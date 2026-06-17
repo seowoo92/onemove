@@ -135,8 +135,11 @@ function cleanMessage(text) {
   return result
 }
 
-function buildUserPrompt(state, routineName, situation) {
-  return `오늘 상태: ${state}
+function buildUserPrompt(state, routineName, situation, nickname) {
+  const nameHint = nickname
+    ? `사용자의 이름은 '${nickname}'입니다. 메시지에서 자연스러울 때 이름을 불러주되, 억지로 매 문장 넣지는 마세요.\n`
+    : ''
+  return `${nameHint}오늘 상태: ${state}
 루틴: ${routineName}
 상황: ${SITUATION_LABELS[situation]}
 이 사용자에게 격려 메시지를 써줘.`
@@ -153,7 +156,7 @@ function buildUserPrompt(state, routineName, situation) {
  * @param {'routine_done'|'easy_done'|'rest_day'|'all_done'} params.situation - 상황
  * @returns {Promise<{ message: string, source: 'solar'|'fallback' }>}
  */
-export async function generateCoachMessage({ personality, state, routineName, situation }) {
+export async function generateCoachMessage({ personality, state, routineName, situation, nickname = '' }) {
   const apiKey = import.meta.env.VITE_SOLAR_API_KEY
 
   if (apiKey) {
@@ -168,7 +171,7 @@ export async function generateCoachMessage({ personality, state, routineName, si
           model: 'solar-pro',
           messages: [
             { role: 'system', content: SYSTEM_PROMPTS[personality] },
-            { role: 'user', content: buildUserPrompt(state, routineName, situation) },
+            { role: 'user', content: buildUserPrompt(state, routineName, situation, nickname) },
           ],
           temperature: 0.8,
           max_tokens: 150,
@@ -186,6 +189,7 @@ export async function generateCoachMessage({ personality, state, routineName, si
   }
 
   const fallbackFn = FALLBACK[personality]?.[situation]
-  const raw = fallbackFn ? fallbackFn(routineName) : '오늘도 잘했어요.'
+  const base = fallbackFn ? fallbackFn(routineName) : '오늘도 잘했어요.'
+  const raw = nickname ? `${nickname}님, ${base}` : base
   return { message: cleanMessage(raw), source: 'fallback' }
 }

@@ -16,6 +16,21 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('home')
   const [homeKey, setHomeKey] = useState(0)
   const [user, setUser] = useState(null)
+  const [nickname, setNickname] = useState('')
+
+  function applyKakaoNickname(currentUser) {
+    if (!currentUser) return
+    if (storage.getNickname()) return
+    const kakaoNick =
+      currentUser.user_metadata?.name ??
+      currentUser.user_metadata?.full_name ??
+      currentUser.user_metadata?.preferred_username ??
+      ''
+    if (kakaoNick) {
+      storage.setNickname(kakaoNick)
+      setNickname(kakaoNick)
+    }
+  }
 
   useEffect(() => {
     async function init() {
@@ -23,6 +38,9 @@ export default function App() {
         ? (await supabase.auth.getSession()).data.session?.user ?? null
         : null
       setUser(currentUser)
+      const stored = storage.getNickname()
+      setNickname(stored)
+      if (!stored) applyKakaoNickname(currentUser)
 
       const savedCoach = storage.getCoach()
       const savedState = storage.getTodayState()
@@ -30,7 +48,6 @@ export default function App() {
       setTodayState(savedState)
 
       if (!savedCoach) {
-        // 카카오 OAuth 복귀 시(currentUser 있음)는 welcome 건너뛰고 코치 선택으로
         setScreen(currentUser ? 'coach-select' : 'welcome')
       } else if (!savedState) {
         setScreen('state-check')
@@ -43,7 +60,9 @@ export default function App() {
 
     if (!supabase) return
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+      const newUser = session?.user ?? null
+      setUser(newUser)
+      if (newUser && !storage.getNickname()) applyKakaoNickname(newUser)
     })
     return () => subscription.unsubscribe()
   }, [])
@@ -77,6 +96,11 @@ export default function App() {
     setCoach(newCoach)
   }
 
+  function handleNicknameChange(newNickname) {
+    storage.setNickname(newNickname)
+    setNickname(newNickname)
+  }
+
   if (!screen) return null
 
   const showTabBar = screen === 'home' && !!coach && !!todayState
@@ -98,14 +122,16 @@ export default function App() {
       {screen === 'home' && coach && todayState && (
         <>
           {activeTab === 'home' && (
-            <Home key={homeKey} coach={coach} todayState={todayState} onGoToStateCheck={handleGoToStateCheck} />
+            <Home key={homeKey} coach={coach} todayState={todayState} nickname={nickname} onGoToStateCheck={handleGoToStateCheck} />
           )}
           {activeTab === 'record' && <RecordScreen />}
           {activeTab === 'settings' && (
             <SettingsScreen
               coach={coach}
               user={user}
+              nickname={nickname}
               onCoachChange={handleCoachChange}
+              onNicknameChange={handleNicknameChange}
               onGoToStateCheck={handleGoToStateCheck}
             />
           )}

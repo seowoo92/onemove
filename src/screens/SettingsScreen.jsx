@@ -1,9 +1,24 @@
+import { useState, useEffect } from 'react'
 import { storage } from '../lib/storage'
 import { supabase } from '../lib/supabase'
 
 const COACHES = ['유쾌', '진중', '다정']
 
-export default function SettingsScreen({ coach, user, onCoachChange, onGoToStateCheck }) {
+export default function SettingsScreen({ coach, user, nickname, onCoachChange, onNicknameChange, onGoToStateCheck }) {
+  const [inputValue, setInputValue] = useState(nickname)
+  const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    setInputValue(nickname)
+  }, [nickname])
+
+  function handleNicknameSave() {
+    const trimmed = inputValue.trim()
+    onNicknameChange(trimmed)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
+
   function handleStateCheck() {
     const completed = storage.getCompletedIds()
     if (completed.length > 0) {
@@ -18,10 +33,7 @@ export default function SettingsScreen({ coach, user, onCoachChange, onGoToState
   async function handleKakaoLogin() {
     if (!supabase) return
     const redirectTo = window.location.origin + import.meta.env.BASE_URL
-    await supabase.auth.signInWithOAuth({
-      provider: 'kakao',
-      options: { redirectTo },
-    })
+    await supabase.auth.signInWithOAuth({ provider: 'kakao', options: { redirectTo } })
   }
 
   async function handleLogout() {
@@ -29,16 +41,44 @@ export default function SettingsScreen({ coach, user, onCoachChange, onGoToState
     await supabase.auth.signOut()
   }
 
-  const nickname =
-    user?.user_metadata?.name ??
-    user?.user_metadata?.full_name ??
-    user?.user_metadata?.preferred_username ??
-    '사용자'
+  const accountLabel = nickname ? `${nickname}님으로 로그인됨` : '로그인됨'
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#FAF6F0' }}>
       <div className="w-full max-w-[480px] mx-auto px-5 pt-10 pb-24">
         <h2 className="text-2xl font-bold mb-8" style={{ color: '#24523F' }}>설정</h2>
+
+        {/* 닉네임 */}
+        <div className="rounded-2xl p-5 mb-3" style={{ backgroundColor: '#FFFFFF' }}>
+          <p className="text-xs mb-3" style={{ color: '#8A9E94' }}>닉네임</p>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value.slice(0, 12))}
+              placeholder="앱에서 불릴 이름을 입력하세요"
+              maxLength={12}
+              className="flex-1 px-3 py-2.5 rounded-xl text-sm outline-none"
+              style={{
+                border: '1.5px solid #ECE6DC',
+                color: '#22302A',
+                backgroundColor: '#FFFFFF',
+              }}
+              onFocus={(e) => { e.target.style.borderColor = '#24523F' }}
+              onBlur={(e) => { e.target.style.borderColor = '#ECE6DC' }}
+            />
+            <button
+              onClick={handleNicknameSave}
+              className="px-4 py-2.5 rounded-xl text-sm font-medium shrink-0"
+              style={{ backgroundColor: '#24523F', color: '#FFFFFF' }}
+            >
+              저장
+            </button>
+          </div>
+          {saved && (
+            <p className="text-xs mt-2" style={{ color: '#24523F' }}>저장되었어요</p>
+          )}
+        </div>
 
         {/* AI 코치 변경 */}
         <div className="rounded-2xl p-5 mb-3" style={{ backgroundColor: '#FFFFFF' }}>
@@ -80,7 +120,7 @@ export default function SettingsScreen({ coach, user, onCoachChange, onGoToState
           {user ? (
             <>
               <p className="text-base font-medium mb-3" style={{ color: '#22302A' }}>
-                {nickname}님으로 로그인됨
+                {accountLabel}
               </p>
               <button
                 onClick={handleLogout}

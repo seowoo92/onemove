@@ -63,6 +63,10 @@ export const storage = {
   },
   setYesterdayIds: (ids) => localStorage.setItem('onemove_yesterday', JSON.stringify(ids)),
 
+  // 닉네임 (영구 보존)
+  getNickname: () => localStorage.getItem('onemove_nickname') ?? '',
+  setNickname: (v) => localStorage.setItem('onemove_nickname', v),
+
   // 날짜별 기록 (자정 리셋 없음, 영구 보존)
   getHistory() {
     try { return JSON.parse(localStorage.getItem('onemove_history') ?? '{}') }

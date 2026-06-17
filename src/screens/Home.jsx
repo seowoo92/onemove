@@ -11,7 +11,7 @@ function formatDate() {
   return `${d.getMonth() + 1}월 ${d.getDate()}일 ${days[d.getDay()]}요일`
 }
 
-export default function Home({ coach, todayState, onGoToStateCheck }) {
+export default function Home({ coach, todayState, nickname = '', onGoToStateCheck }) {
   const [routineIds, setRoutineIds] = useState([])
   const [completedIds, setCompletedIds] = useState(new Set())
   const [easyIds, setEasyIds] = useState(new Set())
@@ -51,7 +51,7 @@ export default function Home({ coach, todayState, onGoToStateCheck }) {
     storage.addHistoryEntry(dateKey, todayState, routineName, routineIds.length)
 
     setModal({ loading: true, message: null, source: null })
-    const result = await generateCoachMessage({ personality: coach, state: todayState, routineName, situation })
+    const result = await generateCoachMessage({ personality: coach, state: todayState, routineName, situation, nickname })
     setModal({ loading: false, message: result.message, source: result.source })
   }
 
@@ -64,7 +64,7 @@ export default function Home({ coach, todayState, onGoToStateCheck }) {
     storage.setSkippedIds([...newSkipped])
 
     setModal({ loading: true, message: null, source: null })
-    const result = await generateCoachMessage({ personality: coach, state: todayState, routineName, situation: 'rest_day' })
+    const result = await generateCoachMessage({ personality: coach, state: todayState, routineName, situation: 'rest_day', nickname })
     setModal({ loading: false, message: result.message, source: result.source })
   }
 
