@@ -1,8 +1,9 @@
 import { storage } from '../lib/storage'
+import { supabase } from '../lib/supabase'
 
 const COACHES = ['유쾌', '진중', '다정']
 
-export default function SettingsScreen({ coach, onCoachChange, onGoToStateCheck }) {
+export default function SettingsScreen({ coach, user, onCoachChange, onGoToStateCheck }) {
   function handleStateCheck() {
     const completed = storage.getCompletedIds()
     if (completed.length > 0) {
@@ -13,6 +14,26 @@ export default function SettingsScreen({ coach, onCoachChange, onGoToStateCheck 
       .forEach(k => localStorage.removeItem(k))
     onGoToStateCheck()
   }
+
+  async function handleKakaoLogin() {
+    if (!supabase) return
+    const redirectTo = window.location.origin + import.meta.env.BASE_URL
+    await supabase.auth.signInWithOAuth({
+      provider: 'kakao',
+      options: { redirectTo },
+    })
+  }
+
+  async function handleLogout() {
+    if (!supabase) return
+    await supabase.auth.signOut()
+  }
+
+  const nickname =
+    user?.user_metadata?.name ??
+    user?.user_metadata?.full_name ??
+    user?.user_metadata?.preferred_username ??
+    '사용자'
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#FAF6F0' }}>
@@ -44,13 +65,45 @@ export default function SettingsScreen({ coach, onCoachChange, onGoToStateCheck 
         </div>
 
         {/* 오늘 상태 다시 고르기 */}
-        <div className="rounded-2xl p-5 mb-10" style={{ backgroundColor: '#FFFFFF' }}>
+        <div className="rounded-2xl p-5 mb-3" style={{ backgroundColor: '#FFFFFF' }}>
           <button onClick={handleStateCheck} className="w-full text-left">
             <p className="text-base font-medium" style={{ color: '#22302A' }}>오늘 상태 다시 고르기</p>
             <p className="text-xs mt-0.5" style={{ color: '#8A9E94' }}>
               상태를 바꾸면 오늘 루틴이 초기화돼요
             </p>
           </button>
+        </div>
+
+        {/* 계정 */}
+        <div className="rounded-2xl p-5 mb-10" style={{ backgroundColor: '#FFFFFF' }}>
+          <p className="text-xs mb-3" style={{ color: '#8A9E94' }}>계정</p>
+          {user ? (
+            <>
+              <p className="text-base font-medium mb-3" style={{ color: '#22302A' }}>
+                {nickname}님으로 로그인됨
+              </p>
+              <button
+                onClick={handleLogout}
+                className="w-full py-2.5 rounded-xl text-sm font-medium"
+                style={{ backgroundColor: '#F0EDE8', color: '#5C7066' }}
+              >
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <>
+              <p className="text-xs mb-3" style={{ color: '#8A9E94' }}>
+                로그인하면 루틴 카드를 카카오톡으로 받을 수 있어요
+              </p>
+              <button
+                onClick={handleKakaoLogin}
+                className="w-full py-2.5 rounded-xl text-sm font-semibold"
+                style={{ backgroundColor: '#FEE500', color: '#3C1E1E' }}
+              >
+                카카오 로그인
+              </button>
+            </>
+          )}
         </div>
 
         {/* 하단 정보 */}
