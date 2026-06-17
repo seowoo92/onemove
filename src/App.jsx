@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { storage } from './lib/storage'
+import AppLayout from './components/AppLayout'
 import CoachSelect from './screens/CoachSelect'
 import StateCheck from './screens/StateCheck'
 import Home from './screens/Home'
@@ -39,7 +40,7 @@ export default function App() {
   if (!screen) return null
 
   return (
-    <>
+    <AppLayout>
       {screen === 'coach-select' && (
         <CoachSelect initialSelected={coach} onSelect={handleCoachSelect} />
       )}
@@ -56,6 +57,6 @@ export default function App() {
           onGoToStateCheck={handleGoToStateCheck}
         />
       )}
-    </>
+    </AppLayout>
   )
 }
