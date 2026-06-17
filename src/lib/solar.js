@@ -88,6 +88,11 @@ function removeThinkTags(text) {
   return text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim()
 }
 
+// ② 반복 구절 제거 (구두점 없이 이어진 반복 루프 처리)
+function removeRepetition(text) {
+  return text.replace(/(.{8,})\1+/g, '$1').trim()
+}
+
 // ③ 화살표·따옴표 제거
 function removeSpecialChars(text) {
   return text.replace(/→/g, '').replace(/["""]/g, '').replace(/[''']/g, '').replace(/\s{2,}/g, ' ').trim()
@@ -122,6 +127,7 @@ function ensureEndPunctuation(text) {
 function cleanMessage(text) {
   let result = removeEmoji(text)
   result = removeThinkTags(result)
+  result = removeRepetition(result)
   result = removeSpecialChars(result)
   result = deduplicateSentences(result)
   result = limitToTwoSentences(result)
@@ -180,6 +186,6 @@ export async function generateCoachMessage({ personality, state, routineName, si
   }
 
   const fallbackFn = FALLBACK[personality]?.[situation]
-  const message = fallbackFn ? fallbackFn(routineName) : '오늘도 잘했어요.'
-  return { message, source: 'fallback' }
+  const raw = fallbackFn ? fallbackFn(routineName) : '오늘도 잘했어요.'
+  return { message: cleanMessage(raw), source: 'fallback' }
 }

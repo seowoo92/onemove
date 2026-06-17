@@ -12,6 +12,7 @@ export default function App() {
   const [coach, setCoach] = useState(null)
   const [todayState, setTodayState] = useState(null)
   const [activeTab, setActiveTab] = useState('home')
+  const [homeKey, setHomeKey] = useState(0)
 
   useEffect(() => {
     const savedCoach = storage.getCoach()
@@ -42,6 +43,11 @@ export default function App() {
     setActiveTab('home')
   }
 
+  function handleTabChange(tab) {
+    if (tab === 'home') setHomeKey(k => k + 1)
+    setActiveTab(tab)
+  }
+
   function handleCoachChange(newCoach) {
     storage.setCoach(newCoach)
     setCoach(newCoach)
@@ -53,7 +59,7 @@ export default function App() {
   const showTabBar = screen === 'home' && !!coach && !!todayState
 
   return (
-    <AppLayout showTabBar={showTabBar} activeTab={activeTab} onTabChange={setActiveTab}>
+    <AppLayout showTabBar={showTabBar} activeTab={activeTab} onTabChange={handleTabChange}>
       {screen === 'coach-select' && (
         <CoachSelect initialSelected={coach} onSelect={handleCoachSelect} />
       )}
@@ -66,7 +72,7 @@ export default function App() {
       {screen === 'home' && coach && todayState && (
         <>
           {activeTab === 'home' && (
-            <Home coach={coach} todayState={todayState} onGoToStateCheck={handleGoToStateCheck} />
+            <Home key={homeKey} coach={coach} todayState={todayState} onGoToStateCheck={handleGoToStateCheck} />
           )}
           {activeTab === 'record' && <RecordScreen />}
           {activeTab === 'settings' && (
