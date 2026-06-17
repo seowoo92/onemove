@@ -6,7 +6,7 @@ export default function CoachModal({ loading, message, source, onClose }) {
       onClick={(e) => e.target === e.currentTarget && !loading && onClose()}
     >
       <div
-        className="w-full max-w-[390px] rounded-t-3xl px-6 pt-8 pb-10"
+        className="w-full max-w-[480px] rounded-t-3xl px-6 pt-8 pb-10"
         style={{ backgroundColor: '#FFFFFF' }}
       >
         {loading ? (

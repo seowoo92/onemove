@@ -3,7 +3,7 @@ const STATES = ['좋아요', '보통이에요', '힘들어요']
 export default function StateCheck({ onSelect, onBack }) {
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#FAF6F0' }}>
-      <div className="w-full max-w-[390px] mx-auto flex flex-col flex-1 px-6 py-14">
+      <div className="w-full max-w-[480px] mx-auto flex flex-col flex-1 px-6 py-14">
 
         {/* 뒤로 버튼 */}
         {onBack && (

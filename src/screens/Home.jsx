@@ -86,7 +86,7 @@ export default function Home({ coach, todayState, onGoToStateCheck }) {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#FAF6F0' }}>
-      <div className="w-full max-w-[390px] mx-auto px-5 pt-10 pb-24">
+      <div className="w-full max-w-[480px] mx-auto px-5 pt-10 pb-24">
 
         {/* 헤더 */}
         <div className="flex items-baseline justify-between mb-1">

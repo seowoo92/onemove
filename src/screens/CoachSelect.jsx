@@ -11,7 +11,7 @@ export default function CoachSelect({ onSelect, initialSelected = null }) {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#FAF6F0' }}>
-      <div className="w-full max-w-[390px] mx-auto flex flex-col flex-1 px-6 py-14">
+      <div className="w-full max-w-[480px] mx-auto flex flex-col flex-1 px-6 py-14">
         {/* 로고 */}
         <div className="text-center mb-14">
           <h1 className="text-3xl font-bold" style={{ color: '#24523F' }}>오늘만큼</h1>

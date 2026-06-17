@@ -19,9 +19,20 @@ function useIsDesktop() {
 export default function AppLayout({ children }) {
   const isDesktop = useIsDesktop()
 
-  // 모바일/태블릿: children을 그대로 반환 (기존 화면과 100% 동일)
+  // 모바일/태블릿: 중앙 정렬 래퍼로 감싸기
+  // - 외부 div: 전체 배경(#FAF6F0)을 화면 끝까지 채움
+  // - 내부 div: max-width 480px, 가운데 정렬 (flex justify-center 사용)
+  //   flex row + justify-center 방식으로 align-items:stretch 간섭을 피함
   if (!isDesktop) {
-    return <>{children}</>
+    return (
+      <div
+        style={{ minHeight: '100vh', backgroundColor: '#FAF6F0', display: 'flex', justifyContent: 'center' }}
+      >
+        <div style={{ width: '100%', maxWidth: '480px' }}>
+          {children}
+        </div>
+      </div>
+    )
   }
 
   // 데스크톱: 좌우 2단 레이아웃 + 폰 베젤
