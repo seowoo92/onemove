@@ -23,10 +23,10 @@ function useViewportMode() {
   return mode
 }
 
-export default function AppLayout({ children }) {
+export default function AppLayout({ children, showTabBar = false, activeTab = 'home', onTabChange = () => {} }) {
   const mode = useViewportMode()
 
-  // 모바일/태블릿: 중앙 정렬 + 그림자 (태블릿만) + 고정 탭바
+  // 모바일/태블릿: 중앙 정렬 + 그림자(태블릿만) + 조건부 고정 탭바
   if (mode !== 'desktop') {
     return (
       <>
@@ -35,24 +35,28 @@ export default function AppLayout({ children }) {
             width: '100%',
             maxWidth: '480px',
             minHeight: '100vh',
-            // 태블릿(480px~1023px)에만 그림자, 모바일(<480px)은 없음
             boxShadow: mode === 'tablet' ? '0 8px 30px rgba(0,0,0,0.08)' : 'none',
           }}>
-            <div style={{ paddingBottom: '56px' }}>
+            <div style={{ paddingBottom: showTabBar ? '56px' : 0 }}>
               {children}
             </div>
           </div>
         </div>
-        {/* 탭바: viewport 기준 하단 고정, 480px 중앙 정렬 */}
-        <TabBar style={{
-          position: 'fixed',
-          bottom: 0,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '100%',
-          maxWidth: '480px',
-          zIndex: 40,
-        }} />
+        {showTabBar && (
+          <TabBar
+            activeTab={activeTab}
+            onTabChange={onTabChange}
+            style={{
+              position: 'fixed',
+              bottom: 0,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '100%',
+              maxWidth: '480px',
+              zIndex: 40,
+            }}
+          />
+        )}
       </>
     )
   }
@@ -102,11 +106,9 @@ export default function AppLayout({ children }) {
             height: 'min(844px, calc(100vh - 96px))',
             border: '10px solid #1C3F2F',
             borderRadius: '52px',
-            // 지정된 그림자 적용
             boxShadow: '0 20px 50px rgba(0,0,0,0.12)',
             overflow: 'hidden',
-            // CSS 트릭: transform이 있는 요소는 position:fixed 자식의 containing block이 됨.
-            // CoachModal의 "fixed inset-0"과 TabBar의 "fixed bottom-0"이 베젤 기준으로 고정됨.
+            // CSS 트릭: position:fixed 자식들이 베젤 기준으로 고정됨 (CoachModal, TabBar)
             transform: 'translateZ(0)',
           }}
         >
@@ -130,11 +132,16 @@ export default function AppLayout({ children }) {
             className="[&::-webkit-scrollbar]:hidden"
             style={{ height: '100%', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'none' }}
           >
-            <div style={{ paddingBottom: '56px' }}>
+            <div style={{ paddingBottom: showTabBar ? '56px' : 0 }}>
               {children}
             </div>
-            {/* 탭바: 베젤 기준 하단 고정 (position:fixed가 bezel의 transform에 의해 베젤 기준으로 동작) */}
-            <TabBar style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40 }} />
+            {showTabBar && (
+              <TabBar
+                activeTab={activeTab}
+                onTabChange={onTabChange}
+                style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40 }}
+              />
+            )}
           </div>
         </div>
       </div>

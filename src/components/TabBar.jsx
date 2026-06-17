@@ -1,10 +1,10 @@
 const TABS = [
-  { label: '홈', active: true },
-  { label: '기록', active: false },
-  { label: '설정', active: false },
+  { key: 'home', label: '홈' },
+  { key: 'record', label: '기록' },
+  { key: 'settings', label: '설정' },
 ]
 
-export default function TabBar({ style }) {
+export default function TabBar({ activeTab, onTabChange, style }) {
   return (
     <div
       style={{
@@ -15,18 +15,19 @@ export default function TabBar({ style }) {
         ...style,
       }}
     >
-      {TABS.map(({ label, active }) => (
+      {TABS.map(({ key, label }) => (
         <div
-          key={label}
+          key={key}
+          onClick={() => onTabChange(key)}
           style={{
             flex: 1,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             fontSize: '13px',
-            fontWeight: active ? 600 : 400,
-            color: active ? '#24523F' : '#9AA39C',
-            cursor: 'default',
+            fontWeight: activeTab === key ? 600 : 400,
+            color: activeTab === key ? '#24523F' : '#9AA39C',
+            cursor: 'pointer',
           }}
         >
           {label}

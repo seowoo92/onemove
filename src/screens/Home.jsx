@@ -46,6 +46,10 @@ export default function Home({ coach, todayState, onGoToStateCheck }) {
     setCompletedIds(newCompleted)
     storage.setCompletedIds([...newCompleted])
 
+    // 날짜별 기록 누적 저장
+    const dateKey = new Date().toISOString().slice(0, 10)
+    storage.addHistoryEntry(dateKey, todayState, routineName, routineIds.length)
+
     setModal({ loading: true, message: null, source: null })
     const result = await generateCoachMessage({ personality: coach, state: todayState, routineName, situation })
     setModal({ loading: false, message: result.message, source: result.source })

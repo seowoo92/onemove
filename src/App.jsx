@@ -4,11 +4,14 @@ import AppLayout from './components/AppLayout'
 import CoachSelect from './screens/CoachSelect'
 import StateCheck from './screens/StateCheck'
 import Home from './screens/Home'
+import RecordScreen from './screens/RecordScreen'
+import SettingsScreen from './screens/SettingsScreen'
 
 export default function App() {
   const [screen, setScreen] = useState(null)
   const [coach, setCoach] = useState(null)
   const [todayState, setTodayState] = useState(null)
+  const [activeTab, setActiveTab] = useState('home')
 
   useEffect(() => {
     const savedCoach = storage.getCoach()
@@ -30,17 +33,27 @@ export default function App() {
     storage.setTodayState(state)
     setTodayState(state)
     setScreen('home')
+    setActiveTab('home')
   }
 
   function handleGoToStateCheck() {
     setTodayState(null)
     setScreen('state-check')
+    setActiveTab('home')
+  }
+
+  function handleCoachChange(newCoach) {
+    storage.setCoach(newCoach)
+    setCoach(newCoach)
+    // todayState, routines, completed 등 일체 건드리지 않음
   }
 
   if (!screen) return null
 
+  const showTabBar = screen === 'home' && !!coach && !!todayState
+
   return (
-    <AppLayout>
+    <AppLayout showTabBar={showTabBar} activeTab={activeTab} onTabChange={setActiveTab}>
       {screen === 'coach-select' && (
         <CoachSelect initialSelected={coach} onSelect={handleCoachSelect} />
       )}
@@ -51,11 +64,19 @@ export default function App() {
         />
       )}
       {screen === 'home' && coach && todayState && (
-        <Home
-          coach={coach}
-          todayState={todayState}
-          onGoToStateCheck={handleGoToStateCheck}
-        />
+        <>
+          {activeTab === 'home' && (
+            <Home coach={coach} todayState={todayState} onGoToStateCheck={handleGoToStateCheck} />
+          )}
+          {activeTab === 'record' && <RecordScreen />}
+          {activeTab === 'settings' && (
+            <SettingsScreen
+              coach={coach}
+              onCoachChange={handleCoachChange}
+              onGoToStateCheck={handleGoToStateCheck}
+            />
+          )}
+        </>
       )}
     </AppLayout>
   )

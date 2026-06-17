@@ -62,4 +62,20 @@ export const storage = {
     catch { return [] }
   },
   setYesterdayIds: (ids) => localStorage.setItem('onemove_yesterday', JSON.stringify(ids)),
+
+  // 날짜별 기록 (자정 리셋 없음, 영구 보존)
+  getHistory() {
+    try { return JSON.parse(localStorage.getItem('onemove_history') ?? '{}') }
+    catch { return {} }
+  },
+  addHistoryEntry(dateKey, state, completedName, total) {
+    const history = this.getHistory()
+    const entry = history[dateKey] ?? { state, completed: [], total }
+    if (!entry.completed.includes(completedName)) {
+      entry.completed = [...entry.completed, completedName]
+    }
+    entry.total = total
+    history[dateKey] = entry
+    localStorage.setItem('onemove_history', JSON.stringify(history))
+  },
 }
