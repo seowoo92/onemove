@@ -13,7 +13,7 @@
 ## 기술 스택
 - 프레임워크: Vite + React 19 + Tailwind CSS v4
 - AI: 업스테이지 Solar API (model: solar-pro)
-- 인증/서버: Supabase (P1 카카오 로그인용, 아직 미연동)
+- 인증/서버: Supabase Auth (카카오 OAuth 연동 완료, 앱 ID 1489350)
 - 배포: GitHub Pages (push to main 시 자동 배포)
 - 데이터 저장: localStorage (서버 DB 없음, MVP 기간)
 
@@ -45,8 +45,14 @@
 - 데스크톱 폰 베젤: 390px×844px, border-radius 52px, #1C3F2F 테두리, 그림자 `0 20px 50px rgba(0,0,0,0.12)`
 - `transform:translateZ(0)` 으로 베젤 안 `position:fixed` 자식(TabBar)이 베젤 기준 고정
 
-## 화면 흐름 (4단계)
-S1 코치 선택 → S2 상태 체크 → S3 루틴 홈 → S4 코치 메시지(모달)
+## 화면 흐름 (5단계)
+S0 진입 → S1 코치 선택 → S2 상태 체크 → S3 루틴 홈 → S4 코치 메시지(모달)
+
+### S0 — 진입 화면 (WelcomeScreen.jsx)
+- 최초 사용자(onemove_coach 없음)에게만 표시, 기존 사용자는 건너뜀
+- 카카오 OAuth 복귀 시(세션 있음) coach 없어도 welcome 건너뛰고 S1으로 직행
+- "카카오로 시작하기" (#FEE500 노란 버튼) / "로그인 없이 시작하기" 두 가지 선택 제공
+- 안내: 루틴 카드·알림을 카카오톡으로 받을 수 있음, 나중에 설정에서도 로그인 가능
 
 ### S1 — 코치 성격 선택
 - 최초 1회만 표시 (localStorage에 onemove_coach 없을 때)
@@ -88,6 +94,10 @@ S1 코치 선택 → S2 상태 체크 → S3 루틴 홈 → S4 코치 메시지(
 - AI 코치 성격 변경: 유쾌 / 진중 / 다정
 - 코치 변경 시 루틴·완료 기록·상태 일체 초기화 없음 (`onemove_coach`만 업데이트)
 - 오늘 상태 다시 고르기: 완료 기록 있으면 confirm 경고, 5개 localStorage 키 초기화
+- 닉네임 설정: 직접 입력 (onemove_nickname, 최대 12자), 저장 시 "저장되었어요" 2초 표시
+- 계정 항목:
+  - 미로그인: "카카오로 시작하기" 노란 버튼 + 안내 문구
+  - 로그인: "OO님으로 로그인됨" (닉네임 기반) + 로그아웃 버튼
 
 ## 루틴 추천 로직 (routinePicker.js)
 - 좋아요: 4개 (보통3 + 쉬움1)
@@ -105,7 +115,7 @@ S1 코치 선택 → S2 상태 체크 → S3 루틴 홈 → S4 코치 메시지(
 - 난이도 분포: 보통 22개 / 쉬움 6개 (기본 루틴 기준)
 
 ## Solar AI 코치 (solar.js)
-- 함수: generateCoachMessage({ personality, state, routineName, situation })
+- 함수: generateCoachMessage({ personality, state, routineName, situation, nickname })
 - personality: '유쾌' | '진중' | '다정'
 - situation: 'routine_done' | 'easy_done' | 'rest_day' | 'all_done'
 - 반환: { message: string, source: 'solar' | 'fallback' }
@@ -119,6 +129,8 @@ S1 코치 선택 → S2 상태 체크 → S3 루틴 홈 → S4 코치 메시지(
   다정: ~해요체, 공감 먼저, 토닥이는 톤
 - 금지어: "작은 걸음", "큰 변화", "성장", 자기계발서 표현
 - 금지 행동: 더 하길 권유, 미래 약속, 제안형 문장, 문장 반복
+- 닉네임: 자연스러울 때만 사용, 매 문장 강제 삽입 금지. 루틴 이름 동사 억지 변형 금지 (어색하면 루틴명 언급 없이 일반 격려로 표현)
+- fallback 메시지: 닉네임 있으면 앞에 "${nickname}님, " 접두 후 cleanMessage 통과
 
 ## localStorage 구조
 모든 날짜 기반 키는 `{ date: 'YYYY-MM-DD', value: ... }` 형태로 저장되며,
@@ -133,6 +145,7 @@ S1 코치 선택 → S2 상태 체크 → S3 루틴 홈 → S4 코치 메시지(
 | `onemove_easy` | 쉬운버전으로 전환된 루틴 ID 배열 | 매일 |
 | `onemove_skipped` | 오늘은 쉬어가기 선택 루틴 ID 배열 | 매일 |
 | `onemove_yesterday` | 어제 추천된 루틴 ID 배열 (중복 방지용) | 유지 |
+| `onemove_nickname` | 앱 내 닉네임 (최대 12자) | 유지 |
 | `onemove_history` | 날짜별 완료 기록 `{"YYYY-MM-DD": {state, completed:[], total}}` | 영구 (날짜 리셋 없음) |
 
 ## 개발 명령어
@@ -141,11 +154,26 @@ S1 코치 선택 → S2 상태 체크 → S3 루틴 홈 → S4 코치 메시지(
 - npm run preview : 빌드 결과 미리보기
 - git push origin main : GitHub Actions 자동 배포 트리거
 
-## 다음 작업 (P1, 6/18 예정)
-- 카카오 로그인 (Supabase Auth)
-- "오늘의 루틴 카드" 카카오톡 나에게 보내기
-- OG 태그 설정 (링크 공유 미리보기)
-- 파비콘 제작
+## 카카오 로그인 (6/18 완료)
+- 카카오 개발자 앱 ID: 1489350, 비즈앱 전환 완료
+- Supabase Auth ↔ 카카오 OAuth 연결: Redirect URI, REST API 키·시크릿, Site URL/Redirect URLs 등록
+- src/lib/supabase.js: createClient(VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY), env 미설정 시 null 반환
+- App.jsx에서 getSession + onAuthStateChange 구독, redirectTo는 origin + BASE_URL (로컬/배포 자동 대응)
+- 로그인은 선택사항 — 미로그인도 모든 핵심 기능 정상 작동
+- KOE205 트러블슈팅: Supabase가 account_email 스코프 강제 요청 → 개인 앱에서 해결 불가 → 비즈앱 전환으로 해결 (Supabase 이슈 #36878)
+
+## 닉네임 (6/18 완료)
+- 설정 탭에서 직접 입력 (localStorage: onemove_nickname, 최대 12자)
+- 카카오 닉네임은 기본값으로만 자동 채움, 직접 설정한 값이 있으면 덮어쓰지 않음
+- generateCoachMessage에 nickname 파라미터 전달 (Home.jsx → solar.js)
+- 시스템 프롬프트: 자연스러울 때만 이름 사용, 루틴 이름 동사 억지 변형 금지
+
+## 다음 작업 (6/19~)
+- P1 잔여: 루틴 카드 카카오톡 보내기 (talk_message 권한 활용)
+- 디자인 미세조정: 폰 베젤 그림자, 폰 노치 로고 가림, S0 안내 카드 여백
+- OG / 카카오 링크 공유 태그 설정
+- 파비콘 적용 (제작한 심볼 이미지 활용)
+- 보안: 6/22 발표 후 Solar API 키 폐기, 추후 Supabase Edge Function 전환 검토
 
 ## 주의사항
 - .env.local 절대 커밋 금지
