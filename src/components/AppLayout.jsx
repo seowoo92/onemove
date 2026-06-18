@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import TabBar from './TabBar'
 
 const FEATURES = [
@@ -23,8 +23,79 @@ function useViewportMode() {
   return mode
 }
 
+// 아래로 더 스크롤할 내용이 있을 때 하단에 표시되는 화살표 안내
+function ScrollHint({ scrollRef, bottom }) {
+  const [show, setShow] = useState(false)
+  useEffect(() => {
+    const el = scrollRef?.current ?? null
+    const measure = () => {
+      let top, sh, ch
+      if (el) {
+        top = el.scrollTop; sh = el.scrollHeight; ch = el.clientHeight
+      } else {
+        const d = document.documentElement
+        top = window.scrollY || d.scrollTop; sh = d.scrollHeight; ch = window.innerHeight
+      }
+      setShow(sh - ch - top > 40)
+    }
+    measure()
+    const target = el ?? window
+    target.addEventListener('scroll', measure, { passive: true })
+    window.addEventListener('resize', measure)
+    let ro
+    if (typeof ResizeObserver !== 'undefined') {
+      ro = new ResizeObserver(measure)
+      ro.observe(el ?? document.body)
+    }
+    // 콘텐츠가 늦게 그려지거나 탭 전환 시에도 확실히 갱신되도록 주기 재측정
+    const id = setInterval(measure, 400)
+    return () => {
+      target.removeEventListener('scroll', measure)
+      window.removeEventListener('resize', measure)
+      if (ro) ro.disconnect()
+      clearInterval(id)
+    }
+  }, [scrollRef])
+
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        position: 'fixed',
+        left: '50%',
+        bottom,
+        transform: 'translateX(-50%)',
+        zIndex: 35,
+        pointerEvents: 'none',
+        opacity: show ? 1 : 0,
+        transition: 'opacity .25s',
+      }}
+    >
+      <style>{`@keyframes scrollHintBob{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}`}</style>
+      <div
+        style={{
+          width: 36,
+          height: 36,
+          borderRadius: '50%',
+          backgroundColor: '#24523F',
+          boxShadow: '0 8px 18px -5px rgba(36,82,63,.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          animation: 'scrollHintBob 1.4s ease-in-out infinite',
+        }}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 6.5l4 4 4-4" />
+        </svg>
+      </div>
+    </div>
+  )
+}
+
 export default function AppLayout({ children, showTabBar = false, activeTab = 'home', onTabChange = () => {} }) {
   const mode = useViewportMode()
+  const bezelRef = useRef(null)
 
   // 모바일/태블릿: 중앙 정렬 + 그림자(태블릿만) + 조건부 고정 탭바
   if (mode !== 'desktop') {
@@ -35,6 +106,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             width: '100%',
             maxWidth: mode === 'tablet' ? '480px' : '100%',
             height: '100vh',
+            backgroundColor: '#FAF6F0',
             boxShadow: mode === 'tablet' ? '0 8px 30px rgba(0,0,0,0.08)' : 'none',
           }}>
             <div style={{ paddingTop: '16px', paddingBottom: showTabBar ? '56px' : 0, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
@@ -57,6 +129,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             }}
           />
         )}
+        <ScrollHint scrollRef={null} bottom={showTabBar ? 64 : 18} />
       </>
     )
   }
@@ -155,8 +228,9 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
           />
           {/* 스크롤 가능한 앱 콘텐츠 */}
           <div
+            ref={bezelRef}
             className="[&::-webkit-scrollbar]:hidden"
-            style={{ height: '812px', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'none' }}
+            style={{ height: '812px', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'none', backgroundColor: '#FAF6F0' }}
           >
             <div style={{ paddingTop: '48px', paddingLeft: '8px', paddingRight: '8px', paddingBottom: showTabBar ? '56px' : 0, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
               {children}
@@ -168,6 +242,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
                 style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40 }}
               />
             )}
+            <ScrollHint scrollRef={bezelRef} bottom={showTabBar ? 64 : 18} />
           </div>
         </div>
       </div>

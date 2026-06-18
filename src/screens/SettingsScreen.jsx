@@ -159,8 +159,12 @@ export default function SettingsScreen({ coach, user, nickname, onCoachChange, o
 
         {/* 마음 날씨 다시 고르기 */}
         <div className="rounded-2xl p-5 mb-3" style={{ backgroundColor: '#FFFFFF', boxShadow: '0 8px 18px -14px rgba(36,82,63,.2)' }}>
-          <button onClick={handleStateCheck} className="w-full text-left">
-            <p className="text-base font-medium" style={{ color: '#22302A' }}>마음 날씨 다시 고르기</p>
+          <button onClick={handleStateCheck} className="w-full text-left"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+            <div className="flex items-center justify-between">
+              <p className="text-base font-medium" style={{ color: '#22302A' }}>마음 날씨 다시 고르기</p>
+              <span style={{ fontSize: 18, color: '#C4BAB2', lineHeight: 1 }}>›</span>
+            </div>
             <p className="text-xs mt-0.5" style={{ color: '#8A9E94' }}>
               마음 날씨를 다시 고르면 오늘 루틴이 새로 시작돼요
             </p>

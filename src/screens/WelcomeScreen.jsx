@@ -69,7 +69,7 @@ export default function WelcomeScreen({ onSkip }) {
           lineHeight: 1.22,
         }}
       >
-        오늘<br />할 수 있는<br />만큼만.
+        오늘 할 수 있는<br />만큼만.
       </h1>
 
       {/* 서브카피 */}
@@ -86,32 +86,31 @@ export default function WelcomeScreen({ onSkip }) {
         }}
       >
         오늘의 한 걸음, 그거면 충분해요.<br />
-        완벽 대신 꾸준함으로 멈춘 자리에서 다시 이어가요.
+        완벽 대신 꾸준함으로<br />
+        멈춘 자리에서 다시 이어가요.
       </p>
 
       {/* 오르막 점 패스 — 한 걸음씩 나아간다 (전부 SVG) */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', minHeight: 120 }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', minHeight: 150 }}>
         <svg
-          width="100%"
-          height="128"
-          viewBox="0 0 390 128"
+          viewBox="0 0 390 170"
           fill="none"
           preserveAspectRatio="xMidYMax meet"
-          style={{ display: 'block' }}
+          style={{ width: '100%', height: 'auto', display: 'block' }}
           aria-hidden="true"
         >
           <path
-            d="M52 104 Q150 92 196 64 T330 26"
+            d="M48 142 Q150 122 196 86 T342 30"
             stroke="#D8E2DA"
-            strokeWidth="3"
+            strokeWidth="3.5"
             strokeLinecap="round"
-            strokeDasharray="2 15"
+            strokeDasharray="2 16"
           />
-          <circle cx="52" cy="104" r="5" fill="#CFE0D4" />
-          <circle cx="116" cy="86" r="7.5" fill="#9FC1A9" />
-          <circle cx="182" cy="64" r="10.5" fill="#EFA58F" />
-          <circle cx="252" cy="44" r="14" fill="#F3D978" />
-          <circle cx="330" cy="26" r="20" fill="#24523F" />
+          <circle cx="48" cy="142" r="7" fill="#CFE0D4" />
+          <circle cx="120" cy="115" r="10.5" fill="#9FC1A9" />
+          <circle cx="194" cy="86" r="15" fill="#EFA58F" />
+          <circle cx="266" cy="56" r="20" fill="#F3D978" />
+          <circle cx="342" cy="28" r="28" fill="#24523F" />
         </svg>
       </div>
 
@@ -127,13 +126,13 @@ export default function WelcomeScreen({ onSkip }) {
             background: '#FEE500',
             color: '#3C1E1E',
             borderRadius: 18,
-            padding: 17,
-            fontSize: 16,
+            padding: 14,
+            fontSize: 15,
             fontWeight: 700,
             border: 'none',
             cursor: 'pointer',
             boxShadow:
-              '0 9px 20px -7px rgba(220,195,0,.6),inset 0 2px 0 rgba(255,255,255,.5),inset 0 -3px 6px rgba(160,140,0,.2)',
+              '0 7px 16px -8px rgba(220,195,0,.5),inset 0 2px 0 rgba(255,255,255,.45),inset 0 -3px 6px rgba(160,140,0,.18)',
           }}
         >
           <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
