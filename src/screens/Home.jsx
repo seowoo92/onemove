@@ -70,7 +70,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
 
   function handleRequestStateChange() {
     if (completedIds.size > 0) {
-      const ok = window.confirm('다시 고르면 오늘 기록이 초기화돼요. 계속할까요?')
+      const ok = window.confirm('마음 날씨를 다시 고르면 오늘 기록이 초기화돼요. 계속할까요?')
       if (!ok) return
     }
     ;['onemove_state', 'onemove_routines', 'onemove_completed', 'onemove_easy', 'onemove_skipped']
@@ -101,7 +101,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
               className="text-xs"
               style={{ color: '#8A9E94' }}
             >
-              상태 다시 고르기
+              마음 날씨 다시 고르기
             </button>
             <p className="text-xs" style={{ color: '#C4BAB2' }}>{formatDate()}</p>
           </div>
@@ -216,6 +216,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
           message={modal.message}
           source={modal.source}
           onClose={() => setModal(null)}
+          coach={coach}
         />
       )}
     </div>

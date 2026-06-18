@@ -23,7 +23,7 @@ export default function StateCheck({ onSelect, onBack }) {
 
         {/* 인사말 */}
         <p className="text-xl font-medium text-center mb-8" style={{ color: '#22302A' }}>
-          오늘 컨디션은 어때요?
+          오늘 마음 날씨는 어떤가요?
         </p>
 
         {/* 상태 버튼 */}

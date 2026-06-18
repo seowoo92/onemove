@@ -87,7 +87,12 @@ export default function App() {
   }
 
   function handleTabChange(tab) {
-    if (tab === 'home') setHomeKey(k => k + 1)
+    if (tab === 'home') {
+      setHomeKey(k => k + 1)
+      setScreen(todayState ? 'home' : 'state-check')
+    } else {
+      setScreen('home')
+    }
     setActiveTab(tab)
   }
 
@@ -103,7 +108,7 @@ export default function App() {
 
   if (!screen) return null
 
-  const showTabBar = screen === 'home' && !!coach && !!todayState
+  const showTabBar = !!coach
 
   return (
     <AppLayout showTabBar={showTabBar} activeTab={activeTab} onTabChange={handleTabChange}>
@@ -119,10 +124,13 @@ export default function App() {
           onBack={() => setScreen('coach-select')}
         />
       )}
-      {screen === 'home' && coach && todayState && (
+      {screen === 'home' && coach && (
         <>
-          {activeTab === 'home' && (
+          {activeTab === 'home' && todayState && (
             <Home key={homeKey} coach={coach} todayState={todayState} nickname={nickname} onGoToStateCheck={handleGoToStateCheck} />
+          )}
+          {activeTab === 'home' && !todayState && (
+            <StateCheck onSelect={handleStateSelect} onBack={() => setScreen('coach-select')} />
           )}
           {activeTab === 'record' && <RecordScreen />}
           {activeTab === 'settings' && (

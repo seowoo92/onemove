@@ -7,6 +7,7 @@ const COACHES = ['유쾌', '진중', '다정']
 export default function SettingsScreen({ coach, user, nickname, onCoachChange, onNicknameChange, onGoToStateCheck }) {
   const [inputValue, setInputValue] = useState(nickname)
   const [saved, setSaved] = useState(false)
+  const [notify, setNotify] = useState(() => storage.getNotify())
 
   useEffect(() => {
     setInputValue(nickname)
@@ -22,7 +23,7 @@ export default function SettingsScreen({ coach, user, nickname, onCoachChange, o
   function handleStateCheck() {
     const completed = storage.getCompletedIds()
     if (completed.length > 0) {
-      const ok = window.confirm('다시 고르면 오늘 기록이 초기화돼요. 계속할까요?')
+      const ok = window.confirm('마음 날씨를 다시 고르면 오늘 기록이 초기화돼요. 계속할까요?')
       if (!ok) return
     }
     ;['onemove_state', 'onemove_routines', 'onemove_completed', 'onemove_easy', 'onemove_skipped']
@@ -80,6 +81,47 @@ export default function SettingsScreen({ coach, user, nickname, onCoachChange, o
           )}
         </div>
 
+        {/* 카카오톡 알림 토글 */}
+        <div className="rounded-2xl p-5 mb-1" style={{ backgroundColor: '#FFFFFF' }}>
+          <div className="flex items-center justify-between">
+            <p className="text-base font-medium" style={{ color: '#22302A' }}>카카오톡 알림</p>
+            <button
+              onClick={() => {
+                const next = !notify
+                setNotify(next)
+                storage.setNotify(next)
+              }}
+              style={{
+                width: 44,
+                height: 24,
+                borderRadius: 12,
+                backgroundColor: notify ? '#24523F' : '#C4BAB2',
+                position: 'relative',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s',
+                flexShrink: 0,
+              }}
+              aria-label={notify ? '알림 끄기' : '알림 켜기'}
+            >
+              <span style={{
+                position: 'absolute',
+                top: 2,
+                left: notify ? 22 : 2,
+                width: 20,
+                height: 20,
+                borderRadius: '50%',
+                backgroundColor: '#FFFFFF',
+                transition: 'left 0.2s',
+                display: 'block',
+              }} />
+            </button>
+          </div>
+        </div>
+        <p className="text-xs mb-3 px-1" style={{ color: '#C4BAB2' }}>
+          알림 발송은 카카오 채널 연동 후 제공돼요
+        </p>
+
         {/* AI 코치 변경 */}
         <div className="rounded-2xl p-5 mb-3" style={{ backgroundColor: '#FFFFFF' }}>
           <p className="text-xs mb-1" style={{ color: '#8A9E94' }}>AI 코치</p>
@@ -104,12 +146,12 @@ export default function SettingsScreen({ coach, user, nickname, onCoachChange, o
           </div>
         </div>
 
-        {/* 오늘 상태 다시 고르기 */}
+        {/* 마음 날씨 다시 고르기 */}
         <div className="rounded-2xl p-5 mb-3" style={{ backgroundColor: '#FFFFFF' }}>
           <button onClick={handleStateCheck} className="w-full text-left">
-            <p className="text-base font-medium" style={{ color: '#22302A' }}>오늘 상태 다시 고르기</p>
+            <p className="text-base font-medium" style={{ color: '#22302A' }}>마음 날씨 다시 고르기</p>
             <p className="text-xs mt-0.5" style={{ color: '#8A9E94' }}>
-              상태를 바꾸면 오늘 루틴이 초기화돼요
+              마음 날씨를 다시 고르면 오늘 루틴이 새로 시작돼요
             </p>
           </button>
         </div>
@@ -144,6 +186,27 @@ export default function SettingsScreen({ coach, user, nickname, onCoachChange, o
               </button>
             </>
           )}
+        </div>
+
+        {/* 위기 상담 연락처 */}
+        <div className="mb-8">
+          <p className="text-xs mb-2" style={{ color: '#8A9E94' }}>마음이 많이 힘들 때</p>
+          <div className="flex flex-col gap-2">
+            {[
+              { name: '국립정신건강센터 정신건강상담', number: '1577-0199', tel: '1577-0199' },
+              { name: '보건복지부 자살예방상담', number: '109', tel: '109' },
+            ].map(({ name, number, tel }) => (
+              <a
+                key={tel}
+                href={`tel:${tel}`}
+                className="rounded-xl p-4 flex items-center justify-between"
+                style={{ backgroundColor: '#FFFFFF', textDecoration: 'none' }}
+              >
+                <span className="text-sm" style={{ color: '#5C7066' }}>{name}</span>
+                <span className="text-sm font-bold" style={{ color: '#24523F' }}>{number}</span>
+              </a>
+            ))}
+          </div>
         </div>
 
         {/* 하단 정보 */}

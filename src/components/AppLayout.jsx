@@ -37,7 +37,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             minHeight: '100vh',
             boxShadow: mode === 'tablet' ? '0 8px 30px rgba(0,0,0,0.08)' : 'none',
           }}>
-            <div style={{ paddingBottom: showTabBar ? '56px' : 0 }}>
+            <div style={{ paddingTop: '16px', paddingBottom: showTabBar ? '56px' : 0 }}>
               {children}
             </div>
           </div>
@@ -132,7 +132,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             className="[&::-webkit-scrollbar]:hidden"
             style={{ height: '100%', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'none' }}
           >
-            <div style={{ paddingBottom: showTabBar ? '56px' : 0 }}>
+            <div style={{ paddingTop: '48px', paddingLeft: '8px', paddingRight: '8px', paddingBottom: showTabBar ? '56px' : 0 }}>
               {children}
             </div>
             {showTabBar && (

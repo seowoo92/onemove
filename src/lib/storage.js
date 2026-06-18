@@ -67,6 +67,10 @@ export const storage = {
   getNickname: () => localStorage.getItem('onemove_nickname') ?? '',
   setNickname: (v) => localStorage.setItem('onemove_nickname', v),
 
+  // 카카오톡 알림 on/off (영구 보존)
+  getNotify: () => localStorage.getItem('onemove_notify') === 'true',
+  setNotify: (bool) => localStorage.setItem('onemove_notify', bool ? 'true' : 'false'),
+
   // 날짜별 기록 (자정 리셋 없음, 영구 보존)
   getHistory() {
     try { return JSON.parse(localStorage.getItem('onemove_history') ?? '{}') }
