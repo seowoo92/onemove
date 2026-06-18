@@ -1,10 +1,30 @@
 import { useState, useEffect } from 'react'
 import { storage } from '../lib/storage'
 import { supabase } from '../lib/supabase'
+import { COACH_INFO, COACH_KEYS } from '../lib/coaches'
 
-const COACHES = ['유쾌', '진중', '다정']
+function CoachAvatar({ info, size = 36 }) {
+  const [imgError, setImgError] = useState(false)
+  if (info.image && !imgError) {
+    return (
+      <img
+        src={info.image}
+        alt={info.name}
+        className="rounded-full shrink-0"
+        style={{ width: size, height: size, objectFit: 'cover' }}
+        onError={() => setImgError(true)}
+      />
+    )
+  }
+  return (
+    <div
+      className="rounded-full shrink-0"
+      style={{ width: size, height: size, backgroundColor: info.color }}
+    />
+  )
+}
 
-export default function SettingsScreen({ coach, user, nickname, onCoachChange, onNicknameChange, onGoToStateCheck }) {
+export default function SettingsScreen({ coach, user, nickname, onCoachChange, onNicknameChange, onGoToStateCheck, onGoToCoachSelect }) {
   const [inputValue, setInputValue] = useState(nickname)
   const [saved, setSaved] = useState(false)
   const [notify, setNotify] = useState(() => storage.getNotify())
@@ -28,6 +48,7 @@ export default function SettingsScreen({ coach, user, nickname, onCoachChange, o
     }
     ;['onemove_state', 'onemove_routines', 'onemove_completed', 'onemove_easy', 'onemove_skipped']
       .forEach(k => localStorage.removeItem(k))
+    storage.removeHistoryEntry(storage.getTodayKey())
     onGoToStateCheck()
   }
 
@@ -45,12 +66,12 @@ export default function SettingsScreen({ coach, user, nickname, onCoachChange, o
   const accountLabel = nickname ? `${nickname}님으로 로그인됨` : '로그인됨'
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FAF6F0' }}>
+    <div className="h-full" style={{ backgroundColor: '#FAF6F0' }}>
       <div className="w-full max-w-[480px] mx-auto px-5 pt-10 pb-24">
         <h2 className="text-2xl font-bold mb-8" style={{ color: '#24523F' }}>설정</h2>
 
         {/* 닉네임 */}
-        <div className="rounded-2xl p-5 mb-3" style={{ backgroundColor: '#FFFFFF' }}>
+        <div className="rounded-2xl p-5 mb-3" style={{ backgroundColor: '#FFFFFF', boxShadow: '0 8px 18px -14px rgba(36,82,63,.2)' }}>
           <p className="text-xs mb-3" style={{ color: '#8A9E94' }}>닉네임</p>
           <div className="flex gap-2">
             <input
@@ -82,7 +103,7 @@ export default function SettingsScreen({ coach, user, nickname, onCoachChange, o
         </div>
 
         {/* 카카오톡 알림 토글 */}
-        <div className="rounded-2xl p-5 mb-1" style={{ backgroundColor: '#FFFFFF' }}>
+        <div className="rounded-2xl p-5 mb-1" style={{ backgroundColor: '#FFFFFF', boxShadow: '0 8px 18px -14px rgba(36,82,63,.2)' }}>
           <div className="flex items-center justify-between">
             <p className="text-base font-medium" style={{ color: '#22302A' }}>카카오톡 알림</p>
             <button
@@ -123,31 +144,21 @@ export default function SettingsScreen({ coach, user, nickname, onCoachChange, o
         </p>
 
         {/* AI 코치 변경 */}
-        <div className="rounded-2xl p-5 mb-3" style={{ backgroundColor: '#FFFFFF' }}>
-          <p className="text-xs mb-1" style={{ color: '#8A9E94' }}>AI 코치</p>
-          <p className="text-base font-medium mb-4" style={{ color: '#22302A' }}>
-            현재 코치: {coach}
-          </p>
-          <div className="flex gap-2">
-            {COACHES.map((c) => (
-              <button
-                key={c}
-                onClick={() => onCoachChange(c)}
-                className="flex-1 py-3 rounded-xl text-sm font-medium"
-                style={{
-                  backgroundColor: coach === c ? '#24523F' : '#FFFFFF',
-                  color: coach === c ? '#FFFFFF' : '#9AA39C',
-                  border: `1.5px solid ${coach === c ? '#24523F' : '#9AA39C'}`,
-                }}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
+        <div className="rounded-2xl p-5 mb-3" style={{ backgroundColor: '#FFFFFF', boxShadow: '0 8px 18px -14px rgba(36,82,63,.2)' }}>
+          <button onClick={onGoToCoachSelect} className="w-full text-left"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+            <div className="flex items-center justify-between">
+              <p className="text-base font-medium" style={{ color: '#22302A' }}>AI 코치 다시 고르기</p>
+              <span style={{ fontSize: 18, color: '#C4BAB2', lineHeight: 1 }}>›</span>
+            </div>
+            <p className="text-xs mt-0.5" style={{ color: '#8A9E94' }}>
+              AI 코치 성격을 변경할 수 있어요
+            </p>
+          </button>
         </div>
 
         {/* 마음 날씨 다시 고르기 */}
-        <div className="rounded-2xl p-5 mb-3" style={{ backgroundColor: '#FFFFFF' }}>
+        <div className="rounded-2xl p-5 mb-3" style={{ backgroundColor: '#FFFFFF', boxShadow: '0 8px 18px -14px rgba(36,82,63,.2)' }}>
           <button onClick={handleStateCheck} className="w-full text-left">
             <p className="text-base font-medium" style={{ color: '#22302A' }}>마음 날씨 다시 고르기</p>
             <p className="text-xs mt-0.5" style={{ color: '#8A9E94' }}>
@@ -157,7 +168,7 @@ export default function SettingsScreen({ coach, user, nickname, onCoachChange, o
         </div>
 
         {/* 계정 */}
-        <div className="rounded-2xl p-5 mb-10" style={{ backgroundColor: '#FFFFFF' }}>
+        <div className="rounded-2xl p-5 mb-10" style={{ backgroundColor: '#FFFFFF', boxShadow: '0 8px 18px -14px rgba(36,82,63,.2)' }}>
           <p className="text-xs mb-3" style={{ color: '#8A9E94' }}>계정</p>
           {user ? (
             <>
@@ -200,7 +211,7 @@ export default function SettingsScreen({ coach, user, nickname, onCoachChange, o
                 key={tel}
                 href={`tel:${tel}`}
                 className="rounded-xl p-4 flex items-center justify-between"
-                style={{ backgroundColor: '#FFFFFF', textDecoration: 'none' }}
+                style={{ backgroundColor: '#FFFFFF', textDecoration: 'none', boxShadow: '0 8px 18px -14px rgba(36,82,63,.2)' }}
               >
                 <span className="text-sm" style={{ color: '#5C7066' }}>{name}</span>
                 <span className="text-sm font-bold" style={{ color: '#24523F' }}>{number}</span>

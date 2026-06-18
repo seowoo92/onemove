@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:"Pretendard Variable",Pretendard,sans-serif;-webkit-font-smoothing:antialiased}</style>
+</helmet>
+<div style="width:max-content;min-width:100%;min-height:100vh;box-sizing:border-box;padding:52px;background:#E6E1D6">
+  <div style="font-size:24px;font-weight:800;color:#24523F;letter-spacing:-.02em">클레이풍 SVG 씬 — 레퍼런스 재현</div>
+  <div style="font-size:14px;font-weight:500;color:#6f7d72;margin-top:6px;max-width:780px">해·광선·구름·새싹·나무·언덕을 SVG로 그리고, 부드러운 그림자·하이라이트로 점토 느낌을 냈어요. 전송 카드 헤더 비율(344×150)과 정사각 미리보기.</div>
+
+  <div style="display:flex;gap:44px;align-items:flex-start;margin-top:32px">
+
+    <div style="flex:none;width:344px">
+      <div style="font-size:13px;font-weight:600;color:#5a6b60;margin-bottom:12px">전송 카드에 적용된 모습</div>
+      <div style="width:344px;border-radius:20px;overflow:hidden;box-shadow:0 16px 34px -16px rgba(36,82,63,.4);border:1px solid #ECEFE9">
+        <div style="height:150px;overflow:hidden">
+          <svg viewBox="0 0 344 150" width="344" height="150" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="sky" cx="50%" cy="20%" r="100%"><stop offset="0%" stop-color="#F3FAEF"/><stop offset="100%" stop-color="#DCEFCF"/></radialGradient>
+              <radialGradient id="sun" cx="38%" cy="34%" r="70%"><stop offset="0%" stop-color="#FFE9A8"/><stop offset="60%" stop-color="#FBD66B"/><stop offset="100%" stop-color="#EFBD43"/></radialGradient>
+              <radialGradient id="hill" cx="40%" cy="22%" r="90%"><stop offset="0%" stop-color="#BFE39A"/><stop offset="100%" stop-color="#8FC96E"/></radialGradient>
+              <radialGradient id="leaf" cx="38%" cy="28%" r="80%"><stop offset="0%" stop-color="#A9DC86"/><stop offset="100%" stop-color="#6FB85A"/></radialGradient>
+              <radialGradient id="tree1" cx="38%" cy="26%" r="80%"><stop offset="0%" stop-color="#9AD27C"/><stop offset="100%" stop-color="#5EA64C"/></radialGradient>
+              <radialGradient id="tree2" cx="38%" cy="26%" r="80%"><stop offset="0%" stop-color="#7FC066"/><stop offset="100%" stop-color="#4C8F3C"/></radialGradient>
+              <linearGradient id="trunk" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#C68A52"/><stop offset="100%" stop-color="#9E6536"/></linearGradient>
+              <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#3a6b35" flood-opacity="0.28"/></filter>
+            </defs>
+            <rect width="344" height="150" fill="url(#sky)"/>
+            <!-- sun rays -->
+            <g stroke="#F6CE5A" stroke-width="4.5" stroke-linecap="round" opacity="0.95">
+              <line x1="265" y1="14" x2="265" y2="4"/><line x1="294" y1="22" x2="301" y2="15"/><line x1="305" y1="48" x2="315" y2="48"/><line x1="236" y1="22" x2="229" y2="15"/><line x1="225" y1="48" x2="215" y2="48"/><line x1="294" y1="74" x2="301" y2="81"/><line x1="236" y1="74" x2="229" y2="81"/>
+            </g>
+            <!-- sun -->
+            <circle cx="265" cy="48" r="26" fill="url(#sun)" filter="url(#soft)"/>
+            <ellipse cx="256" cy="40" rx="9" ry="6" fill="#FFF0C2" opacity="0.65"/>
+            <!-- cloud -->
+            <g filter="url(#soft)"><ellipse cx="120" cy="58" rx="34" ry="17" fill="#fff"/><circle cx="104" cy="52" r="14" fill="#fff"/><circle cx="128" cy="48" r="18" fill="#fff"/></g>
+            <!-- hill -->
+            <path d="M-10 150 Q120 78 200 92 Q300 108 354 84 L354 150 Z" fill="url(#hill)"/>
+            <ellipse cx="120" cy="118" rx="120" ry="20" fill="#fff" opacity="0.12"/>
+            <!-- sprout -->
+            <g filter="url(#soft)"><rect x="83" y="104" width="6" height="26" rx="3" fill="#5EA64C"/><path d="M86 110 C72 106 64 114 62 122 C74 124 84 120 86 110Z" fill="url(#leaf)"/><path d="M86 108 C100 102 110 110 112 119 C99 122 88 118 86 108Z" fill="url(#leaf)"/></g>
+            <!-- trees -->
+            <g filter="url(#soft)"><rect x="238" y="116" width="8" height="20" rx="4" fill="url(#trunk)"/><circle cx="242" cy="108" r="20" fill="url(#tree1)"/><ellipse cx="235" cy="101" rx="8" ry="5" fill="#BCE39C" opacity="0.6"/></g>
+            <g filter="url(#soft)"><rect x="288" y="112" width="9" height="26" rx="4.5" fill="url(#trunk)"/><circle cx="292" cy="100" r="26" fill="url(#tree2)"/><ellipse cx="283" cy="91" rx="10" ry="6" fill="#A9DC86" opacity="0.6"/></g>
+          </svg>
+        </div>
+        <div style="background:#fff;padding:15px 18px 17px"><div style="font-size:13px;font-weight:800;color:#24523F">오늘만큼 · 6월 18일 (목)</div><div style="font-size:15px;font-weight:800;color:#24523F;margin-top:8px">오늘 할 수 있는 만큼, 2개 완료</div></div>
+      </div>
+    </div>
+
+    <div style="flex:none;width:320px">
+      <div style="font-size:13px;font-weight:600;color:#5a6b60;margin-bottom:12px">씬 단독 (정사각)</div>
+      <div style="width:320px;height:320px;border-radius:24px;overflow:hidden;box-shadow:0 16px 34px -16px rgba(36,82,63,.4)">
+        <svg viewBox="0 0 320 320" width="320" height="320" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="sky2" cx="50%" cy="18%" r="100%"><stop offset="0%" stop-color="#F4FAEF"/><stop offset="100%" stop-color="#D8EDCA"/></radialGradient>
+            <radialGradient id="sun2" cx="38%" cy="34%" r="70%"><stop offset="0%" stop-color="#FFE9A8"/><stop offset="60%" stop-color="#FBD66B"/><stop offset="100%" stop-color="#EFBD43"/></radialGradient>
+            <radialGradient id="hill2" cx="40%" cy="22%" r="90%"><stop offset="0%" stop-color="#BFE39A"/><stop offset="100%" stop-color="#8FC96E"/></radialGradient>
+            <radialGradient id="lf2" cx="38%" cy="28%" r="80%"><stop offset="0%" stop-color="#A9DC86"/><stop offset="100%" stop-color="#6FB85A"/></radialGradient>
+            <radialGradient id="tr1b" cx="38%" cy="26%" r="80%"><stop offset="0%" stop-color="#9AD27C"/><stop offset="100%" stop-color="#5EA64C"/></radialGradient>
+            <radialGradient id="tr2b" cx="38%" cy="26%" r="80%"><stop offset="0%" stop-color="#7FC066"/><stop offset="100%" stop-color="#4C8F3C"/></radialGradient>
+            <linearGradient id="trunk2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#C68A52"/><stop offset="100%" stop-color="#9E6536"/></linearGradient>
+            <filter id="soft2" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#3a6b35" flood-opacity="0.28"/></filter>
+          </defs>
+          <rect width="320" height="320" fill="url(#sky2)"/>
+          <g stroke="#F6CE5A" stroke-width="6" stroke-linecap="round"><line x1="228" y1="60" x2="228" y2="44"/><line x1="266" y1="74" x2="277" y2="63"/><line x1="282" y1="108" x2="298" y2="108"/><line x1="190" y1="74" x2="179" y2="63"/><line x1="174" y1="108" x2="158" y2="108"/><line x1="266" y1="142" x2="277" y2="153"/><line x1="190" y1="142" x2="179" y2="153"/></g>
+          <circle cx="228" cy="108" r="38" fill="url(#sun2)" filter="url(#soft2)"/>
+          <ellipse cx="215" cy="96" rx="13" ry="9" fill="#FFF0C2" opacity="0.65"/>
+          <g filter="url(#soft2)"><ellipse cx="92" cy="120" rx="46" ry="23" fill="#fff"/><circle cx="70" cy="112" r="19" fill="#fff"/><circle cx="104" cy="104" r="25" fill="#fff"/></g>
+          <path d="M-10 320 Q120 150 220 178 Q300 200 332 168 L332 320 Z" fill="url(#hill2)"/>
+          <g filter="url(#soft2)"><rect x="150" y="208" width="9" height="46" rx="4.5" fill="#5EA64C"/><path d="M155 218 C128 210 112 226 108 242 C132 248 152 238 155 218Z" fill="url(#lf2)"/><path d="M155 214 C182 204 200 220 204 238 C178 244 158 234 155 214Z" fill="url(#lf2)"/></g>
+          <g filter="url(#soft2)"><rect x="228" y="232" width="11" height="36" rx="5.5" fill="url(#trunk2)"/><circle cx="233" cy="218" r="30" fill="url(#tr1b)"/><ellipse cx="221" cy="206" rx="12" ry="7" fill="#BCE39C" opacity="0.6"/></g>
+          <g filter="url(#soft2)"><rect x="276" y="224" width="12" height="44" rx="6" fill="url(#trunk2)"/><circle cx="282" cy="206" r="38" fill="url(#tr2b)"/><ellipse cx="269" cy="192" rx="14" ry="8" fill="#A9DC86" opacity="0.6"/></g>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

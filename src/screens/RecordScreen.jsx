@@ -32,11 +32,10 @@ function getLast14Days() {
   return result
 }
 
-const LEGEND = [
-  { color: '#F3D978', label: '좋아요' },
-  { color: '#9FD2B0', label: '보통' },
-  { color: '#A9CFE0', label: '힘들어요' },
-]
+const LEGEND = ['좋아요', '보통이에요', '힘들어요'].map((state) => {
+  const info = getWeatherInfo(state)
+  return { image: info.image, label: info.weather }
+})
 
 export default function RecordScreen() {
   const history = storage.getHistory()
@@ -60,7 +59,7 @@ export default function RecordScreen() {
   const hasAnyRecord = timelineEntries.length > 0
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FAF6F0' }}>
+    <div className="h-full" style={{ backgroundColor: '#FAF6F0' }}>
       {/* 1. pt-10→pt-16, px-5→px-6 */}
       <div className="w-full max-w-[480px] mx-auto px-6 pt-6 pb-24">
 
@@ -97,11 +96,15 @@ export default function RecordScreen() {
 
               {/* 범례: mt-3→mt-5 */}
               <div className="flex items-center justify-center gap-5 mt-5">
-                {LEGEND.map(({ color, label }) => (
+                {LEGEND.map(({ image, label }) => (
                   <div key={label} className="flex items-center gap-1.5">
-                    <div
-                      className="w-2.5 h-2.5 rounded-full shrink-0"
-                      style={{ backgroundColor: color }}
+                    <img
+                      src={image}
+                      alt=""
+                      width={20}
+                      height={20}
+                      className="shrink-0"
+                      style={{ objectFit: 'contain', display: 'block' }}
                     />
                     <span className="text-xs" style={{ color: '#9AA39C' }}>{label}</span>
                   </div>
@@ -119,21 +122,27 @@ export default function RecordScreen() {
 
                 return (
                   <div key={dateStr} className="flex gap-4">
-                    {/* 왼쪽: 컬러 점 + 세로 연결선 */}
-                    <div className="flex flex-col items-center" style={{ width: 12 }}>
-                      <div
-                        className="rounded-full shrink-0"
-                        style={{
-                          width: 12,
-                          height: 12,
-                          marginTop: 4,
-                          backgroundColor: info?.color ?? '#9AA39C',
-                        }}
-                      />
+                    {/* 왼쪽: 날씨 아이콘 + 세로 연결선 */}
+                    <div className="flex flex-col items-center" style={{ width: 30 }}>
+                      {info?.image ? (
+                        <img
+                          src={info.image}
+                          alt=""
+                          width={30}
+                          height={30}
+                          className="shrink-0"
+                          style={{ objectFit: 'contain', display: 'block', marginTop: 2 }}
+                        />
+                      ) : (
+                        <div
+                          className="rounded-full shrink-0"
+                          style={{ width: 12, height: 12, marginTop: 4, backgroundColor: '#9AA39C' }}
+                        />
+                      )}
                       {!isLast && (
                         <div
                           className="flex-1"
-                          style={{ width: 2, marginTop: 4, backgroundColor: '#E0DACE' }}
+                          style={{ width: 2, marginTop: 6, backgroundColor: '#E0DACE' }}
                         />
                       )}
                     </div>

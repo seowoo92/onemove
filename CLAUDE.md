@@ -7,11 +7,12 @@
 - 핵심 철학: 실패해도 죄책감 없이 재도전할 수 있도록 설계. "어려워요" 선택 시 쉬운 버전 제안, 포기해도 격려 메시지 출력.
 - 배포 URL: https://seowoo92.github.io/onemove/
 - GitHub: https://github.com/seowoo92/onemove
-- MVP 발표: 2026년 6월 22일 (오프라인)
+- MVP 발표: 2026년 6월 19일 (오프라인) — 당초 6/22에서 앞당겨짐
 - AI 경진대회: AI Reboot 경진대회 출품 예정
 
 ## 기술 스택
 - 프레임워크: Vite + React 19 + Tailwind CSS v4
+- 폰트: Pretendard Variable (CDN, 폴백 -apple-system, sans-serif)
 - AI: 업스테이지 Solar API (model: solar-pro)
 - 인증/서버: Supabase Auth (카카오 OAuth 연동 완료, 앱 ID 1489350)
 - 배포: GitHub Pages (push to main 시 자동 배포)
@@ -25,6 +26,7 @@
 - .env.local은 .gitignore에 포함 — 절대 커밋 금지
 
 ## 디자인 시스템
+> 색·타이포·간격·컴포넌트·화면별 사양의 상세 기준은 docs/design-handoff.md (1차 시안 핸드오프). 디자인 작업 시 그 문서를 우선 따른다.
 - 배경: #FAF6F0 (오프화이트) / 외부 페이지 배경: #FFFFFF
 - 메인 컬러: #24523F (딥그린)
 - 포인트 컬러: #EE8466 (코랄)
@@ -50,8 +52,10 @@
 | 태블릿 | 480–1023px | 중앙 정렬, maxWidth 480px, 박스 그림자 `0 8px 30px rgba(0,0,0,0.08)` |
 | 데스크톱 | ≥1024px | 좌우 2단: 좌측 서비스 소개 패널 + 우측 폰 베젤 |
 
-- 데스크톱 폰 베젤: 390px×844px, border-radius 52px, #1C3F2F 테두리, 그림자 `0 20px 50px rgba(0,0,0,0.12)`
-- `transform:translateZ(0)` 으로 베젤 안 `position:fixed` 자식(TabBar)이 베젤 기준 고정
+- 데스크톱 폰 베젤: 390px×812px **고정** (창 높이를 늘려도 콘텐츠가 베젤을 넘지 않음), border-radius 46px, 10px solid #1C3F2F 테두리, 그림자 `0 20px 50px rgba(0,0,0,0.12)`
+- `transform:translateZ(0)` 으로 베젤 안 `position:fixed` 자식(TabBar·CoachModal)이 베젤 기준 고정
+- **(핵심 규칙) 베젤 안에서는 `height:100vh` 절대 금지 → `height:100%`만 사용.** 100vh는 베젤 밖 뷰포트를 참조해 콘텐츠가 베젤을 넘침
+- 모바일/태블릿 화면 컨테이너에도 `height:100%`(부모 100vh 기준) + `box-sizing:border-box`를 지정. 빠지면 한 화면을 채우는 화면(코치 선택·웰컴 등)이 위로 쏠리고 아래 여백이 생김 (AppLayout.jsx)
 
 ## 화면 흐름 (5단계)
 S0 진입 → S1 코치 선택 → S2 상태 체크 → S3 루틴 홈 → S4 코치 메시지(모달)
@@ -62,10 +66,12 @@ S0 진입 → S1 코치 선택 → S2 상태 체크 → S3 루틴 홈 → S4 코
 - "카카오로 시작하기" (#FEE500 노란 버튼) / "로그인 없이 시작하기" 두 가지 선택 제공
 - 안내: 루틴 카드·알림을 카카오톡으로 받을 수 있음, 나중에 설정에서도 로그인 가능
 
-### S1 — 코치 성격 선택
-- 최초 1회만 표시 (localStorage에 onemove_coach 없을 때)
-- 유쾌 / 진중 / 다정 3종 카드 선택
-- 선택 후 localStorage 저장 → S2로 이동
+### S1 — 코치 선택 (CoachSelect.jsx)
+- 표시 조건: localStorage에 onemove_coach 없을 때 (설정의 'AI 코치 다시 고르기'로도 재진입)
+- 큰 코치 아바타(150px) + 코치명 + 한마디(tagline) + 하단 3종 썸네일(유쾌/진중/다정)로 탭하며 미리보기 전환
+- 코치 3종 이름: 유쾌→유쾌한 햇살 / 진중→진중한 숲 / 다정→다정한 물 (이름·색·이미지·tagline은 src/lib/coaches.js에서 관리)
+- 아바타 이미지: public/images/coach-cheerful|calm|warm.png (로드 실패 시 클레이 셰이딩 색 원으로 폴백)
+- 선택 후 localStorage 저장 → 온보딩이면 S2로, 설정에서 왔으면 설정 탭으로 복귀 (루틴·완료·상태 초기화 없음)
 
 ### S2 — 오늘 상태 체크
 - 좋아요 / 보통이에요 / 힘들어요 3버튼
@@ -83,7 +89,7 @@ S0 진입 → S1 코치 선택 → S2 상태 체크 → S3 루틴 홈 → S4 코
 
 ### S4 — 코치 메시지 모달 (하단 시트)
 - 하단에서 올라오는 시트 구조: 드래그 핸들 + 코치 아바타(색 원) + 코치 이름 + 메시지 + 출처 배지 + 계속하기 버튼
-- 코치 매핑: 유쾌→유쾌한 코치(#F3D978), 진중→진중한 코치(#24523F), 다정→다정한 코치(#EE8466)
+- 코치 매핑: 유쾌→유쾌한 햇살(#F3D978), 진중→진중한 숲(#24523F), 다정→다정한 물(#EE8466) — 이름·색·이미지는 src/lib/coaches.js
 - 배경 오버레이 클릭 시 닫기 가능 (로딩 중 제외)
 - Solar API 호출로 성격×상황에 맞는 2문장 메시지 생성
 - 로딩 중: "코치가 메시지를 작성하고 있어요..."
@@ -103,7 +109,7 @@ S0 진입 → S1 코치 선택 → S2 상태 체크 → S3 루틴 홈 → S4 코
 - 타임라인: 좌측 컬러 점+세로선, 날짜·마음 날씨·완료수, 완료 루틴명 칩 나열
 
 ### 설정 탭 (SettingsScreen.jsx)
-- AI 코치 성격 변경: 유쾌 / 진중 / 다정
+- AI 코치 다시 고르기: 행 클릭 → 코치 선택 화면(CoachSelect)으로 이동, 선택 완료 시 설정 탭으로 복귀 (App.jsx의 coachSelectFrom='settings' 플래그로 분기)
 - 코치 변경 시 루틴·완료 기록·상태 일체 초기화 없음 (`onemove_coach`만 업데이트)
 - 마음 날씨 다시 고르기: 완료 기록 있으면 confirm 경고, 5개 localStorage 키 초기화
 - 닉네임 설정: 직접 입력 (onemove_nickname, 최대 12자), 저장 시 "저장되었어요" 2초 표시
@@ -191,20 +197,28 @@ S0 진입 → S1 코치 선택 → S2 상태 체크 → S3 루틴 홈 → S4 코
 - generateCoachMessage에 nickname 파라미터 전달 (Home.jsx → solar.js)
 - 시스템 프롬프트: 자연스러울 때만 이름 사용, 루틴 이름 동사 억지 변형 금지
 
-## 다음 작업 (6/19~)
-- P1 잔여: 루틴 카드 카카오톡 보내기 (talk_message 권한 활용, 8월 버전 목표)
-- og-image.png 실제 이미지 제작 후 public/ 추가 (OG 태그는 이미 index.html에 설정됨)
-- 파비콘 적용 (제작한 심볼 이미지 활용)
-- 코치 아바타: 현재 단색 원 → 시안 일러스트 아바타로 교체 (디자인 확정 후)
-- 전체 디자인 시안 반영: 현재 구조·기능 위주 임시 디자인, 클로드 시안 확정 후 입힐 예정
+## 완료 (6/19, 옮겨온 작업 — 일부 아직 커밋 전 working tree)
+- Pretendard 폰트 적용, 파비콘·앱 아이콘 PNG 교체, docs/design-handoff.md 추가·재정리
+- 코치 2단계: 이름 변경(유쾌한 햇살/진중한 숲/다정한 물), src/lib/coaches.js 신규, 코치 캐릭터 이미지(public/images/), tagline
+- 설정 'AI 코치 다시 고르기' → CoachSelect 이동/복귀
+- CoachSelect 전면 개편 (큰 아바타 + 썸네일 전환), AppLayout 베젤 390×812 고정
+- 코치 아바타: 캐릭터 일러스트 PNG 3종 적용 (public/images/, 로드 실패 시 클레이 색 원 폴백)
+- AppLayout 모바일/태블릿 컨테이너 height:100% 보정 (한 화면 채우는 화면 위 쏠림 해결)
+
+## 다음 작업
+- 화면별 디자인 시안 적용: 마음 날씨(아이콘+부제+말풍선), 홈(완료 버튼 노랑 #F7EBBE·진행 카드·칩 색), 기록, 코치 모달 다듬기, 완료 축하 카드
+- 이미지 교체: 마음 날씨 아이콘 3종, 완료 축하 배너 (사용자 제작 후 public/images/ 추가)
 - 기록 탭 완료수 버그: completed 중복 누적 → "16/4" 표시 현상, storage 로직 점검 필요
-- 보안: 6/22 발표 후 Solar API 키 폐기, 추후 Supabase Edge Function 전환 검토
+- og-image.png 실제 이미지 제작 후 public/ 추가 (OG 태그는 이미 index.html에 설정됨)
+- P1 잔여(8월): 루틴 카드 카카오톡 보내기 (talk_message 권한 심사 후)
+- 보안: 발표 후 Solar API 키 폐기, 8월 Supabase Edge Function 전환
 
 ## 주의사항
 - .env.local 절대 커밋 금지
 - 시스템 기본 이모지 글리프를 코드·메시지에 절대 넣지 말 것 (직접 제작 일러스트·UI 아이콘은 허용)
 - 루틴 문구, 영역명 임의 변경 금지 (routines.js는 확정본)
 - 새 기능 추가 전 반드시 CLAUDE.md 확인
-- Solar API 키: VITE_ 접두사로 빌드에 번들됨 → 브라우저에서 노출 상태. 발표(6/22) 후 업스테이지 콘솔에서 폐기 필요
+- Solar API 키: VITE_ 접두사로 빌드에 번들됨 → 브라우저에서 노출 상태. 발표(6/19) 후 업스테이지 콘솔에서 폐기 필요
 - 코치 변경 시 루틴/완료/상태 절대 초기화하지 않음 (`onemove_coach`만 교체)
+- 베젤 안 `height:100vh` 금지 → `height:100%`만 (베젤 밖 뷰포트 참조로 콘텐츠가 베젤 넘침)
 - src/index.css 전역 리셋(`* { margin:0; padding:0 }`)은 반드시 `@layer base { }` 안에 있어야 함 — 밖에 두면 Tailwind 간격 유틸리티(mb-*, pt-* 등) 전체를 덮어씀

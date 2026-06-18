@@ -30,14 +30,14 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
   if (mode !== 'desktop') {
     return (
       <>
-        <div style={{ minHeight: '100vh', backgroundColor: '#FFFFFF', display: 'flex', justifyContent: 'center' }}>
+        <div style={{ height: '100vh', backgroundColor: '#FFFFFF', display: 'flex', justifyContent: 'center' }}>
           <div style={{
             width: '100%',
-            maxWidth: '480px',
-            minHeight: '100vh',
+            maxWidth: mode === 'tablet' ? '480px' : '100%',
+            height: '100vh',
             boxShadow: mode === 'tablet' ? '0 8px 30px rgba(0,0,0,0.08)' : 'none',
           }}>
-            <div style={{ paddingTop: '16px', paddingBottom: showTabBar ? '56px' : 0 }}>
+            <div style={{ paddingTop: '16px', paddingBottom: showTabBar ? '56px' : 0, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
               {children}
             </div>
           </div>
@@ -103,9 +103,9 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             position: 'relative',
             width: '390px',
             flexShrink: 0,
-            height: 'min(844px, calc(100vh - 96px))',
+            height: '812px',
             border: '10px solid #1C3F2F',
-            borderRadius: '52px',
+            borderRadius: '46px',
             boxShadow: '0 20px 50px rgba(0,0,0,0.12)',
             overflow: 'hidden',
             // CSS 트릭: position:fixed 자식들이 베젤 기준으로 고정됨 (CoachModal, TabBar)
@@ -130,9 +130,9 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
           {/* 스크롤 가능한 앱 콘텐츠 */}
           <div
             className="[&::-webkit-scrollbar]:hidden"
-            style={{ height: '100%', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'none' }}
+            style={{ height: '812px', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'none' }}
           >
-            <div style={{ paddingTop: '48px', paddingLeft: '8px', paddingRight: '8px', paddingBottom: showTabBar ? '56px' : 0 }}>
+            <div style={{ paddingTop: '48px', paddingLeft: '8px', paddingRight: '8px', paddingBottom: showTabBar ? '56px' : 0, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
               {children}
             </div>
             {showTabBar && (

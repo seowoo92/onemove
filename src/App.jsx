@@ -17,6 +17,7 @@ export default function App() {
   const [homeKey, setHomeKey] = useState(0)
   const [user, setUser] = useState(null)
   const [nickname, setNickname] = useState('')
+  const [coachSelectFrom, setCoachSelectFrom] = useState(null)
 
   function applyKakaoNickname(currentUser) {
     if (!currentUser) return
@@ -70,7 +71,19 @@ export default function App() {
   function handleCoachSelect(personality) {
     storage.setCoach(personality)
     setCoach(personality)
-    setScreen('state-check')
+    if (coachSelectFrom === 'settings') {
+      setCoachSelectFrom(null)
+      setScreen('home')
+      setActiveTab('settings')
+    } else {
+      setCoachSelectFrom(null)
+      setScreen('state-check')
+    }
+  }
+
+  function handleGoToCoachSelectFromSettings() {
+    setCoachSelectFrom('settings')
+    setScreen('coach-select')
   }
 
   function handleStateSelect(state) {
@@ -116,7 +129,15 @@ export default function App() {
         <WelcomeScreen onSkip={() => setScreen('coach-select')} />
       )}
       {screen === 'coach-select' && (
-        <CoachSelect initialSelected={coach} onSelect={handleCoachSelect} />
+        <CoachSelect
+          initialSelected={coach}
+          onSelect={handleCoachSelect}
+          onBack={coachSelectFrom === 'settings' ? () => {
+            setCoachSelectFrom(null)
+            setScreen('home')
+            setActiveTab('settings')
+          } : null}
+        />
       )}
       {screen === 'state-check' && (
         <StateCheck
@@ -141,6 +162,7 @@ export default function App() {
               onCoachChange={handleCoachChange}
               onNicknameChange={handleNicknameChange}
               onGoToStateCheck={handleGoToStateCheck}
+              onGoToCoachSelect={handleGoToCoachSelectFromSettings}
             />
           )}
         </>

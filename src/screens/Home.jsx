@@ -5,10 +5,71 @@ import { pickRoutines } from '../lib/routinePicker'
 import { generateCoachMessage } from '../lib/solar'
 import CoachModal from '../components/CoachModal'
 
+const DAYS = ['일', '월', '화', '수', '목', '금', '토']
 function formatDate() {
   const d = new Date()
-  const days = ['일', '월', '화', '수', '목', '금', '토']
-  return `${d.getMonth() + 1}월 ${d.getDate()}일 ${days[d.getDay()]}요일`
+  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${DAYS[d.getDay()]})`
+}
+
+// 영역(area) → 시안 칩 색 (몸돌봄=초록 / 환경=파랑 / 마음=코랄)
+const AREA_CHIP = {
+  '몸 깨우기': { bg: '#D5EFD8', color: '#24523F' },
+  '자기돌봄': { bg: '#D5EFD8', color: '#24523F' },
+  '에너지': { bg: '#D5EFD8', color: '#24523F' },
+  '공간': { bg: '#E4F0F6', color: '#3D6E8A' },
+  '바깥': { bg: '#E4F0F6', color: '#3D6E8A' },
+  '연결': { bg: '#FBE3DA', color: '#9B5B45' },
+  '성취': { bg: '#FBE3DA', color: '#9B5B45' },
+}
+const DIFF_CHIP = { bg: '#EFEAE2', color: '#97907F' }
+
+// 코치별 클레이 셰이딩 (완료 축하 카드 아바타)
+const CLAY = {
+  '유쾌': 'radial-gradient(circle at 34% 30%,#FFEFB6,#F3D978 55%,#E8C24E)',
+  '진중': 'radial-gradient(circle at 38% 28%,#3C7A5C,#24523F)',
+  '다정': 'radial-gradient(circle at 34% 30%,#F6C6B4,#EFA58F 55%,#E08066)',
+}
+
+const COMPLETE_BTN = {
+  flex: 1,
+  textAlign: 'center',
+  background: '#F7EBBE',
+  color: '#24523F',
+  borderRadius: 14,
+  padding: 13,
+  fontSize: 14.5,
+  fontWeight: 700,
+  border: 'none',
+  cursor: 'pointer',
+  boxShadow: '0 8px 16px -7px rgba(214,184,90,.38),inset 0 1px 0 rgba(255,255,255,.6)',
+}
+const SECONDARY_BTN = {
+  flex: 1,
+  textAlign: 'center',
+  borderRadius: 14,
+  padding: 13,
+  fontSize: 14.5,
+  fontWeight: 600,
+  border: 'none',
+  cursor: 'pointer',
+}
+
+function Chip({ bg, color, weight = 600, children }) {
+  return (
+    <span
+      style={{
+        fontSize: 11.5,
+        fontWeight: weight,
+        color,
+        background: bg,
+        borderRadius: 8,
+        padding: '4px 9px',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {children}
+    </span>
+  )
 }
 
 export default function Home({ coach, todayState, nickname = '', onGoToStateCheck }) {
@@ -46,9 +107,12 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
     setCompletedIds(newCompleted)
     storage.setCompletedIds([...newCompleted])
 
-    // 날짜별 기록 누적 저장
-    const dateKey = new Date().toISOString().slice(0, 10)
-    storage.addHistoryEntry(dateKey, todayState, routineName, routineIds.length)
+    // 날짜별 기록: 현재 완료 집합을 그대로 저장 (누적 X → 완료수 ≤ 총개수 보장)
+    const completedNames = [...newCompleted].map((cid) => {
+      const b = ROUTINE_MAP[cid]
+      return (easyIds.has(cid) ? b?.easyVersion?.name : b?.name) ?? '루틴'
+    })
+    storage.setHistoryEntry(storage.getTodayKey(), todayState, completedNames, routineIds.length)
 
     setModal({ loading: true, message: null, source: null })
     const result = await generateCoachMessage({ personality: coach, state: todayState, routineName, situation, nickname })
@@ -75,6 +139,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
     }
     ;['onemove_state', 'onemove_routines', 'onemove_completed', 'onemove_easy', 'onemove_skipped']
       .forEach(k => localStorage.removeItem(k))
+    storage.removeHistoryEntry(storage.getTodayKey())
     onGoToStateCheck()
   }
 
@@ -87,127 +152,154 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
   const completedCount = completedIds.size
   const totalCount = routineIds.length
   const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
+  const allResolved = totalCount > 0 && routineIds.every((id) => completedIds.has(id) || skippedIds.has(id))
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FAF6F0' }}>
-      <div className="w-full max-w-[480px] mx-auto px-5 pt-10 pb-24">
-
-        {/* 헤더 */}
-        <div className="flex items-baseline justify-between mb-1">
-          <h1 className="text-2xl font-bold" style={{ color: '#24523F' }}>오늘만큼</h1>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleRequestStateChange}
-              className="text-xs"
-              style={{ color: '#8A9E94' }}
-            >
-              마음 날씨 다시 고르기
-            </button>
-            <p className="text-xs" style={{ color: '#C4BAB2' }}>{formatDate()}</p>
+    <div style={{ minHeight: '100%', backgroundColor: '#FAF6F0' }}>
+      <div
+        style={{
+          width: '100%',
+          maxWidth: 480,
+          margin: '0 auto',
+          padding: '14px 20px 28px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 14,
+        }}
+      >
+        {/* 헤더 — 인사 + 날짜·마음 날씨 */}
+        <div>
+          <div style={{ fontSize: 20, fontWeight: 800, color: '#24523F', letterSpacing: '-0.02em' }}>
+            {nickname ? `${nickname}님, 오늘도 와줘서 고마워요` : '오늘도 와줘서 고마워요'}
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 500, color: '#7c8a80', marginTop: 2 }}>
+            {formatDate()} · {todayState}
           </div>
         </div>
 
-        {/* 진행 현황 */}
-        <p className="text-sm mb-2" style={{ color: '#22302A' }}>
-          오늘{' '}
-          <span className="font-semibold" style={{ color: '#24523F' }}>{completedCount}</span>
-          {' '}/ {totalCount}개 완료
-        </p>
-        <div className="h-1.5 rounded-full mb-8 overflow-hidden" style={{ backgroundColor: '#E8E1D8' }}>
-          <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{ backgroundColor: '#24523F', width: `${progress}%` }}
-          />
+        {/* 진행 카드 (딥그린) */}
+        <div style={{ background: '#24523F', borderRadius: 22, padding: '17px 19px', boxShadow: '0 14px 30px -14px rgba(36,82,63,.5)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <span style={{ fontSize: 16, fontWeight: 600, color: 'rgba(255,255,255,.9)' }}>
+              오늘 <b style={{ color: '#fff', fontWeight: 800 }}>{completedCount} / {totalCount}</b>개 완료
+            </span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#F3D978' }}>한 걸음씩</span>
+          </div>
+          <div style={{ marginTop: 11, height: 11, borderRadius: 6, background: 'rgba(255,255,255,.2)', overflow: 'hidden' }}>
+            <div style={{ width: `${progress}%`, height: '100%', borderRadius: 6, background: 'linear-gradient(90deg,#D9F2EE,#F3D978)', transition: 'width .5s' }} />
+          </div>
         </div>
 
-        {/* 루틴 카드 목록 */}
-        <div className="flex flex-col gap-3">
-          {routineIds.map((id) => {
-            const base = ROUTINE_MAP[id]
-            if (!base) return null
+        {/* 루틴 항목 */}
+        {routineIds.map((id) => {
+          const base = ROUTINE_MAP[id]
+          if (!base) return null
 
-            const isEasy = easyIds.has(id)
-            const isDone = completedIds.has(id)
-            const isSkipped = skippedIds.has(id)
-            const isDimmed = isDone || isSkipped
-            const routine = isEasy ? base.easyVersion : base
+          const isEasy = easyIds.has(id)
+          const isDone = completedIds.has(id)
+          const isSkipped = skippedIds.has(id)
+          const routine = isEasy ? base.easyVersion : base
+          const areaChip = AREA_CHIP[routine.area] ?? { bg: '#F0EDE8', color: '#6B7B6F' }
 
+          // 완료된 루틴 — 연녹 행 + 체크 원
+          if (isDone) {
             return (
-              <div
-                key={id}
-                className="rounded-2xl p-5 transition-opacity duration-300"
-                style={{ backgroundColor: '#FFFFFF', opacity: isDimmed ? 0.45 : 1 }}
-              >
-                {/* 루틴명 + 쉬운버전 뱃지 */}
-                <div className="flex items-start justify-between mb-3">
-                  <p
-                    className="text-base font-medium leading-snug"
-                    style={{
-                      color: '#22302A',
-                      textDecoration: isDone ? 'line-through' : 'none',
-                    }}
-                  >
-                    {routine.name}
-                  </p>
-                  {isEasy && !isDimmed && (
-                    <span
-                      className="ml-2 mt-0.5 shrink-0 text-xs px-2 py-0.5 rounded-full"
-                      style={{ backgroundColor: '#FFF0EC', color: '#EE8466' }}
-                    >
-                      쉬운 버전
-                    </span>
-                  )}
+              <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 11, background: '#EFF4EE', borderRadius: 18, padding: '14px 16px' }}>
+                <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#24523F', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
+                  <svg width="13" height="13" viewBox="0 0 13 13"><path d="M2 7l3 3 6-7" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </div>
-
-                {/* 태그 */}
-                <div className="flex gap-2 mb-4">
-                  <span className="text-xs px-2.5 py-1 rounded-full" style={{ backgroundColor: '#F0EDE8', color: '#6B7B6F' }}>
-                    {routine.area}
-                  </span>
-                  <span className="text-xs px-2.5 py-1 rounded-full" style={{ backgroundColor: '#F0EDE8', color: '#6B7B6F' }}>
-                    {routine.difficulty}
-                  </span>
-                </div>
-
-                {/* 상태 레이블 또는 버튼 */}
-                {isDone && (
-                  <p className="text-xs" style={{ color: '#8A9E94' }}>완료했어요</p>
-                )}
-                {isSkipped && (
-                  <p className="text-xs" style={{ color: '#8A9E94' }}>오늘은 쉬어가요</p>
-                )}
-                {!isDimmed && (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleComplete(id)}
-                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold"
-                      style={{ backgroundColor: '#24523F', color: '#FFFFFF' }}
-                    >
-                      완료
-                    </button>
-                    {isEasy ? (
-                      <button
-                        onClick={() => handleSkip(id)}
-                        className="flex-1 py-2.5 rounded-xl text-sm font-medium"
-                        style={{ backgroundColor: '#FAF6F0', color: '#8A9E94' }}
-                      >
-                        오늘은 쉬어가기
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleSwitchToEasy(id)}
-                        className="flex-1 py-2.5 rounded-xl text-sm font-medium"
-                        style={{ backgroundColor: '#FAF6F0', color: '#8A9E94' }}
-                      >
-                        지금은 어려워요
-                      </button>
-                    )}
-                  </div>
-                )}
+                <span style={{ fontSize: 15.5, fontWeight: 600, color: '#5c6960', textDecoration: 'line-through', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{routine.name}</span>
+                <span style={{ marginLeft: 'auto', fontSize: 13, fontWeight: 700, color: '#6FB988', flex: 'none' }}>완료</span>
               </div>
             )
-          })}
-        </div>
+          }
+
+          // 오늘은 쉬어가기 선택 — 차분한 행
+          if (isSkipped) {
+            return (
+              <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 11, background: '#F4F1EC', borderRadius: 18, padding: '14px 16px' }}>
+                <span style={{ fontSize: 15.5, fontWeight: 600, color: '#9aa39c', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{routine.name}</span>
+                <span style={{ marginLeft: 'auto', fontSize: 13, fontWeight: 700, color: '#B07E6C', flex: 'none' }}>오늘은 쉬어가요</span>
+              </div>
+            )
+          }
+
+          // 쉬운 버전으로 전환된 활성 카드
+          if (isEasy) {
+            return (
+              <div key={id} style={{ position: 'relative', background: '#fff', borderRadius: 22, padding: '18px 19px', boxShadow: '0 14px 28px -15px rgba(36,82,63,.26),inset 0 2px 0 rgba(255,255,255,.9)' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#FBEDE6', borderRadius: 9, padding: '5px 10px', marginBottom: 12 }}>
+                  <svg width="13" height="13" viewBox="0 0 13 13"><path d="M6.5 1.5l1.5 3 3.3.5-2.4 2.3.6 3.3-3-1.6-3 1.6.6-3.3L1.7 5l3.3-.5z" fill="#E5B4A4" /></svg>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: '#B07E6C' }}>더 쉬운 버전으로 바꿨어요</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, color: '#9aa69d', textDecoration: 'line-through', fontWeight: 500 }}>{base.name}</div>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: '#24523F', marginTop: 5 }}>{base.easyVersion.name}</div>
+                  </div>
+                  <div style={{ flex: 'none', display: 'flex', gap: 6, alignItems: 'center', marginTop: 2 }}>
+                    <Chip bg={DIFF_CHIP.bg} color={DIFF_CHIP.color} weight={700}>{routine.difficulty}</Chip>
+                    <Chip bg={areaChip.bg} color={areaChip.color}>{routine.area}</Chip>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 9, marginTop: 16 }}>
+                  <button onClick={() => handleComplete(id)} style={COMPLETE_BTN}>완료</button>
+                  <button onClick={() => handleSkip(id)} style={{ ...SECONDARY_BTN, background: '#FBEDE6', color: '#B07E6C', fontWeight: 700 }}>오늘은 쉬어가기</button>
+                </div>
+              </div>
+            )
+          }
+
+          // 일반 활성 카드
+          return (
+            <div key={id} style={{ background: '#fff', borderRadius: 22, padding: '18px 19px', boxShadow: '0 12px 24px -15px rgba(36,82,63,.22),inset 0 2px 0 rgba(255,255,255,.9)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color: '#24523F', flex: 1, minWidth: 0 }}>{routine.name}</div>
+                <div style={{ flex: 'none', display: 'flex', gap: 6, alignItems: 'center', marginTop: 2 }}>
+                  <Chip bg={DIFF_CHIP.bg} color={DIFF_CHIP.color} weight={700}>{routine.difficulty}</Chip>
+                  <Chip bg={areaChip.bg} color={areaChip.color}>{routine.area}</Chip>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 9, marginTop: 15 }}>
+                <button onClick={() => handleComplete(id)} style={COMPLETE_BTN}>완료</button>
+                <button onClick={() => handleSwitchToEasy(id)} style={{ ...SECONDARY_BTN, background: '#F1F5F0', color: '#5c6960' }}>지금은 어려워요</button>
+              </div>
+            </div>
+          )
+        })}
+
+        {/* 완료 축하 카드 (오늘 루틴을 모두 정리했을 때) */}
+        {allResolved && (
+          <div style={{ borderRadius: 34, background: '#F9F6EE', padding: 24, boxShadow: '0 18px 40px -18px rgba(36,82,63,.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', opacity: 0.5, marginBottom: 14 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#5c6960' }}>오늘 {completedCount} / {totalCount}개 완료</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#EFA58F' }}>오늘만큼 다 했어요</span>
+            </div>
+            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 26, boxShadow: '0 14px 30px -18px rgba(36,82,63,.26)' }}>
+              <div style={{ position: 'relative', height: 118, background: 'linear-gradient(#F7E7C8,#F3D5C0)' }}>
+                <div style={{ position: 'absolute', left: '50%', bottom: 0, transform: 'translateX(-50%)', width: 124, height: 62, borderRadius: '64px 64px 0 0', background: 'linear-gradient(#FBE39C,#EFA58F)', boxShadow: '0 -6px 22px -4px rgba(239,165,143,.55)' }} />
+                <div style={{ position: 'absolute', left: 34, bottom: 30, width: 6, height: 6, borderRadius: '50%', background: '#fff', opacity: 0.7 }} />
+                <div style={{ position: 'absolute', right: 42, top: 26, width: 5, height: 5, borderRadius: '50%', background: '#fff', opacity: 0.6 }} />
+              </div>
+              <div style={{ background: '#fff', padding: '24px 24px 26px', textAlign: 'center' }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: '#24523F', letterSpacing: '-0.03em' }}>오늘만큼, 다 해냈어요</div>
+                <div style={{ fontSize: 14.5, fontWeight: 500, color: '#5c6960', marginTop: 11, lineHeight: 1.7, wordBreak: 'keep-all' }}>완료든 쉬어가기든 모두 오늘의 기록이에요.<br />딱 그만큼이면 충분해요.</div>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 9, marginTop: 18, background: '#F4F8F3', borderRadius: 14, padding: '11px 16px' }}>
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: CLAY[coach] ?? CLAY['유쾌'] }} />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#24523F' }}>내일도 딱 그만큼만, 천천히 만나요</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 마음 날씨 다시 고르기 */}
+        <button
+          onClick={handleRequestStateChange}
+          style={{ alignSelf: 'center', marginTop: 4, background: 'none', border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, color: '#9aa39c' }}
+        >
+          마음 날씨 다시 고르기
+        </button>
       </div>
 
       {modal && (

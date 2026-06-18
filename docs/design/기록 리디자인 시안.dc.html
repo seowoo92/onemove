@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:"Pretendard Variable",Pretendard,sans-serif;-webkit-font-smoothing:antialiased}</style>
+</helmet>
+<div style="width:max-content;min-width:100%;min-height:100vh;box-sizing:border-box;padding:52px;background:#E6E1D6">
+  <div style="font-size:24px;font-weight:800;color:#24523F;letter-spacing:-.02em">기록 페이지 — 리디자인 시안 3종</div>
+  <div style="font-size:14px;font-weight:500;color:#6f7d72;margin-top:6px;max-width:760px">마음 날씨 색(좋아요=노랑 / 보통=민트 / 힘들어요=블루)을 활용한 세 방향. 같은 데이터로 비교합니다.</div>
+
+  <div style="display:flex;gap:44px;align-items:flex-start;margin-top:32px">
+
+    <div style="flex:none;width:360px">
+      <div style="font-size:13px;font-weight:600;color:#5a6b60;margin-bottom:12px">안 1 — 마음 날씨 색 코딩</div>
+      <div style="position:relative;width:360px;height:732px;border-radius:40px;background:#F9F6EE;overflow:hidden;box-shadow:0 24px 56px -22px rgba(36,82,63,.32)">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 26px 4px;font-size:13px;font-weight:650;color:#24523F"><span>9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11"><rect y="6" width="3" height="5" rx="1" fill="#24523F"/><rect x="4.5" y="4" width="3" height="7" rx="1" fill="#24523F"/><rect x="9" y="2" width="3" height="9" rx="1" fill="#24523F"/><rect x="13.5" width="3" height="11" rx="1" fill="#24523F" opacity=".35"/></svg><svg width="23" height="11" viewBox="0 0 23 11"><rect x="0.5" y="0.5" width="18" height="10" rx="3" fill="none" stroke="#24523F" opacity=".5"/><rect x="2" y="2" width="13" height="7" rx="1.5" fill="#24523F"/><rect x="20" y="3.5" width="1.6" height="4" rx=".8" fill="#24523F" opacity=".5"/></svg></div></div>
+        <div style="padding:14px 22px 20px">
+          <div style="font-size:23px;font-weight:800;color:#24523F;letter-spacing:-.02em">기록</div>
+          <div style="font-size:13px;font-weight:500;color:#7c8a80;margin-top:3px">최근 14일 · 멈춘 날도 기록이에요</div>
+          <div style="display:flex;flex-direction:column;gap:11px;margin-top:18px">
+            <div style="display:flex;overflow:hidden;border-radius:18px;background:#FBF1CE;box-shadow:0 8px 18px -13px rgba(36,82,63,.25)"><div style="width:6px;background:#EFC845"></div><div style="flex:1;padding:15px 16px"><div style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#FFEFB6,#F3D978 55%,#E8C24E)"></div><div><div style="font-size:14.5px;font-weight:700;color:#24523F">6월 18일 (목) · 오늘</div><div style="font-size:12px;color:#9a7a1a;font-weight:600">좋아요</div></div></div><span style="font-size:14px;font-weight:800;color:#24523F">4 / 4</span></div></div></div>
+            <div style="display:flex;overflow:hidden;border-radius:18px;background:#E4F2E8;box-shadow:0 8px 18px -13px rgba(36,82,63,.25)"><div style="width:6px;background:#6FB988"></div><div style="flex:1;padding:15px 16px"><div style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="position:relative;width:38px;height:38px;border-radius:50%;background:#fff"><div style="position:absolute;left:8px;bottom:11px;width:22px;height:11px;border-radius:7px;background:#CBE6D5"></div><div style="position:absolute;left:11px;top:9px;width:14px;height:14px;border-radius:50%;background:#CBE6D5"></div></div><div><div style="font-size:14.5px;font-weight:700;color:#24523F">6월 17일 (화)</div><div style="font-size:12px;color:#3e7a57;font-weight:600">보통이에요</div></div></div><span style="font-size:14px;font-weight:800;color:#24523F">2 / 4</span></div></div></div>
+            <div style="display:flex;overflow:hidden;border-radius:18px;background:#E2EEF5;box-shadow:0 8px 18px -13px rgba(36,82,63,.25)"><div style="width:6px;background:#7FB0CC"></div><div style="flex:1;padding:15px 16px"><div style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="position:relative;width:38px;height:38px;border-radius:50%;background:#fff"><div style="position:absolute;left:7px;top:11px;width:24px;height:12px;border-radius:7px;background:#B8D5E6"></div><div style="position:absolute;left:12px;top:7px;width:15px;height:15px;border-radius:50%;background:#B8D5E6"></div></div><div><div style="font-size:14.5px;font-weight:700;color:#24523F">6월 16일 (월)</div><div style="font-size:12px;color:#3d6e8a;font-weight:600">힘들어요</div></div></div><span style="font-size:14px;font-weight:800;color:#3d6e8a">1 / 3</span></div></div></div>
+            <div style="display:flex;overflow:hidden;border-radius:18px;background:#FBF1CE;box-shadow:0 8px 18px -13px rgba(36,82,63,.25)"><div style="width:6px;background:#EFC845"></div><div style="flex:1;padding:15px 16px"><div style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#FFEFB6,#F3D978 55%,#E8C24E)"></div><div><div style="font-size:14.5px;font-weight:700;color:#24523F">6월 15일 (일)</div><div style="font-size:12px;color:#9a7a1a;font-weight:600">좋아요</div></div></div><span style="font-size:14px;font-weight:800;color:#24523F">4 / 4</span></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="flex:none;width:360px">
+      <div style="font-size:13px;font-weight:600;color:#5a6b60;margin-bottom:12px">안 2 — 14일 컬러 스트립 요약</div>
+      <div style="position:relative;width:360px;height:732px;border-radius:40px;background:#F9F6EE;overflow:hidden;box-shadow:0 24px 56px -22px rgba(36,82,63,.32)">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 26px 4px;font-size:13px;font-weight:650;color:#24523F"><span>9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11"><rect y="6" width="3" height="5" rx="1" fill="#24523F"/><rect x="4.5" y="4" width="3" height="7" rx="1" fill="#24523F"/><rect x="9" y="2" width="3" height="9" rx="1" fill="#24523F"/><rect x="13.5" width="3" height="11" rx="1" fill="#24523F" opacity=".35"/></svg><svg width="23" height="11" viewBox="0 0 23 11"><rect x="0.5" y="0.5" width="18" height="10" rx="3" fill="none" stroke="#24523F" opacity=".5"/><rect x="2" y="2" width="13" height="7" rx="1.5" fill="#24523F"/><rect x="20" y="3.5" width="1.6" height="4" rx=".8" fill="#24523F" opacity=".5"/></svg></div></div>
+        <div style="padding:14px 22px 20px">
+          <div style="font-size:23px;font-weight:800;color:#24523F;letter-spacing:-.02em">기록</div>
+          <div style="font-size:13px;font-weight:500;color:#7c8a80;margin-top:3px">최근 14일 · 멈춘 날도 기록이에요</div>
+          <div style="background:#fff;border-radius:22px;padding:18px 18px 16px;margin-top:16px;box-shadow:0 10px 22px -14px rgba(36,82,63,.22)">
+            <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:13px;font-weight:700;color:#24523F">최근 14일</span><span style="font-size:12px;font-weight:600;color:#7c8a80">완료율 · 마음 날씨</span></div>
+            <div style="display:flex;align-items:flex-end;gap:5px;height:88px;margin-top:14px">
+              <div style="flex:1;height:60%;border-radius:5px 5px 3px 3px;background:#7FB0CC"></div>
+              <div style="flex:1;height:85%;border-radius:5px 5px 3px 3px;background:#EFC845"></div>
+              <div style="flex:1;height:40%;border-radius:5px 5px 3px 3px;background:#7FB0CC"></div>
+              <div style="flex:1;height:70%;border-radius:5px 5px 3px 3px;background:#6FB988"></div>
+              <div style="flex:1;height:100%;border-radius:5px 5px 3px 3px;background:#EFC845"></div>
+              <div style="flex:1;height:55%;border-radius:5px 5px 3px 3px;background:#6FB988"></div>
+              <div style="flex:1;height:30%;border-radius:5px 5px 3px 3px;background:#7FB0CC"></div>
+              <div style="flex:1;height:80%;border-radius:5px 5px 3px 3px;background:#EFC845"></div>
+              <div style="flex:1;height:65%;border-radius:5px 5px 3px 3px;background:#6FB988"></div>
+              <div style="flex:1;height:90%;border-radius:5px 5px 3px 3px;background:#EFC845"></div>
+              <div style="flex:1;height:33%;border-radius:5px 5px 3px 3px;background:#7FB0CC"></div>
+              <div style="flex:1;height:50%;border-radius:5px 5px 3px 3px;background:#6FB988"></div>
+              <div style="flex:1;height:75%;border-radius:5px 5px 3px 3px;background:#EFC845"></div>
+              <div style="flex:1;height:100%;border-radius:5px 5px 3px 3px;background:#EFC845"></div>
+            </div>
+            <div style="display:flex;gap:14px;margin-top:14px"><span style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#7c8a80"><span style="width:9px;height:9px;border-radius:3px;background:#EFC845"></span>좋아요</span><span style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#7c8a80"><span style="width:9px;height:9px;border-radius:3px;background:#6FB988"></span>보통</span><span style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#7c8a80"><span style="width:9px;height:9px;border-radius:3px;background:#7FB0CC"></span>힘들어요</span></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:14px">
+            <div style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:15px;padding:13px 15px;box-shadow:0 7px 15px -13px rgba(36,82,63,.2)"><span style="width:11px;height:11px;border-radius:50%;background:#EFC845"></span><span style="flex:1;font-size:14px;font-weight:700;color:#24523F">6월 18일 (목) · 오늘</span><span style="font-size:13px;font-weight:800;color:#24523F">4 / 4</span></div>
+            <div style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:15px;padding:13px 15px;box-shadow:0 7px 15px -13px rgba(36,82,63,.2)"><span style="width:11px;height:11px;border-radius:50%;background:#6FB988"></span><span style="flex:1;font-size:14px;font-weight:700;color:#24523F">6월 17일 (화)</span><span style="font-size:13px;font-weight:800;color:#24523F">2 / 4</span></div>
+            <div style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:15px;padding:13px 15px;box-shadow:0 7px 15px -13px rgba(36,82,63,.2)"><span style="width:11px;height:11px;border-radius:50%;background:#7FB0CC"></span><span style="flex:1;font-size:14px;font-weight:700;color:#24523F">6월 16일 (월)</span><span style="font-size:13px;font-weight:800;color:#3d6e8a">1 / 3</span></div>
+            <div style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:15px;padding:13px 15px;box-shadow:0 7px 15px -13px rgba(36,82,63,.2)"><span style="width:11px;height:11px;border-radius:50%;background:#EFC845"></span><span style="flex:1;font-size:14px;font-weight:700;color:#24523F">6월 15일 (일)</span><span style="font-size:13px;font-weight:800;color:#24523F">4 / 4</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="flex:none;width:360px">
+      <div style="font-size:13px;font-weight:600;color:#5a6b60;margin-bottom:12px">안 3 — 딥그린 헤더 + 컬러 타임라인</div>
+      <div style="position:relative;width:360px;height:732px;border-radius:40px;background:#F9F6EE;overflow:hidden;box-shadow:0 24px 56px -22px rgba(36,82,63,.32)">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 26px 4px;font-size:13px;font-weight:650;color:#24523F"><span>9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11"><rect y="6" width="3" height="5" rx="1" fill="#24523F"/><rect x="4.5" y="4" width="3" height="7" rx="1" fill="#24523F"/><rect x="9" y="2" width="3" height="9" rx="1" fill="#24523F"/><rect x="13.5" width="3" height="11" rx="1" fill="#24523F" opacity=".35"/></svg><svg width="23" height="11" viewBox="0 0 23 11"><rect x="0.5" y="0.5" width="18" height="10" rx="3" fill="none" stroke="#24523F" opacity=".5"/><rect x="2" y="2" width="13" height="7" rx="1.5" fill="#24523F"/><rect x="20" y="3.5" width="1.6" height="4" rx=".8" fill="#24523F" opacity=".5"/></svg></div></div>
+        <div style="padding:14px 22px 20px">
+          <div style="font-size:23px;font-weight:800;color:#24523F;letter-spacing:-.02em">기록</div>
+          <div style="background:linear-gradient(135deg,#2d6049,#24523F);border-radius:24px;padding:20px;margin-top:14px;box-shadow:0 16px 30px -16px rgba(36,82,63,.5)">
+            <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.8)">이번 주 마음 기록</div>
+            <div style="display:flex;align-items:flex-end;gap:18px;margin-top:10px">
+              <div><div style="font-size:30px;font-weight:800;color:#fff;line-height:1">연속 4일</div><div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:3px">함께한 날</div></div>
+              <div><div style="font-size:30px;font-weight:800;color:#F3D978;line-height:1">23개</div><div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:3px">완료한 루틴</div></div>
+            </div>
+          </div>
+          <div style="position:relative;margin-top:20px;padding-left:26px">
+            <div style="position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:#E2E6DE"></div>
+            <div style="position:relative;margin-bottom:18px"><div style="position:absolute;left:-26px;top:2px;width:13px;height:13px;border-radius:50%;background:#EFC845;box-shadow:0 0 0 3px #FBF1CE"></div><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:14.5px;font-weight:700;color:#24523F">6월 18일 (목) · 오늘</div><div style="font-size:12px;color:#9a7a1a;font-weight:600;margin-top:1px">좋아요 · 맑음</div></div><span style="font-size:14px;font-weight:800;color:#24523F">4 / 4</span></div></div>
+            <div style="position:relative;margin-bottom:18px"><div style="position:absolute;left:-26px;top:2px;width:13px;height:13px;border-radius:50%;background:#6FB988;box-shadow:0 0 0 3px #E4F2E8"></div><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:14.5px;font-weight:700;color:#24523F">6월 17일 (화)</div><div style="font-size:12px;color:#3e7a57;font-weight:600;margin-top:1px">보통이에요 · 구름</div></div><span style="font-size:14px;font-weight:800;color:#24523F">2 / 4</span></div></div>
+            <div style="position:relative;margin-bottom:18px"><div style="position:absolute;left:-26px;top:2px;width:13px;height:13px;border-radius:50%;background:#7FB0CC;box-shadow:0 0 0 3px #E2EEF5"></div><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:14.5px;font-weight:700;color:#24523F">6월 16일 (월)</div><div style="font-size:12px;color:#3d6e8a;font-weight:600;margin-top:1px">힘들어요 · 비 · 쉬어간 날</div></div><span style="font-size:14px;font-weight:800;color:#3d6e8a">1 / 3</span></div></div>
+            <div style="position:relative"><div style="position:absolute;left:-26px;top:2px;width:13px;height:13px;border-radius:50%;background:#EFC845;box-shadow:0 0 0 3px #FBF1CE"></div><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:14.5px;font-weight:700;color:#24523F">6월 15일 (일)</div><div style="font-size:12px;color:#9a7a1a;font-weight:600;margin-top:1px">좋아요 · 맑음</div></div><span style="font-size:14px;font-weight:800;color:#24523F">4 / 4</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

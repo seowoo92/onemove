@@ -1,4 +1,10 @@
-const today = () => new Date().toISOString().slice(0, 10)
+// 로컬(기기 시간대) 기준 YYYY-MM-DD. toISOString()은 UTC라 KST와 어긋나므로 사용 금지.
+const today = () => {
+  const d = new Date()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${m}-${day}`
+}
 
 function getKeyed(key) {
   try {
@@ -71,19 +77,26 @@ export const storage = {
   getNotify: () => localStorage.getItem('onemove_notify') === 'true',
   setNotify: (bool) => localStorage.setItem('onemove_notify', bool ? 'true' : 'false'),
 
+  // 오늘 날짜 키 (로컬 기준) — 기록 저장 시 화면 날짜와 일치시키기 위해 사용
+  getTodayKey: () => today(),
+
   // 날짜별 기록 (자정 리셋 없음, 영구 보존)
   getHistory() {
     try { return JSON.parse(localStorage.getItem('onemove_history') ?? '{}') }
     catch { return {} }
   },
-  addHistoryEntry(dateKey, state, completedName, total) {
+  // 해당 날짜 기록을 현재 완료 집합으로 '덮어쓴다'. 누적이 아니므로 완료수 ≤ 총개수 보장.
+  setHistoryEntry(dateKey, state, completedNames, total) {
     const history = this.getHistory()
-    const entry = history[dateKey] ?? { state, completed: [], total }
-    if (!entry.completed.includes(completedName)) {
-      entry.completed = [...entry.completed, completedName]
-    }
-    entry.total = total
-    history[dateKey] = entry
+    history[dateKey] = { state, completed: [...completedNames], total }
     localStorage.setItem('onemove_history', JSON.stringify(history))
+  },
+  // 마음 날씨 다시 고르기 등으로 그 날을 새로 시작할 때 기록 초기화
+  removeHistoryEntry(dateKey) {
+    const history = this.getHistory()
+    if (dateKey in history) {
+      delete history[dateKey]
+      localStorage.setItem('onemove_history', JSON.stringify(history))
+    }
   },
 }

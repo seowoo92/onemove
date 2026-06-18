@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+.omscroll::-webkit-scrollbar{width:0;display:none}
+@keyframes omdot{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+@keyframes omrise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes omfade{from{opacity:0}to{opacity:1}}
+@keyframes ompop{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;width:100%;display:flex;align-items:center;justify-content:center;background:#E6E1D6;padding:24px">
+  <div style="position:relative;width:390px;height:812px;border-radius:46px;background:{{ appBg }};overflow:hidden;box-shadow:0 30px 70px -24px rgba(36,82,63,.4),0 10px 22px rgba(36,82,63,.12)">
+    <div style="position:absolute;inset:0;background-image:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.55%22/%3E%3C/svg%3E');opacity:.045;mix-blend-mode:multiply;pointer-events:none;z-index:40"></div>
+
+    <div style="position:relative;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:17px 28px 4px;font-size:13px;font-weight:650;color:#24523F"><span>9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11"><rect y="6" width="3" height="5" rx="1" fill="#24523F"/><rect x="4.5" y="4" width="3" height="7" rx="1" fill="#24523F"/><rect x="9" y="2" width="3" height="9" rx="1" fill="#24523F"/><rect x="13.5" width="3" height="11" rx="1" fill="#24523F" opacity=".35"/></svg><svg width="23" height="11" viewBox="0 0 23 11"><rect x="0.5" y="0.5" width="18" height="10" rx="3" fill="none" stroke="#24523F" opacity=".5"/><rect x="2" y="2" width="13" height="7" rx="1.5" fill="#24523F"/><rect x="20" y="3.5" width="1.6" height="4" rx=".8" fill="#24523F" opacity=".5"/></svg></div></div>
+
+    <div style="position:relative;z-index:5;height:776px">
+
+      <sc-if value="{{ isWelcome }}" hint-placeholder-val="{{ true }}">
+        <div style="height:776px;padding:34px 30px 0;display:flex;flex-direction:column;position:relative">
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="position:relative;display:flex;align-items:center"><div style="width:13px;height:13px;border-radius:50%;background:#EFA58F"></div><div style="width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 36% 32%,#FFEFB6,#F3D978 56%,#E8C24E);margin-left:-5px;opacity:.92"></div><div style="width:23px;height:23px;border-radius:50%;background:#1C4030;margin-left:-5px;opacity:.94"></div></div>
+            <span style="font-size:15px;font-weight:700;color:#24523F">오늘만큼</span>
+          </div>
+          <div style="margin-top:62px;font-size:39px;font-weight:800;color:#24523F;letter-spacing:-.045em;line-height:1.22">오늘<br>할 수 있는<br>만큼만.</div>
+          <div style="font-size:15px;font-weight:500;color:#6f7d72;line-height:1.7;margin-top:22px;max-width:260px">무기력한 날에도 한 걸음. 실패해도 다시 시작할 수 있게 설계했어요.</div>
+          <div style="position:absolute;left:0;right:0;bottom:130px;height:132px;overflow:hidden">
+            <div style="position:absolute;left:-40px;bottom:-30px;width:200px;height:120px;border-radius:50%;background:#D9F2EE"></div>
+            <div style="position:absolute;right:-30px;bottom:-44px;width:200px;height:120px;border-radius:50%;background:#B8D5E6;opacity:.8"></div>
+            <div style="position:absolute;left:150px;bottom:18px;width:36px;height:28px;border-radius:50%;background:#EFA58F;opacity:.9"></div>
+          </div>
+          <div style="position:absolute;left:30px;right:30px;bottom:34px;display:flex;flex-direction:column;gap:11px">
+            <button onClick="{{ onKakao }}" style="display:flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;background:#FEE500;color:#3C1E1E;border-radius:18px;padding:17px;font-size:16px;font-weight:700;font-family:inherit;box-shadow:0 9px 20px -7px rgba(220,195,0,.6),inset 0 2px 0 rgba(255,255,255,.5),inset 0 -3px 6px rgba(160,140,0,.2)"><svg width="18" height="18" viewBox="0 0 18 18"><path d="M9 2C4.9 2 1.5 4.6 1.5 7.8c0 2 1.4 3.8 3.5 4.8-.2.6-.7 2.3-.8 2.6 0 .3.2.3.4.2.2-.1 2.4-1.6 3.3-2.2.4 0 .7.1 1.1.1 4.1 0 7.5-2.6 7.5-5.8S13.1 2 9 2z" fill="#3C1E1E"/></svg>카카오로 시작하기</button>
+            <button onClick="{{ onGuest }}" style="border:none;cursor:pointer;background:transparent;color:#6f7d72;padding:11px;font-size:14.5px;font-weight:600;font-family:inherit">로그인 없이 시작하기</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isCoach }}" hint-placeholder-val="{{ false }}">
+        <div style="height:776px;padding:26px 28px 28px;display:flex;flex-direction:column;align-items:center;text-align:center">
+          <div style="font-size:23px;font-weight:800;color:#24523F;letter-spacing:-.03em;line-height:1.35">오늘부터의<br>코치를 골라요</div>
+          <div style="font-size:14px;font-weight:500;color:#6f7d72;margin-top:10px">탭해서 성격을 미리 느껴보세요.</div>
+          <div style="margin-top:38px;display:flex;flex-direction:column;align-items:center">
+            <div style="width:150px;height:150px;border-radius:50%;background:{{ selOrbBg }};box-shadow:0 0 0 6px rgba(36,82,63,.08),0 18px 34px -12px rgba(36,82,63,.4),inset 0 -10px 20px rgba(0,0,0,.14),inset 0 8px 14px rgba(255,255,255,.55)"></div>
+            <div style="font-size:20px;font-weight:800;color:#24523F;margin-top:20px">{{ selName }}</div>
+            <div style="font-size:14.5px;font-weight:500;color:#7c8a80;margin-top:6px;max-width:250px;line-height:1.5">{{ selQuote }}</div>
+          </div>
+          <div style="margin-top:auto;display:flex;gap:20px;align-items:flex-end;justify-content:center">
+            <button onClick="{{ pickSelCheer }}" style="border:none;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:9px;font-family:inherit"><div style="width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#FFEFB6,#F3D978 55%,#E8C24E);box-shadow:{{ ringCheer }}"></div><span style="font-size:12.5px;font-weight:700;color:#24523F">유쾌</span></button>
+            <button onClick="{{ pickSelCalm }}" style="border:none;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:9px;font-family:inherit"><div style="width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 38% 28%,#3C7A5C,#24523F);box-shadow:{{ ringCalm }}"></div><span style="font-size:12.5px;font-weight:700;color:#24523F">진중</span></button>
+            <button onClick="{{ pickSelWarm }}" style="border:none;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:9px;font-family:inherit"><div style="width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#F6C6B4,#EFA58F 55%,#E08066);box-shadow:{{ ringWarm }}"></div><span style="font-size:12.5px;font-weight:700;color:#24523F">다정</span></button>
+          </div>
+          <button onClick="{{ confirmCoach }}" style="width:100%;margin-top:26px;border:none;cursor:pointer;background:linear-gradient(#2d6049,#24523F);color:#fff;border-radius:18px;padding:17px;font-size:16px;font-weight:700;font-family:inherit;box-shadow:0 10px 22px -8px rgba(36,82,63,.55),inset 0 2px 0 rgba(255,255,255,.16),inset 0 -3px 6px rgba(0,0,0,.2)">{{ selName }}로 시작</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isState }}" hint-placeholder-val="{{ false }}">
+        <div style="height:776px;padding:10px 28px 78px;display:flex;flex-direction:column">
+          <button onClick="{{ backToCoach }}" style="width:42px;height:42px;border:none;cursor:pointer;background:#fff;border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px -8px rgba(36,82,63,.3),inset 0 2px 0 rgba(255,255,255,.9)"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 3l-5 5 5 5" fill="none" stroke="#24523F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <div style="margin-top:22px"><div style="font-size:23px;font-weight:800;color:#24523F;letter-spacing:-.03em;line-height:1.35">오늘 마음 날씨는<br>어떤가요?</div><div style="font-size:14px;font-weight:500;color:#7c8a80;margin-top:9px">{{ dateLabel }} · 어떤 날이든 괜찮아요</div></div>
+          <div style="display:flex;flex-direction:column;gap:13px;margin-top:26px">
+            <button onClick="{{ chooseGood }}" style="border:none;cursor:pointer;text-align:left;display:flex;align-items:center;gap:16px;background:#fff;border-radius:24px;padding:18px;font-family:inherit;box-shadow:0 10px 22px -13px rgba(36,82,63,.22),inset 0 2px 0 rgba(255,255,255,.9)">
+              <div style="flex:none;position:relative;width:54px;height:54px;border-radius:50%;background:#FCF2D2;box-shadow:inset 0 2px 5px rgba(190,160,60,.22)"><div style="position:absolute;left:25.5px;top:4px;width:3px;height:5px;border-radius:2px;background:#F0CF63;transform-origin:1.5px 23px;transform:rotate(0deg)"></div><div style="position:absolute;left:25.5px;top:4px;width:3px;height:5px;border-radius:2px;background:#F0CF63;transform-origin:1.5px 23px;transform:rotate(45deg)"></div><div style="position:absolute;left:25.5px;top:4px;width:3px;height:5px;border-radius:2px;background:#F0CF63;transform-origin:1.5px 23px;transform:rotate(90deg)"></div><div style="position:absolute;left:25.5px;top:4px;width:3px;height:5px;border-radius:2px;background:#F0CF63;transform-origin:1.5px 23px;transform:rotate(135deg)"></div><div style="position:absolute;left:25.5px;top:4px;width:3px;height:5px;border-radius:2px;background:#F0CF63;transform-origin:1.5px 23px;transform:rotate(180deg)"></div><div style="position:absolute;left:25.5px;top:4px;width:3px;height:5px;border-radius:2px;background:#F0CF63;transform-origin:1.5px 23px;transform:rotate(225deg)"></div><div style="position:absolute;left:25.5px;top:4px;width:3px;height:5px;border-radius:2px;background:#F0CF63;transform-origin:1.5px 23px;transform:rotate(270deg)"></div><div style="position:absolute;left:25.5px;top:4px;width:3px;height:5px;border-radius:2px;background:#F0CF63;transform-origin:1.5px 23px;transform:rotate(315deg)"></div><div style="position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#FFEFB6,#F3D978 58%,#E8C24E);box-shadow:inset 0 -3px 6px rgba(170,120,20,.22),inset 0 3px 5px rgba(255,255,255,.7)"></div></div>
+              <div><div style="font-size:17px;font-weight:700;color:#24523F">좋아요</div><div style="font-size:13px;color:#7c8a80;margin-top:1px">맑게 갠 하루예요</div></div>
+            </button>
+            <button onClick="{{ chooseOk }}" style="border:none;cursor:pointer;text-align:left;display:flex;align-items:center;gap:16px;background:#fff;border-radius:24px;padding:18px;font-family:inherit;box-shadow:0 10px 22px -13px rgba(36,82,63,.22),inset 0 2px 0 rgba(255,255,255,.9)">
+              <div style="flex:none;position:relative;width:54px;height:54px;border-radius:50%;background:#EAF4F9;box-shadow:inset 0 2px 5px rgba(120,150,170,.2)"><div style="position:absolute;left:10px;bottom:15px;width:30px;height:15px;border-radius:9px;background:#fff;box-shadow:0 3px 6px -3px rgba(120,150,170,.5)"></div><div style="position:absolute;left:12px;top:14px;width:17px;height:17px;border-radius:50%;background:#fff"></div><div style="position:absolute;right:9px;top:11px;width:20px;height:20px;border-radius:50%;background:#fff"></div></div>
+              <div><div style="font-size:17px;font-weight:700;color:#24523F">보통이에요</div><div style="font-size:13px;color:#7c8a80;margin-top:1px">구름 조금, 그런대로</div></div>
+            </button>
+            <button onClick="{{ chooseHard }}" style="border:none;cursor:pointer;text-align:left;display:flex;align-items:center;gap:16px;background:#fff;border-radius:24px;padding:18px;font-family:inherit;box-shadow:0 10px 22px -13px rgba(36,82,63,.22),inset 0 2px 0 rgba(255,255,255,.9)">
+              <div style="flex:none;position:relative;width:54px;height:54px;border-radius:50%;background:#DCEAF1;box-shadow:inset 0 2px 5px rgba(100,130,150,.25)"><div style="position:absolute;left:9px;top:11px;width:32px;height:17px;border-radius:10px;background:#B8D5E6"></div><div style="position:absolute;left:13px;top:7px;width:18px;height:18px;border-radius:50%;background:#B8D5E6"></div><div style="position:absolute;left:16px;bottom:9px;width:3px;height:8px;border-radius:2px;background:#9BC2D8"></div><div style="position:absolute;left:26px;bottom:6px;width:3px;height:8px;border-radius:2px;background:#9BC2D8"></div><div style="position:absolute;left:36px;bottom:9px;width:3px;height:8px;border-radius:2px;background:#9BC2D8"></div></div>
+              <div><div style="font-size:17px;font-weight:700;color:#24523F">힘들어요</div><div style="font-size:13px;color:#7c8a80;margin-top:1px">비 오는 날도 지나가요</div></div>
+            </button>
+          </div>
+          <div style="margin-top:auto;padding-top:24px;display:flex;align-items:flex-end;gap:11px">
+            <div style="flex:none;position:relative;width:46px;height:46px;border-radius:50%;background:radial-gradient(120% 120% at 35% 28%,#FFFFFF,#E7F0E8);box-shadow:0 8px 18px -10px rgba(36,82,63,.45),inset 0 -3px 6px rgba(36,82,63,.08);display:flex;align-items:center;justify-content:center">
+              <span style="font-size:24px;font-weight:800;color:#2d6049;line-height:1">?</span>
+            </div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:9px">
+              <div style="background:#FBF4E2;border-radius:18px;padding:13px 16px;text-align:left;font-size:12.5px;font-weight:500;color:#6d6a52;line-height:1.6;box-shadow:0 7px 16px -12px rgba(180,150,60,.45)">
+                선택한 마음 날씨에 맞추어<br>루틴 개수와 난이도를 조절해서 제안해요.
+              </div>
+              <div style="position:relative;background:#EBF2EB;border-radius:18px 18px 18px 6px;padding:13px 16px;text-align:left;font-size:12.5px;font-weight:500;color:#566b5c;line-height:1.6;box-shadow:0 7px 16px -12px rgba(36,82,63,.4)">
+                <div style="position:absolute;left:-4px;bottom:11px;width:11px;height:11px;background:#EBF2EB;border-radius:0 0 0 3px;transform:rotate(45deg)"></div>
+                마음 날씨는 설정에서 언제든 다시 고를 수 있어요.<br>다시 고르면 오늘의 루틴은 새로 시작돼요.
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isApp }}" hint-placeholder-val="{{ false }}">
+        <div style="height:776px;position:relative">
+
+          <sc-if value="{{ tabHome }}" hint-placeholder-val="{{ true }}">
+            <div class="omscroll" style="height:718px;overflow-y:auto;padding:14px 22px 20px;display:flex;flex-direction:column;gap:14px">
+              <div style="margin-bottom:2px">
+                <div style="font-size:20px;font-weight:800;color:#24523F;letter-spacing:-.02em">{{ homeGreeting }}</div><div style="font-size:13px;font-weight:500;color:#7c8a80;margin-top:2px">{{ dateLabel }} · {{ todayState }}</div>
+              </div>
+              <div style="background:{{ progCardBg }};border-radius:22px;padding:17px 19px;box-shadow:{{ progShadow }}">
+                <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:16px;font-weight:600;color:{{ progMainColor }}">오늘 <b style="color:{{ progNumColor }};font-weight:800">{{ doneCount }} / {{ total }}</b>개 완료</span><span style="font-size:13px;font-weight:700;color:{{ progWordColor }}">{{ progressWord }}</span></div>
+                <div style="margin-top:11px;height:11px;border-radius:6px;background:{{ progTrackBg }};overflow:hidden;box-shadow:inset 0 1px 3px rgba(36,82,63,.12)"><div style="width:{{ pctWidth }};height:100%;border-radius:6px;background:{{ progBarBg }};transition:width .4s ease"></div></div>
+              </div>
+
+              <sc-for list="{{ items }}" as="it" hint-placeholder-count="3">
+                <sc-if value="{{ it.isTodo }}" hint-placeholder-val="{{ true }}">
+                  <div style="background:#fff;border-radius:22px;padding:18px 19px;box-shadow:0 12px 24px -15px rgba(36,82,63,.22),inset 0 2px 0 rgba(255,255,255,.9)">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+                      <div style="font-size:18px;font-weight:700;color:#24523F;flex:1;min-width:0">{{ it.name }}</div>
+                      <div style="flex:none;display:flex;gap:6px;align-items:center;margin-top:2px">
+                        <span style="font-size:11.5px;font-weight:700;color:{{ it.levelFg }};background:{{ it.levelBg }};border-radius:8px;padding:4px 9px;white-space:nowrap">{{ it.level }}</span>
+                        <span style="font-size:11.5px;font-weight:600;color:{{ it.areaFg }};background:{{ it.areaBg }};border-radius:8px;padding:4px 9px;white-space:nowrap">{{ it.areaText }}</span>
+                      </div>
+                    </div>
+                    <div style="font-size:12.5px;font-weight:500;color:#7c8a80;margin-top:7px;line-height:1.55;text-wrap:pretty">{{ it.effect }}</div>
+                    <div style="display:flex;gap:9px;margin-top:15px">
+                      <button onClick="{{ it.onComplete }}" style="flex:1;border:none;cursor:pointer;background:#F7EBBE;color:#24523F;border-radius:14px;padding:13px;font-size:14.5px;font-weight:700;font-family:inherit;box-shadow:0 8px 16px -7px rgba(214,184,90,.38),inset 0 1px 0 rgba(255,255,255,.6)">완료</button>
+                      <button onClick="{{ it.onHard }}" style="flex:1;border:none;cursor:pointer;background:#F1F5F0;color:#5c6960;border-radius:14px;padding:13px;font-size:14.5px;font-weight:600;font-family:inherit">지금은 어려워요</button>
+                    </div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ it.isEasy }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:relative;background:#fff;border-radius:22px;padding:18px 19px;box-shadow:0 14px 28px -15px rgba(36,82,63,.26),inset 0 2px 0 rgba(255,255,255,.9)">
+                    <div style="display:inline-flex;align-items:center;gap:6px;background:#FBEDE6;border-radius:9px;padding:5px 10px;margin-bottom:12px"><svg width="13" height="13" viewBox="0 0 13 13"><path d="M6.5 1.5l1.5 3 3.3.5-2.4 2.3.6 3.3-3-1.6-3 1.6.6-3.3L1.7 5l3.3-.5z" fill="#E5B4A4"/></svg><span style="font-size:11.5px;font-weight:700;color:#B07E6C">더 쉬운 버전으로 바꿨어요</span></div>
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+                      <div style="flex:1;min-width:0">
+                        <div style="font-size:13px;color:#9aa69d;text-decoration:line-through;font-weight:500">{{ it.origName }}</div>
+                        <div style="font-size:18px;font-weight:800;color:#24523F;margin-top:5px">{{ it.name }}</div>
+                      </div>
+                      <div style="flex:none;display:flex;gap:6px;align-items:center;margin-top:2px">
+                        <span style="font-size:11.5px;font-weight:700;color:#3d6e8a;background:#E4F0F6;border-radius:8px;padding:4px 9px;white-space:nowrap">아주 쉬움</span>
+                        <span style="font-size:11.5px;font-weight:600;color:{{ it.areaFg }};background:{{ it.areaBg }};border-radius:8px;padding:4px 9px;white-space:nowrap">{{ it.areaText }}</span>
+                      </div>
+                    </div>
+                    <div style="font-size:12.5px;font-weight:500;color:#7c8a80;margin-top:8px;line-height:1.55;text-wrap:pretty">{{ it.effect }}</div>
+                    <div style="display:flex;gap:9px;margin-top:16px">
+                      <button onClick="{{ it.onComplete }}" style="flex:1;border:none;cursor:pointer;background:#F7EBBE;color:#24523F;border-radius:14px;padding:13px;font-size:14.5px;font-weight:700;font-family:inherit;box-shadow:0 8px 16px -7px rgba(214,184,90,.38),inset 0 1px 0 rgba(255,255,255,.6)">완료</button>
+                      <button onClick="{{ it.onSkip }}" style="flex:1;border:none;cursor:pointer;background:#FBEDE6;color:#B07E6C;border-radius:14px;padding:13px;font-size:14.5px;font-weight:700;font-family:inherit">오늘은 쉬어가기</button>
+                    </div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ it.isDone }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:11px;background:#EFF4EE;border-radius:18px;padding:14px 16px"><div style="width:26px;height:26px;border-radius:50%;background:#24523F;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 13 13"><path d="M2 7l3 3 6-7" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span style="font-size:16px;font-weight:600;color:#5c6960;text-decoration:line-through">{{ it.name }}</span><span style="margin-left:auto;font-size:13px;font-weight:700;color:#6FB988">완료</span></div>
+                </sc-if>
+                <sc-if value="{{ it.isSkipped }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:11px;background:#EAF0F4;border-radius:18px;padding:14px 16px"><div style="width:26px;height:26px;border-radius:50%;background:#B8D5E6;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 12 12"><rect x="2.5" y="2" width="2.5" height="8" rx="1" fill="#fff"/><rect x="7" y="2" width="2.5" height="8" rx="1" fill="#fff"/></svg></div><span style="font-size:16px;font-weight:600;color:#5c6960">{{ it.name }}</span><span style="margin-left:auto;font-size:13px;font-weight:700;color:#3d6e8a">오늘은 쉬어가요</span></div>
+                </sc-if>
+              </sc-for>
+
+              <sc-if value="{{ allDone }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:8px;position:relative;overflow:hidden;border-radius:28px;box-shadow:0 16px 34px -18px rgba(36,82,63,.28)">
+                  <div style="position:relative;height:120px;background:linear-gradient(#F7E7C8,#F3D5C0)">
+                    <div style="position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:128px;height:64px;border-radius:66px 66px 0 0;background:linear-gradient(#FBE39C,#EFA58F);box-shadow:0 -6px 22px -4px rgba(239,165,143,.55)"></div>
+                    <div style="position:absolute;left:36px;bottom:30px;width:6px;height:6px;border-radius:50%;background:#fff;opacity:.7"></div>
+                    <div style="position:absolute;right:44px;top:26px;width:5px;height:5px;border-radius:50%;background:#fff;opacity:.6"></div>
+                  </div>
+                  <div style="background:#fff;padding:24px 24px 26px;text-align:center">
+                    <div style="font-size:23px;font-weight:800;color:#24523F;letter-spacing:-.03em">오늘 하루도 잘 해냈어요</div>
+                    <div style="font-size:14.5px;font-weight:500;color:#5c6960;margin-top:11px;line-height:1.7;text-wrap:pretty">완료든 쉬어가기든 모두 오늘의 기록이에요.<br>딱 그만큼이면 충분해요.</div>
+                    <div style="display:inline-flex;align-items:center;gap:9px;margin-top:18px;background:#F4F8F3;border-radius:14px;padding:11px 16px"><div style="flex:none;width:24px;height:24px;border-radius:50%;background:{{ coachOrbBg }}"></div><span style="font-size:13px;font-weight:600;color:#24523F">{{ coachName }}가 오늘의 너를 안아줘요</span></div>
+                    <button onClick="{{ goRecord }}" style="width:100%;margin-top:16px;border:none;cursor:pointer;background:#F4F8F3;color:#24523F;border-radius:16px;padding:15px;font-size:14.5px;font-weight:700;font-family:inherit">오늘 기록 보기</button>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ loggedIn }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ openKakaoSheet }}" style="margin-top:6px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;background:#FEE500;color:#3C1E1E;border-radius:16px;padding:14px;font-size:15px;font-weight:700;font-family:inherit;box-shadow:0 8px 18px -8px rgba(220,195,0,.5)"><svg width="18" height="18" viewBox="0 0 18 18"><path d="M9 2C4.9 2 1.5 4.6 1.5 7.8c0 2 1.4 3.8 3.5 4.8-.2.6-.7 2.3-.8 2.6 0 .3.2.3.4.2.2-.1 2.4-1.6 3.3-2.2.4 0 .7.1 1.1.1 4.1 0 7.5-2.6 7.5-5.8S13.1 2 9 2z" fill="#3C1E1E"/></svg>오늘의 루틴 카드 카카오톡으로 보내기</button>
+                <div style="font-size:11.5px;font-weight:500;color:#9aa69d;text-align:center;margin-top:7px">내 카카오톡으로 오늘의 카드를 받아요</div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ tabRecord }}" hint-placeholder-val="{{ false }}">
+            <div class="omscroll" style="height:718px;overflow-y:auto;padding:14px 22px 20px;display:flex;flex-direction:column;gap:16px">
+              <div><div style="font-size:23px;font-weight:800;color:#24523F;letter-spacing:-.02em">기록</div><div style="font-size:14px;font-weight:500;color:#7c8a80;margin-top:3px">최근 14일 · 멈춘 날도 기록이에요</div></div>
+
+              <div style="background:#fff;border-radius:22px;padding:18px 18px 16px;box-shadow:0 10px 22px -14px rgba(36,82,63,.22)">
+                <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px;font-weight:700;color:#24523F">최근 14일</span><span style="font-size:13px;font-weight:600;color:#7c8a80">완료율 · 마음 날씨</span></div>
+                <div style="display:flex;align-items:flex-end;gap:5px;height:88px;margin-top:14px">
+                  <div style="flex:1;height:60%;border-radius:5px 5px 3px 3px;background:#A9CFE0"></div>
+                  <div style="flex:1;height:85%;border-radius:5px 5px 3px 3px;background:#F3D978"></div>
+                  <div style="flex:1;height:40%;border-radius:5px 5px 3px 3px;background:#A9CFE0"></div>
+                  <div style="flex:1;height:70%;border-radius:5px 5px 3px 3px;background:#9FD2B0"></div>
+                  <div style="flex:1;height:100%;border-radius:5px 5px 3px 3px;background:#F3D978"></div>
+                  <div style="flex:1;height:55%;border-radius:5px 5px 3px 3px;background:#9FD2B0"></div>
+                  <div style="flex:1;height:30%;border-radius:5px 5px 3px 3px;background:#A9CFE0"></div>
+                  <div style="flex:1;height:80%;border-radius:5px 5px 3px 3px;background:#F3D978"></div>
+                  <div style="flex:1;height:65%;border-radius:5px 5px 3px 3px;background:#9FD2B0"></div>
+                  <div style="flex:1;height:90%;border-radius:5px 5px 3px 3px;background:#F3D978"></div>
+                  <div style="flex:1;height:33%;border-radius:5px 5px 3px 3px;background:#A9CFE0"></div>
+                  <div style="flex:1;height:50%;border-radius:5px 5px 3px 3px;background:#9FD2B0"></div>
+                  <div style="flex:1;height:75%;border-radius:5px 5px 3px 3px;background:#F3D978"></div>
+                  <div style="flex:1;height:100%;border-radius:5px 5px 3px 3px;background:#F3D978"></div>
+                </div>
+                <div style="display:flex;gap:14px;margin-top:14px"><span style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:#7c8a80"><span style="width:10px;height:10px;border-radius:3px;background:#F3D978"></span>좋아요</span><span style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:#7c8a80"><span style="width:10px;height:10px;border-radius:3px;background:#9FD2B0"></span>보통</span><span style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:#7c8a80"><span style="width:10px;height:10px;border-radius:3px;background:#A9CFE0"></span>힘들어요</span></div>
+              </div>
+
+              <div style="position:relative;padding-left:26px;margin-top:2px">
+                <div style="position:absolute;left:5px;top:6px;bottom:14px;width:2px;background:#E2E6DE"></div>
+                <sc-for list="{{ records }}" as="rec" hint-placeholder-count="4">
+                  <div style="position:relative;margin-bottom:20px">
+                    <div style="position:absolute;left:-26px;top:2px;width:13px;height:13px;border-radius:50%;background:{{ rec.nodeColor }};box-shadow:0 0 0 3px {{ rec.ringColor }}"></div>
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                      <div><div style="font-size:16px;font-weight:700;color:#24523F">{{ rec.dateLabel }}</div><div style="font-size:13.5px;font-weight:600;color:{{ rec.stateColor }};margin-top:2px">{{ rec.stateLine }}</div></div>
+                      <span style="font-size:16px;font-weight:800;color:{{ rec.doneColor }}">{{ rec.doneText }}</span>
+                    </div>
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:9px">
+                      <sc-for list="{{ rec.names }}" as="nm" hint-placeholder-count="3"><span style="font-size:13px;font-weight:600;color:#5c6960;background:#F1F4F0;border-radius:8px;padding:4px 10px">{{ nm }}</span></sc-for>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ tabSettings }}" hint-placeholder-val="{{ false }}">
+            <div class="omscroll" style="height:718px;overflow-y:auto;padding:14px 22px 16px;display:flex;flex-direction:column;justify-content:space-between;gap:8px">
+              <div style="font-size:23px;font-weight:800;color:#24523F;letter-spacing:-.02em">설정</div>
+
+              <div style="background:#fff;border-radius:22px;padding:14px 16px;box-shadow:0 10px 22px -14px rgba(36,82,63,.22)">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <sc-if value="{{ editNickOff }}" hint-placeholder-val="{{ true }}"><div style="flex:1;min-width:0;font-size:18px;font-weight:800;color:#24523F">{{ accountName }}님</div></sc-if>
+                  <sc-if value="{{ editNick }}" hint-placeholder-val="{{ false }}"><input value="{{ nickname }}" onInput="{{ onNick }}" maxlength="12" placeholder="닉네임" style="flex:1;min-width:0;border:none;outline:none;background:#F4F6F2;border-radius:9px;padding:7px 10px;font-family:inherit;font-size:16px;font-weight:700;color:#24523F"/></sc-if>
+                  <button onClick="{{ onEditNick }}" style="flex:none;border:none;cursor:pointer;background:#EFF4EE;color:#24523F;border-radius:10px;padding:7px 13px;font-size:12.5px;font-weight:700;font-family:inherit">{{ nickBtnLabel }}</button>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
+                  <span style="font-size:12.5px;font-weight:500;color:#7c8a80">{{ coachLabel }} 코치와 함께</span>
+                  <sc-if value="{{ savedToast }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6.2" fill="#6FB988"/><path d="M4 7.2l2 2 4-4.4" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="font-size:12px;font-weight:600;color:#6FB988">저장되었어요</span></span></sc-if>
+                </div>
+                <button onClick="{{ kakaoAction }}" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;border:none;cursor:pointer;background:#FEE500;color:#3C1E1E;border-radius:13px;padding:11px;font-size:14px;font-weight:700;font-family:inherit;margin-top:12px;box-shadow:0 7px 16px -8px rgba(220,195,0,.5)"><svg width="17" height="17" viewBox="0 0 18 18"><path d="M9 2C4.9 2 1.5 4.6 1.5 7.8c0 2 1.4 3.8 3.5 4.8-.2.6-.7 2.3-.8 2.6 0 .3.2.3.4.2.2-.1 2.4-1.6 3.3-2.2.4 0 .7.1 1.1.1 4.1 0 7.5-2.6 7.5-5.8S13.1 2 9 2z" fill="#3C1E1E"/></svg>{{ kakaoLabel }}</button>
+              </div>
+
+              <div>
+                <div style="font-size:12.5px;font-weight:700;color:#9aa69d;letter-spacing:.03em;margin-bottom:6px;padding-left:2px">알림</div>
+                <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:16px;padding:12px 18px;box-shadow:0 8px 16px -13px rgba(36,82,63,.2)">
+                  <span style="font-size:15px;font-weight:600;color:#24523F">카카오톡 알림</span>
+                  <sc-if value="{{ alarmOn }}" hint-placeholder-val="{{ true }}"><div onClick="{{ onToggleAlarm }}" style="cursor:pointer;width:46px;height:27px;border-radius:14px;background:#24523F;position:relative;transition:background .2s"><div style="position:absolute;top:3px;left:22px;width:21px;height:21px;border-radius:50%;background:#fff;transition:left .2s"></div></div></sc-if>
+                  <sc-if value="{{ alarmOff }}" hint-placeholder-val="{{ false }}"><div onClick="{{ onToggleAlarm }}" style="cursor:pointer;width:46px;height:27px;border-radius:14px;background:#D6DDD6;position:relative;transition:background .2s"><div style="position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:left .2s"></div></div></sc-if>
+                </div>
+              </div>
+
+              <div>
+                <div style="font-size:12.5px;font-weight:700;color:#9aa69d;letter-spacing:.03em;margin-bottom:6px;padding-left:2px">AI 코치 성격</div>
+                <div style="display:flex;gap:9px">
+                  <button onClick="{{ setCoachCheer }}" style="flex:1;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;background:#fff;border-radius:18px;padding:11px 6px;font-family:inherit;box-shadow:{{ setRingCheer }}"><div style="width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#FFEFB6,#F3D978 55%,#E8C24E)"></div><span style="font-size:13px;font-weight:700;color:#24523F">유쾌</span></button>
+                  <button onClick="{{ setCoachCalm }}" style="flex:1;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;background:#fff;border-radius:18px;padding:11px 6px;font-family:inherit;box-shadow:{{ setRingCalm }}"><div style="width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 38% 28%,#3C7A5C,#24523F)"></div><span style="font-size:13px;font-weight:700;color:#24523F">진중</span></button>
+                  <button onClick="{{ setCoachWarm }}" style="flex:1;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;background:#fff;border-radius:18px;padding:11px 6px;font-family:inherit;box-shadow:{{ setRingWarm }}"><div style="width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#F6C6B4,#EFA58F 55%,#E08066)"></div><span style="font-size:13px;font-weight:700;color:#24523F">다정</span></button>
+                </div>
+              </div>
+
+              <div>
+                <div style="font-size:12.5px;font-weight:700;color:#9aa69d;letter-spacing:.03em;margin-bottom:6px;padding-left:2px">마음 날씨</div>
+                <button onClick="{{ reChooseState }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;border:none;cursor:pointer;text-align:left;background:#fff;border-radius:16px;padding:12px 18px;font-family:inherit;box-shadow:0 8px 16px -13px rgba(36,82,63,.2)">
+                  <div><div style="font-size:15px;font-weight:600;color:#24523F">마음 날씨 다시 고르기</div><div style="font-size:12px;font-weight:500;color:#9aa69d;margin-top:3px">다시 고르면 오늘 루틴이 초기화돼요</div></div>
+                  <svg width="16" height="16" viewBox="0 0 16 16" style="flex:none"><path d="M6 3l5 5-5 5" fill="none" stroke="#c2cabf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+
+              <div>
+                <div style="font-size:12.5px;font-weight:700;color:#9aa69d;letter-spacing:.03em;margin-bottom:6px;padding-left:2px">마음이 많이 힘들 때</div>
+                <div style="display:flex;gap:9px">
+                  <a href="tel:1577-0199" style="flex:1;text-decoration:none;background:#F1F2EF;border-radius:14px;padding:12px 13px"><div style="font-size:12px;font-weight:600;color:#6b7269;line-height:1.4">국립정신건강센터<br>정신건강상담</div><div style="font-size:14px;font-weight:800;color:#3a4a40;margin-top:6px">☎ 1577-0199</div></a>
+                  <a href="tel:109" style="flex:1;text-decoration:none;background:#F1F2EF;border-radius:14px;padding:12px 13px"><div style="font-size:12px;font-weight:600;color:#6b7269;line-height:1.4">보건복지부<br>자살예방상담</div><div style="font-size:14px;font-weight:800;color:#3a4a40;margin-top:6px">☎ 109</div></a>
+                </div>
+              </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="position:absolute;left:0;right:0;bottom:0;height:58px;background:rgba(255,255,255,.94);display:flex;align-items:center;justify-content:space-around;box-shadow:0 -3px 16px rgba(36,82,63,.08);padding-bottom:5px">
+            <button onClick="{{ goHome }}" style="border:none;background:transparent;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:4px;color:{{ homeColor }}">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.8L12 4l8 6.8"/><path d="M6 10v9.5h12V10"/><path d="M10 19.5V14h4v5.5"/></svg>
+              <span style="font-size:11.5px;font-weight:{{ homeWeight }}">홈</span>
+            </button>
+            <button onClick="{{ goRecord }}" style="border:none;background:transparent;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:4px;color:{{ recordColor }}">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2.6"/><path d="M9 9h6"/><path d="M9 13h6"/><path d="M9 17h3.5"/></svg>
+              <span style="font-size:11.5px;font-weight:{{ recordWeight }}">기록</span>
+            </button>
+            <button onClick="{{ goSettings }}" style="border:none;background:transparent;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:4px;color:{{ settingsColor }}">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h11"/><path d="M19 8h1"/><circle cx="16" cy="8" r="2.3" fill="#fff"/><path d="M4 16h5"/><path d="M13 16h7"/><circle cx="10" cy="16" r="2.3" fill="#fff"/></svg>
+              <span style="font-size:11.5px;font-weight:{{ settingsWeight }}">설정</span>
+            </button>
+          </div>
+        </div>
+      </sc-if>
+
+    <sc-if value="{{ modalOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;z-index:45;background:rgba(20,46,34,.45)"></div>
+      <div style="position:absolute;left:0;right:0;bottom:0;z-index:46;background:#F9F6EE;border-radius:34px 34px 0 0;padding:14px 26px 30px;box-shadow:0 -20px 50px -10px rgba(0,0,0,.3)">
+        <div style="width:42px;height:5px;border-radius:3px;background:#D8DCD3;margin:0 auto 22px"></div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:52px;height:52px;border-radius:50%;background:{{ coachOrbBg }};box-shadow:0 8px 16px -5px rgba(36,82,63,.3),inset 0 -5px 9px rgba(0,0,0,.15),inset 0 4px 7px rgba(255,255,255,.5)"></div>
+          <div><div style="font-size:16px;font-weight:800;color:#24523F">{{ coachName }}</div><div style="font-size:12.5px;font-weight:500;color:#7c8a80">코치가 한마디 건네요</div></div>
+        </div>
+        <sc-if value="{{ modalLoading }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-top:24px;display:flex;align-items:center;gap:10px"><div style="display:flex;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:#6FB988;animation:omdot 1.2s infinite"></span><span style="width:8px;height:8px;border-radius:50%;background:#6FB988;animation:omdot 1.2s infinite .2s"></span><span style="width:8px;height:8px;border-radius:50%;background:#6FB988;animation:omdot 1.2s infinite .4s"></span></div><span style="font-size:14.5px;font-weight:600;color:#7c8a80">코치가 메시지를 작성하고 있어요…</span></div>
+          <div style="margin-top:18px;height:16px;border-radius:6px;background:#ECEFE9;width:90%"></div>
+          <div style="margin-top:10px;height:16px;border-radius:6px;background:#ECEFE9;width:70%"></div>
+        </sc-if>
+        <sc-if value="{{ modalReady }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:22px;font-size:19px;font-weight:700;color:#24523F;line-height:1.6;letter-spacing:-.01em;min-height:90px">{{ modalMessage }}</div>
+          <div style="display:flex;justify-content:flex-end;margin-top:8px"><span style="font-size:11px;font-weight:600;color:#9aa69d;background:#fff;border-radius:8px;padding:4px 9px;box-shadow:0 3px 8px -5px rgba(36,82,63,.3)">출처 · {{ modalSource }}</span></div>
+        </sc-if>
+        <button onClick="{{ closeModal }}" style="width:100%;margin-top:18px;border:none;cursor:pointer;background:linear-gradient(#2d6049,#24523F);color:#fff;border-radius:18px;padding:17px;font-size:16px;font-weight:700;font-family:inherit;box-shadow:0 10px 22px -8px rgba(36,82,63,.55),inset 0 2px 0 rgba(255,255,255,.16),inset 0 -3px 6px rgba(0,0,0,.2)">계속하기</button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ kakaoSheetOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeKakaoSheet }}" style="position:absolute;inset:0;z-index:47;background:rgba(20,46,34,.45)"></div>
+      <div style="position:absolute;left:0;right:0;bottom:0;z-index:48;background:#F9F6EE;border-radius:34px 34px 0 0;padding:14px 22px 26px;box-shadow:0 -20px 50px -10px rgba(0,0,0,.3)">
+        <div style="width:42px;height:5px;border-radius:3px;background:#D8DCD3;margin:0 auto 16px"></div>
+        <div style="font-size:16px;font-weight:800;color:#24523F;text-align:center">이 카드를 내 카카오톡으로 보낼게요</div>
+        <div style="border-radius:20px;overflow:hidden;margin-top:16px;box-shadow:0 14px 30px -14px rgba(36,82,63,.4);border:1px solid #ECEFE9">
+          <div style="height:124px;overflow:hidden">
+            <svg viewBox="0 0 344 150" width="100%" height="124" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="display:block">
+              <defs>
+                <radialGradient id="ksky" cx="50%" cy="20%" r="100%"><stop offset="0%" stop-color="#F3FAEF"/><stop offset="100%" stop-color="#DCEFCF"/></radialGradient>
+                <radialGradient id="ksun" cx="38%" cy="34%" r="70%"><stop offset="0%" stop-color="#FFE9A8"/><stop offset="60%" stop-color="#FBD66B"/><stop offset="100%" stop-color="#EFBD43"/></radialGradient>
+                <radialGradient id="khill" cx="40%" cy="22%" r="90%"><stop offset="0%" stop-color="#BFE39A"/><stop offset="100%" stop-color="#8FC96E"/></radialGradient>
+                <radialGradient id="kleaf" cx="38%" cy="28%" r="80%"><stop offset="0%" stop-color="#A9DC86"/><stop offset="100%" stop-color="#6FB85A"/></radialGradient>
+                <radialGradient id="ktree1" cx="38%" cy="26%" r="80%"><stop offset="0%" stop-color="#9AD27C"/><stop offset="100%" stop-color="#5EA64C"/></radialGradient>
+                <radialGradient id="ktree2" cx="38%" cy="26%" r="80%"><stop offset="0%" stop-color="#7FC066"/><stop offset="100%" stop-color="#4C8F3C"/></radialGradient>
+                <linearGradient id="ktrunk" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#C68A52"/><stop offset="100%" stop-color="#9E6536"/></linearGradient>
+                <filter id="ksoft" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#3a6b35" flood-opacity="0.28"/></filter>
+              </defs>
+              <rect width="344" height="150" fill="url(#ksky)"/>
+              <g stroke="#F6CE5A" stroke-width="4.5" stroke-linecap="round" opacity="0.95"><line x1="265" y1="14" x2="265" y2="4"/><line x1="294" y1="22" x2="301" y2="15"/><line x1="305" y1="48" x2="315" y2="48"/><line x1="236" y1="22" x2="229" y2="15"/><line x1="225" y1="48" x2="215" y2="48"/><line x1="294" y1="74" x2="301" y2="81"/><line x1="236" y1="74" x2="229" y2="81"/></g>
+              <circle cx="265" cy="48" r="26" fill="url(#ksun)" filter="url(#ksoft)"/>
+              <ellipse cx="256" cy="40" rx="9" ry="6" fill="#FFF0C2" opacity="0.65"/>
+              <g filter="url(#ksoft)"><ellipse cx="120" cy="58" rx="34" ry="17" fill="#fff"/><circle cx="104" cy="52" r="14" fill="#fff"/><circle cx="128" cy="48" r="18" fill="#fff"/></g>
+              <path d="M-10 150 Q120 78 200 92 Q300 108 354 84 L354 150 Z" fill="url(#khill)"/>
+              <g filter="url(#ksoft)"><rect x="83" y="104" width="6" height="26" rx="3" fill="#5EA64C"/><path d="M86 110 C72 106 64 114 62 122 C74 124 84 120 86 110Z" fill="url(#kleaf)"/><path d="M86 108 C100 102 110 110 112 119 C99 122 88 118 86 108Z" fill="url(#kleaf)"/></g>
+              <g filter="url(#ksoft)"><rect x="238" y="116" width="8" height="20" rx="4" fill="url(#ktrunk)"/><circle cx="242" cy="108" r="20" fill="url(#ktree1)"/><ellipse cx="235" cy="101" rx="8" ry="5" fill="#BCE39C" opacity="0.6"/></g>
+              <g filter="url(#ksoft)"><rect x="288" y="112" width="9" height="26" rx="4.5" fill="url(#ktrunk)"/><circle cx="292" cy="100" r="26" fill="url(#ktree2)"/><ellipse cx="283" cy="91" rx="10" ry="6" fill="#A9DC86" opacity="0.6"/></g>
+            </svg>
+          </div>
+          <div style="background:#fff;padding:16px 18px 18px">
+            <div style="display:flex;align-items:center;gap:7px"><div style="display:flex;align-items:center"><div style="width:10px;height:10px;border-radius:50%;background:#EFA58F"></div><div style="width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 36% 32%,#FFEFB6,#F3D978 56%,#E8C24E);margin-left:-4px"></div><div style="width:18px;height:18px;border-radius:50%;background:#1C4030;margin-left:-4px"></div></div><span style="font-size:13px;font-weight:800;color:#24523F">오늘만큼 · {{ dateLabel }}</span></div>
+            <div style="font-size:15px;font-weight:800;color:#24523F;margin-top:10px">{{ kakaoTitle }}</div>
+            <div style="display:flex;flex-direction:column;gap:7px;margin-top:11px">
+              <sc-for list="{{ kakaoItems }}" as="ki" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <sc-if value="{{ ki.done }}" hint-placeholder-val="{{ true }}"><span style="width:17px;height:17px;border-radius:50%;background:#24523F;display:flex;align-items:center;justify-content:center"><svg width="9" height="9" viewBox="0 0 13 13"><path d="M2 7l3 3 6-7" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></sc-if>
+                  <sc-if value="{{ ki.undone }}" hint-placeholder-val="{{ false }}"><span style="width:17px;height:17px;border-radius:50%;border:2px solid #C9D6CC"></span></sc-if>
+                  <span style="font-size:13px;font-weight:600;color:#5c6960">{{ ki.name }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="font-size:11.5px;font-weight:600;color:#9aa69d;margin-top:13px;text-align:center;border-top:1px solid #F0F2EE;padding-top:11px">오늘만큼 · 멈춰도 다시 시작해도 괜찮아요</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:9px;margin-top:16px">
+          <button onClick="{{ closeKakaoSheet }}" style="flex:none;border:none;cursor:pointer;background:#F1F5F0;color:#5c6960;border-radius:16px;padding:15px 20px;font-size:15px;font-weight:600;font-family:inherit">닫기</button>
+          <button onClick="{{ sendKakao }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;background:#FEE500;color:#3C1E1E;border-radius:16px;padding:15px;font-size:15px;font-weight:700;font-family:inherit"><svg width="18" height="18" viewBox="0 0 18 18"><path d="M9 2C4.9 2 1.5 4.6 1.5 7.8c0 2 1.4 3.8 3.5 4.8-.2.6-.7 2.3-.8 2.6 0 .3.2.3.4.2.2-.1 2.4-1.6 3.3-2.2.4 0 .7.1 1.1.1 4.1 0 7.5-2.6 7.5-5.8S13.1 2 9 2z" fill="#3C1E1E"/></svg>카카오톡으로 보내기</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ kakaoSentToast }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;left:50%;bottom:96px;transform:translateX(-50%);z-index:49;display:flex;align-items:center;gap:8px;background:#24523F;border-radius:14px;padding:13px 18px;box-shadow:0 12px 26px -10px rgba(36,82,63,.5);white-space:nowrap"><svg width="16" height="16" viewBox="0 0 18 18"><path d="M9 2C4.9 2 1.5 4.6 1.5 7.8c0 2 1.4 3.8 3.5 4.8-.2.6-.7 2.3-.8 2.6 0 .3.2.3.4.2.2-.1 2.4-1.6 3.3-2.2.4 0 .7.1 1.1.1 4.1 0 7.5-2.6 7.5-5.8S13.1 2 9 2z" fill="#FEE500"/></svg><span style="font-size:14px;font-weight:700;color:#fff">내 카카오톡으로 보냈어요</span></div>
+    </sc-if>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:812}}">
+const K = { coach:'om_coach', nick:'om_nickname', session:'om_session', today:'om_today', records:'om_records' };
+const COACHES = {
+  '유쾌': { name:'유쾌한 햇살', quote:'“오늘도 한 발짝, 가볍게 가보자!”', orb:'radial-gradient(circle at 34% 30%,#FFEFB6,#F3D978 55%,#E8C24E)' },
+  '진중': { name:'진중한 숲', quote:'“천천히, 곁에서 함께 지켜볼게.”', orb:'radial-gradient(circle at 38% 28%,#3C7A5C,#24523F)' },
+  '다정': { name:'다정한 물', quote:'“괜찮아, 네 속도대로 가도 돼.”', orb:'radial-gradient(circle at 34% 30%,#F6C6B4,#EFA58F 55%,#E08066)' },
+};
+const EASY = {
+  '물 한 컵 마시기':'물 한 모금 마시기',
+  '창문 열고 1분 환기':'커튼만 젖히기',
+  '5분 동네 산책':'현관 앞에 1분 서 있기',
+  '오늘 한 줄 적기':'머릿속으로 오늘 한 가지 떠올리기',
+  '침대에서 기지개 켜기':'손끝만 쭉 뻗기',
+  '좋아하는 노래 1곡 듣기':'좋아하는 노래 30초 듣기',
+};
+const EFFECT = {
+  '물 한 컵 마시기':'한 모금이 머리를 맑게 깨워줘요',
+  '창문 열고 1분 환기':'새 공기가 답답한 기분을 환기시켜줘요',
+  '5분 동네 산책':'햇볕과 걸음이 마음을 한결 가볍게 해요',
+  '오늘 한 줄 적기':'마음을 글로 풀어내면 머리가 정리돼요',
+  '침대에서 기지개 켜기':'굳었던 몸이 부드럽게 깨어나요',
+  '좋아하는 노래 1곡 듣기':'좋아하는 소리가 기분을 살며시 끌어올려요',
+};
+function mk(id,name,area,level){ return { id, name, easyName:EASY[name]||name, effect:EFFECT[name]||'', area, level, done:false, easy:false, skipped:false }; }
+function genRoutines(state){
+  if(state==='힘들어요') return [ mk('r1','물 한 컵 마시기','몸 돌봄','아주 쉬움'), mk('r2','침대에서 기지개 켜기','몸 돌봄','아주 쉬움'), mk('r3','좋아하는 노래 1곡 듣기','마음','아주 쉬움') ];
+  return [ mk('r1','물 한 컵 마시기','몸 돌봄','아주 쉬움'), mk('r2','창문 열고 1분 환기','환경','쉬움'), mk('r3','5분 동네 산책','활력','보통'), mk('r4','오늘 한 줄 적기','마음','보통') ];
+}
+function todayKey(){ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+function todayLabel(){ const d=new Date(); const w=['일','월','화','수','목','금','토'][d.getDay()]; return (d.getMonth()+1)+'월 '+d.getDate()+'일 ('+w+')'; }
+const SEED_RECORDS = [
+  { dateLabel:'6월 17일 (화)', state:'보통이에요', weather:'cloud', done:2, total:4, names:['물 한 컵','5분 산책'] },
+  { dateLabel:'6월 16일 (월)', state:'힘들어요', weather:'rain', done:1, total:3, names:['현관 앞 1분','쉬어간 날'] },
+  { dateLabel:'6월 15일 (일)', state:'좋아요', weather:'sun', done:4, total:4, names:['물 한 컵','환기','산책','한 줄 일기'] },
+];
+
+class Component extends DCLogic {
+  state = {
+    screen:'welcome', tab:'home', coach:null, selCoach:'유쾌',
+    session:false, nickname:'', savedToast:false, alarm:true, editNick:false, kakaoSheet:false, kakaoSent:false,
+    todayState:null, routines:[], records:SEED_RECORDS,
+    modal:{ open:false, loading:false, situation:'완료', name:'', message:'', source:'AI' },
+  };
+
+  componentDidMount(){
+    try {
+      const coach = localStorage.getItem(K.coach);
+      const nick = localStorage.getItem(K.nick) || '';
+      const session = localStorage.getItem(K.session)==='1';
+      const alarm = localStorage.getItem('om_alarm')!=='0';
+      const recRaw = localStorage.getItem(K.records);
+      const todayRaw = localStorage.getItem(K.today);
+      const next = { coach: coach||null, selCoach: coach||'유쾌', nickname:nick, session, alarm,
+        records: recRaw? JSON.parse(recRaw): SEED_RECORDS };
+      let parsed = todayRaw? JSON.parse(todayRaw): null;
+      if(parsed && parsed.key===todayKey()){ next.todayState=parsed.state; next.routines=parsed.routines; }
+      if(!coach){ next.screen = session? 'coach':'welcome'; }
+      else if(next.todayState){ next.screen='app'; next.tab='home'; }
+      else { next.screen='state'; }
+      this.setState(next);
+    } catch(e){}
+  }
+
+  persist(){
+    try {
+      const s=this.state;
+      if(s.coach) localStorage.setItem(K.coach,s.coach);
+      localStorage.setItem(K.nick,s.nickname);
+      localStorage.setItem(K.session, s.session?'1':'0');
+      localStorage.setItem('om_alarm', s.alarm?'1':'0');
+      localStorage.setItem(K.records, JSON.stringify(s.records));
+      if(s.todayState) localStorage.setItem(K.today, JSON.stringify({ key:todayKey(), state:s.todayState, routines:s.routines }));
+      else localStorage.removeItem(K.today);
+    } catch(e){}
+  }
+
+  // navigation
+  onKakao = ()=> this.setState(s=>({ session:true, nickname: s.nickname||'오늘러', screen: s.coach? s.screen:'coach' }), ()=>this.persist());
+  onGuest = ()=> this.setState({ screen:'coach' });
+  pickSel = (c)=> this.setState({ selCoach:c });
+  confirmCoach = ()=> this.setState(s=>({ coach:s.selCoach, screen:'state' }), ()=>this.persist());
+  backToCoach = ()=> this.setState({ screen:'coach' });
+  chooseState = (st)=> this.setState({ todayState:st, routines:genRoutines(st), screen:'app', tab:'home' }, ()=>this.persist());
+  reChooseState = ()=>{ if(this.state.routines.some(r=>r.done||r.skipped)){ if(!window.confirm('오늘 기록이 초기화돼요. 상태를 다시 고를까요?')) return; } this.setState({ screen:'state' }); };
+  setTab = (t)=> this.setState({ tab:t });
+
+  setCoach = (c)=> this.setState({ coach:c, selCoach:c }, ()=>this.persist());
+  onNick = (e)=>{ const v=(e.target.value||'').slice(0,12); this.setState({ nickname:v }); };
+  onSaveNick = ()=>{ this.persist(); this.setState({ savedToast:true }); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({ savedToast:false }),2000); };
+  onLogout = ()=> this.setState({ session:false }, ()=>this.persist());
+  onToggleAlarm = ()=> this.setState(s=>({ alarm:!s.alarm }), ()=>this.persist());
+  openKakaoSheet = ()=> this.setState({ kakaoSheet:true });
+  closeKakaoSheet = ()=> this.setState({ kakaoSheet:false });
+  sendKakao = ()=>{ this.setState({ kakaoSheet:false, kakaoSent:true }); clearTimeout(this._k); this._k=setTimeout(()=>this.setState({ kakaoSent:false }),2400); };
+  onEditNick = ()=>{ if(this.state.editNick){ this.persist(); this.setState({ editNick:false, savedToast:true }); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({ savedToast:false }),2000); } else { this.setState({ editNick:true }); } };
+
+  // routine actions
+  mutate(id,fn){ this.setState(s=>({ routines:s.routines.map(r=>r.id===id?fn(r):r) }), ()=>this.persist()); }
+  complete = (id)=>{ const r=this.state.routines.find(x=>x.id===id); const nm=r.easy?r.easyName:r.name; this.mutate(id, r=>({...r,done:true})); this.openModal('완료', nm); };
+  hard = (id)=>{ const r=this.state.routines.find(x=>x.id===id); this.mutate(id, r=>({...r,easy:true})); this.openModal('어려워요', r.easyName); };
+  skip = (id)=>{ const r=this.state.routines.find(x=>x.id===id); const nm=r.easy?r.easyName:r.name; this.mutate(id, r=>({...r,skipped:true})); this.openModal('쉬어가기', nm); };
+  openModal(situation,name){ this.setState({ modal:{ open:true, loading:true, situation, name, message:'', source:'AI' } }, ()=>this.genMsg()); }
+  closeModal = ()=> this.setState(s=>({ modal:{...s.modal, open:false } }));
+
+  async genMsg(){
+    const coach=this.state.coach||'유쾌'; const m=this.state.modal;
+    const tone={'유쾌':'밝고 가볍게, 장난기 살짝','진중':'차분하고 묵직하게, 신뢰감 있게','다정':'따뜻하고 포근하게, 다독이듯'}[coach];
+    const sit = m.situation==='완료' ? `사용자가 방금 '${m.name}' 루틴을 완료했어.`
+      : m.situation==='어려워요' ? `'${m.name}'(으)로 더 쉽게 바꿨어. 부담 없이 해볼 수 있게 해줘.`
+      : `'${m.name}'은 오늘 쉬어가기로 했어. 멈춘 게 아니라 쉬는 거라고 안심시켜줘.`;
+    const prompt=`너는 '오늘만큼' 회복탄력성 루틴 코치야. 말투 성격: ${tone}. 상황: ${sit} 죄책감을 주지 말고 다음으로 자연스럽게 이어가게, 정확히 2문장으로, 한국어 반말로, 이모지·따옴표 없이 격려해줘. 본문만.`;
+    try {
+      const t = await window.claude.complete(prompt);
+      const msg=(t||'').trim().replace(/^["“]|["”]$/g,'');
+      if(!msg) throw 0;
+      this.setState(s=>({ modal:{...s.modal, loading:false, message:msg, source:'AI' } }));
+    } catch(e){
+      const fb={'완료':'잘했어, 딱 그만큼이면 충분해. 오늘의 너를 그대로 안아줄게.','어려워요':'괜찮아, 쉬운 걸로 바꾼 것도 잘한 선택이야. 딱 그만큼만 해보자.','쉬어가기':'멈춘 게 아니라 쉬어가는 거야. 내일 다시 와도 늦지 않아.'}[m.situation];
+      this.setState(s=>({ modal:{...s.modal, loading:false, message:fb, source:'예비 메시지' } }));
+    }
+  }
+
+  viewItem(r){
+    const easy=r.easy; const name=easy?r.easyName:r.name; const level=easy?'아주 쉬움':r.level;
+    const ac={'몸 돌봄':['#D5EFD8','#24523F'],'환경':['#E4F0F6','#3d6e8a'],'활력':['#D5EFD8','#24523F'],'마음':['#FBE3DA','#9b5b45']}[r.area]||['#EFF4EE','#5c6960'];
+    const lc={'아주 쉬움':['#E4F0F6','#3d6e8a'],'쉬움':['#D5EFD8','#24523F'],'보통':['#FBEFC8','#8a6a1a']}[level]||['#EFF4EE','#5c6960'];
+    return { id:r.id, name, origName:r.name, level, areaText:r.area, effect:r.effect||EFFECT[r.name]||'',
+      areaBg:ac[0], areaFg:ac[1], levelBg:lc[0], levelFg:lc[1],
+      isTodo:!r.done&&!r.skipped&&!easy, isEasy:!r.done&&!r.skipped&&easy, isDone:r.done, isSkipped:r.skipped,
+      onComplete:()=>this.complete(r.id), onHard:()=>this.hard(r.id), onSkip:()=>this.skip(r.id) };
+  }
+
+  buildRecords(){
+    const wmap={'좋아요':'sun','보통이에요':'cloud','힘들어요':'rain'};
+    const COL={ sun:['#F3D978','#FBF1CE','#9a7a1a','#24523F','맑음'], cloud:['#9FD2B0','#E4F2E8','#3e7a57','#24523F','구름'], rain:['#A9CFE0','#E2EEF5','#3d6e8a','#3d6e8a','비'] };
+    const today = this.state.todayState ? [{
+      dateLabel: todayLabel()+' · 오늘', state:this.state.todayState, weather:wmap[this.state.todayState],
+      done:this.state.routines.filter(r=>r.done).length, total:this.state.routines.length,
+      names:this.state.routines.filter(r=>r.done).map(r=>r.easy?r.easyName:r.name)
+    }] : [];
+    return [...today, ...this.state.records].map(r=>{
+      const c=COL[r.weather]||COL.cloud;
+      return {
+        dateLabel:r.dateLabel, state:r.state, doneText:r.done+' / '+r.total,
+        stateLine:r.state+' · '+c[4],
+        nodeColor:c[0], ringColor:c[1], stateColor:c[2], doneColor:c[3],
+        names: (r.names&&r.names.length)? r.names : ['기록만 남긴 날']
+      };
+    });
+  }
+
+  renderVals(){
+    const s=this.state; const sc=COACHES[s.coach]||COACHES['유쾌']; const sel=COACHES[s.selCoach];
+    const total=s.routines.length; const doneCount=s.routines.filter(r=>r.done).length;
+    const decided=s.routines.filter(r=>r.done||r.skipped).length;
+    const pct= total? Math.round(doneCount/total*100):0;
+    const ring=(on)=> on? '0 0 0 3px #24523F,0 6px 13px -4px rgba(36,82,63,.4)':'0 6px 13px -4px rgba(36,82,63,.3)';
+    const setRing=(on)=> on? '0 0 0 2.5px #24523F,0 8px 16px -13px rgba(36,82,63,.2)':'0 8px 16px -13px rgba(36,82,63,.18)';
+    const recs=this.buildRecords();
+    const totalDays = s.records.length + (s.todayState?1:0);
+    const totalDone = s.records.reduce((a,r)=>a+r.done,0) + doneCount;
+    const progressWord = total===0?'' : (doneCount===0?'천천히 시작해요': doneCount>=total?'오늘도 잘 해냈어요': doneCount>=total/2?'절반 넘었어요':'한 걸음씩');
+    const fullDone = total>0 && doneCount>=total;
+    const homeGreeting = s.nickname ? (s.nickname+'님, 오늘도 와줘서 고마워요') : '오늘도 와줘서 고마워요';
+    return {
+      appBg: '#F9F6EE',
+      isWelcome:s.screen==='welcome', isCoach:s.screen==='coach', isState:s.screen==='state', isApp:s.screen==='app',
+      tabHome:s.tab==='home', tabRecord:s.tab==='record', tabSettings:s.tab==='settings',
+      dateLabel: todayLabel(), todayState: s.todayState||'', homeGreeting,
+      // coach select
+      selOrbBg:sel.orb, selName:sel.name, selQuote:sel.quote,
+      ringCheer:ring(s.selCoach==='유쾌'), ringCalm:ring(s.selCoach==='진중'), ringWarm:ring(s.selCoach==='다정'),
+      pickSelCheer:()=>this.pickSel('유쾌'), pickSelCalm:()=>this.pickSel('진중'), pickSelWarm:()=>this.pickSel('다정'),
+      confirmCoach:this.confirmCoach, backToCoach:this.backToCoach,
+      onKakao:this.onKakao, onGuest:this.onGuest,
+      chooseGood:()=>this.chooseState('좋아요'), chooseOk:()=>this.chooseState('보통이에요'), chooseHard:()=>this.chooseState('힘들어요'),
+      // home
+      items: [...s.routines].sort((a,b)=>(b.done?1:0)-(a.done?1:0)).map(r=>this.viewItem(r)), doneCount, total, pctWidth: pct+'%', progressWord,
+      progCardBg: '#24523F',
+      progShadow: '0 14px 30px -14px rgba(36,82,63,.5)',
+      progMainColor: 'rgba(255,255,255,.9)',
+      progNumColor: '#fff',
+      progWordColor: '#F3D978',
+      progTrackBg: 'rgba(255,255,255,.2)',
+      progBarBg: 'linear-gradient(90deg,#D9F2EE,#F3D978)',
+      allDone: total>0 && decided===total, reChooseState:this.reChooseState,
+      // records
+      records:recs, totalDays, totalDone,
+      // settings
+      setCoachCheer:()=>this.setCoach('유쾌'), setCoachCalm:()=>this.setCoach('진중'), setCoachWarm:()=>this.setCoach('다정'),
+      setRingCheer:setRing(s.coach==='유쾌'), setRingCalm:setRing(s.coach==='진중'), setRingWarm:setRing(s.coach==='다정'),
+      nickname:s.nickname, nickLen:(s.nickname||'').length, onNick:this.onNick, onSaveNick:this.onSaveNick, savedToast:s.savedToast,
+      editNick:s.editNick, editNickOff:!s.editNick, onEditNick:this.onEditNick, nickBtnLabel: s.editNick?'완료':'변경',
+      loggedIn:s.session, loggedOut:!s.session, accountName: s.nickname||'회원', onLogout:this.onLogout,
+      coachLabel: sc.name,
+      kakaoSheetOpen: s.kakaoSheet, kakaoSentToast: s.kakaoSent,
+      openKakaoSheet:this.openKakaoSheet, closeKakaoSheet:this.closeKakaoSheet, sendKakao:this.sendKakao,
+      kakaoItems: s.routines.map(r=>({ name:(r.easy?r.easyName:r.name), done:!!r.done, undone:!r.done })),
+      kakaoTitle: '오늘 할 수 있는 만큼, '+doneCount+'개 완료',
+      kakaoLabel: s.session?'카카오 연결됨':'카카오로 시작하기',
+      kakaoAction: s.session? this.onLogout : this.onKakao,
+      alarmOn: s.alarm, alarmOff: !s.alarm, onToggleAlarm: this.onToggleAlarm,
+      // tab bar
+      goHome:()=>this.setTab('home'), goRecord:()=>this.setTab('record'), goSettings:()=>this.setTab('settings'),
+      homeWeight: s.tab==='home'?800:500, homeColor: s.tab==='home'?'#24523F':'#9aa69d',
+      recordWeight: s.tab==='record'?800:500, recordColor: s.tab==='record'?'#24523F':'#9aa69d',
+      settingsWeight: s.tab==='settings'?800:500, settingsColor: s.tab==='settings'?'#24523F':'#9aa69d',
+      // modal
+      modalOpen:s.modal.open, modalLoading:s.modal.loading, modalReady:!s.modal.loading,
+      modalMessage:s.modal.message, modalSource:s.modal.source, closeModal:this.closeModal,
+      coachOrbBg:sc.orb, coachName:sc.name,
+    };
+  }
+}
+</script>
+</body>
+</html>
