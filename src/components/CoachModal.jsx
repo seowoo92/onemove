@@ -14,106 +14,83 @@ export default function CoachModal({ loading, message, source, onClose, coach })
       <style>{`@keyframes coachDot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}`}</style>
       <div
         style={{
+          position: 'relative',
+          overflow: 'hidden',
           width: 'calc(100% - 20px)',
           maxWidth: 480,
           backgroundColor: '#F9F6EE',
           borderRadius: '34px 34px 0 0',
           boxShadow: '0 -20px 50px -10px rgba(0,0,0,.3)',
-          padding: '14px 28px 30px',
-          maxHeight: '82vh',
-          overflowY: 'auto',
+          padding: '14px 22px 22px',
           boxSizing: 'border-box',
         }}
       >
         {/* 드래그 핸들 */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 22 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
           <div style={{ width: 42, height: 5, borderRadius: 3, backgroundColor: '#DDD5C8' }} />
         </div>
 
-        {/* 코치 헤더 */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 13, marginBottom: 22 }}>
-          {info.image && !imgError ? (
-            <img
-              src={info.image}
-              alt={info.name}
-              style={{ width: 52, height: 52, borderRadius: '50%', objectFit: 'cover', flex: 'none' }}
-              onError={() => setImgError(true)}
-            />
+        {/* 코치 메시지 말풍선 */}
+        <div
+          style={{
+            position: 'relative',
+            background: '#fff',
+            borderRadius: 22,
+            padding: '20px 20px 14px',
+            boxShadow: '0 10px 26px -16px rgba(36,82,63,.28)',
+            marginBottom: 22,
+            minHeight: 92,
+          }}
+        >
+          {loading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, minHeight: 58 }}>
+              <p style={{ fontSize: 14.5, fontWeight: 500, color: '#8A9E94', margin: 0 }}>코치가 메시지를 작성하고 있어요</p>
+              <div style={{ display: 'flex', gap: 6 }}>
+                {[0, 1, 2].map((i) => (
+                  <span key={i} style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: '#C2A98F', display: 'block', animation: `coachDot 1.2s ${i * 0.16}s infinite ease-in-out` }} />
+                ))}
+              </div>
+            </div>
           ) : (
-            <div style={{ width: 52, height: 52, borderRadius: '50%', backgroundColor: info.color, flex: 'none' }} />
+            <>
+              <p style={{ fontSize: 19, fontWeight: 700, color: '#24523F', lineHeight: 1.6, margin: 0, wordBreak: 'keep-all' }}>{message}</p>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 12 }}>
+                <span style={{ fontSize: 11.5, fontWeight: 600, color: '#9AA39C', background: '#F4F1EA', borderRadius: 9, padding: '5px 11px' }}>
+                  {source === 'solar' ? '출처 · AI' : '출처 · 예비'}
+                </span>
+              </div>
+            </>
           )}
-          <div>
-            <p style={{ fontSize: 17, fontWeight: 800, color: '#24523F', margin: 0 }}>{info.name}</p>
-            <p style={{ fontSize: 12.5, fontWeight: 500, color: '#8A9E94', margin: '2px 0 0' }}>코치가 한마디 건네요</p>
-          </div>
+          {/* 말풍선 꼬리 (캐릭터 방향) */}
+          <div style={{ position: 'absolute', left: 46, bottom: -8, width: 18, height: 18, background: '#fff', transform: 'rotate(45deg)', borderRadius: '0 0 0 5px' }} />
         </div>
 
-        {/* 메시지 본문 */}
-        {loading ? (
-          <div style={{ minHeight: 90, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14 }}>
-            <p style={{ fontSize: 14.5, fontWeight: 500, color: '#8A9E94', margin: 0 }}>코치가 메시지를 작성하고 있어요</p>
-            <div style={{ display: 'flex', gap: 6 }}>
-              {[0, 1, 2].map((i) => (
-                <span
-                  key={i}
-                  style={{
-                    width: 7,
-                    height: 7,
-                    borderRadius: '50%',
-                    backgroundColor: '#C2A98F',
-                    display: 'block',
-                    animation: `coachDot 1.2s ${i * 0.16}s infinite ease-in-out`,
-                  }}
-                />
-              ))}
-            </div>
-          </div>
+        {/* 코치 캐릭터 (하단 경계 아래로 내려 잘리게) */}
+        {info.image && !imgError ? (
+          <img
+            src={info.image}
+            alt={info.name}
+            onError={() => setImgError(true)}
+            style={{ position: 'absolute', left: 2, bottom: -36, width: 206, height: 'auto', display: 'block', zIndex: 1, pointerEvents: 'none' }}
+          />
         ) : (
-          <>
-            <p style={{ fontSize: 19, fontWeight: 700, color: '#24523F', lineHeight: 1.6, minHeight: 90, margin: 0, wordBreak: 'keep-all' }}>
-              {message}
-            </p>
-
-            {/* 출처 배지 */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8, marginBottom: 22 }}>
-              <span
-                style={{
-                  fontSize: 11.5,
-                  fontWeight: 600,
-                  padding: '5px 11px',
-                  borderRadius: 9,
-                  backgroundColor: '#FFFFFF',
-                  color: '#9AA39C',
-                  boxShadow: '0 4px 10px -7px rgba(36,82,63,.3)',
-                }}
-              >
-                {source === 'solar' ? '출처 · AI' : '출처 · 예비'}
-              </span>
-            </div>
-          </>
+          <div style={{ position: 'absolute', left: 14, bottom: 0, width: 110, height: 110, borderRadius: '50%', background: info.color, zIndex: 1 }} />
         )}
 
-        {/* 계속하기 버튼 */}
-        {!loading && (
-          <button
-            onClick={onClose}
-            style={{
-              width: '100%',
-              background: 'linear-gradient(180deg, #2d6049, #24523F)',
-              color: '#FFFFFF',
-              borderRadius: 18,
-              paddingTop: 16,
-              paddingBottom: 16,
-              fontSize: 16,
-              fontWeight: 700,
-              border: 'none',
-              cursor: 'pointer',
-              boxShadow: '0 10px 22px -8px rgba(36,82,63,.55), inset 0 2px 0 rgba(255,255,255,.16)',
-            }}
-          >
-            계속하기
-          </button>
-        )}
+        {/* 이름 + 계속하기 (캐릭터 오른쪽) */}
+        <div style={{ marginLeft: 168, minHeight: 138, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ fontSize: 17, fontWeight: 800, color: '#24523F' }}>{info.name}</div>
+          <div style={{ fontSize: 13, fontWeight: 500, color: '#8A9E94', marginTop: 2, whiteSpace: 'nowrap' }}>코치가 한마디 건네요</div>
+          <div style={{ flex: 1, minHeight: 18 }} />
+          {!loading && (
+            <button
+              onClick={onClose}
+              style={{ width: '100%', background: 'linear-gradient(180deg, #2d6049, #24523F)', color: '#FFFFFF', border: 'none', borderRadius: 16, padding: 14, fontSize: 15.5, fontWeight: 700, boxShadow: '0 10px 22px -8px rgba(36,82,63,.5), inset 0 2px 0 rgba(255,255,255,.16)', cursor: 'pointer' }}
+            >
+              계속하기
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )

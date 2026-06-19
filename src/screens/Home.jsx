@@ -4,6 +4,7 @@ import { storage } from '../lib/storage'
 import { pickRoutines } from '../lib/routinePicker'
 import { generateCoachMessage } from '../lib/solar'
 import CoachModal from '../components/CoachModal'
+import { COACH_INFO } from '../lib/coaches'
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토']
 function formatDate() {
@@ -28,6 +29,14 @@ const CLAY = {
   '유쾌': 'radial-gradient(circle at 34% 30%,#FFEFB6,#F3D978 55%,#E8C24E)',
   '진중': 'radial-gradient(circle at 38% 28%,#3C7A5C,#24523F)',
   '다정': 'radial-gradient(circle at 34% 30%,#F6C6B4,#EFA58F 55%,#E08066)',
+}
+
+// 주격 조사 이/가 (받침 있으면 '이')
+function subjectParticle(name) {
+  const last = name[name.length - 1] ?? ''
+  const code = last.charCodeAt(0)
+  if (code < 0xac00 || code > 0xd7a3) return '가'
+  return (code - 0xac00) % 28 === 0 ? '가' : '이'
 }
 
 const COMPLETE_BTN = {
@@ -153,6 +162,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
   const totalCount = routineIds.length
   const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
   const allResolved = totalCount > 0 && routineIds.every((id) => completedIds.has(id) || skippedIds.has(id))
+  const coachName = COACH_INFO[coach]?.name ?? '코치'
 
   return (
     <div style={{ minHeight: '100%', backgroundColor: '#FAF6F0' }}>
@@ -270,24 +280,23 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
 
         {/* 완료 축하 카드 (오늘 루틴을 모두 정리했을 때) */}
         {allResolved && (
-          <div style={{ borderRadius: 34, background: '#F9F6EE', padding: 24, boxShadow: '0 18px 40px -18px rgba(36,82,63,.3)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', opacity: 0.5, marginBottom: 14 }}>
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#5c6960' }}>오늘 {completedCount} / {totalCount}개 완료</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#EFA58F' }}>오늘만큼 다 했어요</span>
+          <div style={{ borderRadius: 22, overflow: 'hidden', background: '#fff', boxShadow: '0 14px 30px -18px rgba(36,82,63,.26)' }}>
+            {/* 배너 (풍경 이미지 전체 표시 — 잘림 없음, 세로는 비율대로) */}
+            <div style={{ minHeight: 110, background: 'linear-gradient(#F7E7C8,#F3D5C0)' }}>
+              <img
+                src="/onemove/images/complete-banner.png"
+                alt=""
+                style={{ width: '100%', height: 'auto', display: 'block' }}
+                onError={(e) => { e.currentTarget.style.display = 'none' }}
+              />
             </div>
-            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 26, boxShadow: '0 14px 30px -18px rgba(36,82,63,.26)' }}>
-              <div style={{ position: 'relative', height: 118, background: 'linear-gradient(#F7E7C8,#F3D5C0)' }}>
-                <div style={{ position: 'absolute', left: '50%', bottom: 0, transform: 'translateX(-50%)', width: 124, height: 62, borderRadius: '64px 64px 0 0', background: 'linear-gradient(#FBE39C,#EFA58F)', boxShadow: '0 -6px 22px -4px rgba(239,165,143,.55)' }} />
-                <div style={{ position: 'absolute', left: 34, bottom: 30, width: 6, height: 6, borderRadius: '50%', background: '#fff', opacity: 0.7 }} />
-                <div style={{ position: 'absolute', right: 42, top: 26, width: 5, height: 5, borderRadius: '50%', background: '#fff', opacity: 0.6 }} />
-              </div>
-              <div style={{ background: '#fff', padding: '24px 24px 26px', textAlign: 'center' }}>
-                <div style={{ fontSize: 22, fontWeight: 800, color: '#24523F', letterSpacing: '-0.03em' }}>오늘만큼, 다 해냈어요</div>
-                <div style={{ fontSize: 14.5, fontWeight: 500, color: '#5c6960', marginTop: 11, lineHeight: 1.7, wordBreak: 'keep-all' }}>완료든 쉬어가기든 모두 오늘의 기록이에요.<br />딱 그만큼이면 충분해요.</div>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 9, marginTop: 18, background: '#F4F8F3', borderRadius: 14, padding: '11px 16px' }}>
-                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: CLAY[coach] ?? CLAY['유쾌'] }} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#24523F' }}>내일도 딱 그만큼만, 천천히 만나요</span>
-                </div>
+            {/* 본문 */}
+            <div style={{ padding: '16px 20px 18px', textAlign: 'center' }}>
+              <div style={{ fontSize: 18, fontWeight: 800, color: '#24523F' }}>오늘 하루도 잘 해냈어요</div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: '#7c8a80', marginTop: 7, lineHeight: 1.55, wordBreak: 'keep-all' }}>완료든 쉬어가기든 모두 오늘의 기록이에요.</div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 14, background: '#F4F8F3', borderRadius: 13, padding: '9px 15px' }}>
+                <div style={{ width: 22, height: 22, borderRadius: '50%', background: CLAY[coach] ?? CLAY['유쾌'] }} />
+                <span style={{ fontSize: 12.5, fontWeight: 600, color: '#24523F' }}>{coachName}{subjectParticle(coachName)} 오늘의 너를 안아줘요</span>
               </div>
             </div>
           </div>
