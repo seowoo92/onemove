@@ -36,9 +36,13 @@ export function onStorageChange(fn) {
 const notify = () => listeners.forEach((fn) => { try { fn() } catch { /* 구독자 오류가 저장을 막지 않게 */ } })
 
 export const storage = {
+  // 프로필(닉네임·코치·알림)의 마지막 로컬 변경 시각 — 기기 간 동기화 때 서버와 최신 비교용
+  getProfileTs: () => Number(localStorage.getItem('onemove_profile_ts') ?? 0),
+  touchProfileTs: () => localStorage.setItem('onemove_profile_ts', String(Date.now())),
+
   // 코치 성격 (날짜 무관 유지)
   getCoach: () => localStorage.getItem('onemove_coach'),
-  setCoach: (v) => { localStorage.setItem('onemove_coach', v); notify() },
+  setCoach(v) { localStorage.setItem('onemove_coach', v); this.touchProfileTs(); notify() },
 
   // 오늘 상태 (날짜 기반 리셋)
   getTodayState: () => getKeyed('onemove_state'),
@@ -80,11 +84,11 @@ export const storage = {
 
   // 닉네임 (영구 보존)
   getNickname: () => localStorage.getItem('onemove_nickname') ?? '',
-  setNickname: (v) => { localStorage.setItem('onemove_nickname', v); notify() },
+  setNickname(v) { localStorage.setItem('onemove_nickname', v); this.touchProfileTs(); notify() },
 
   // 카카오톡 알림 on/off (영구 보존)
   getNotify: () => localStorage.getItem('onemove_notify') === 'true',
-  setNotify: (bool) => { localStorage.setItem('onemove_notify', bool ? 'true' : 'false'); notify() },
+  setNotify(bool) { localStorage.setItem('onemove_notify', bool ? 'true' : 'false'); this.touchProfileTs(); notify() },
 
   // 오늘 날짜 키 (로컬 기준) — 기록 저장 시 화면 날짜와 일치시키기 위해 사용
   getTodayKey: () => today(),

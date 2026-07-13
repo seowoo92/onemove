@@ -59,8 +59,17 @@ export async function reconcileOnLogin(id) {
       supabase.from('daily_entries').select('*').eq('user_id', id).eq('entry_date', todayKey).maybeSingle(),
     ])
     if (prof) {
-      if (!storage.getNickname() && prof.nickname) storage.setNickname(prof.nickname)
-      if (!storage.getCoach() && prof.coach) storage.setCoach(prof.coach)
+      const serverTs = Date.parse(prof.updated_at ?? '') || 0
+      if (serverTs > storage.getProfileTs()) {
+        // 서버 프로필이 이 기기의 마지막 변경보다 최신 — 다른 기기에서 바꾼 닉네임·코치·알림을 반영
+        if (prof.nickname) storage.setNickname(prof.nickname)
+        if (prof.coach) storage.setCoach(prof.coach)
+        storage.setNotify(!!prof.notify_enabled)
+      } else {
+        // 로컬이 최신이거나 비교 불가 — 빈 값만 서버로 보충
+        if (!storage.getNickname() && prof.nickname) storage.setNickname(prof.nickname)
+        if (!storage.getCoach() && prof.coach) storage.setCoach(prof.coach)
+      }
     }
     if (entry?.state && !storage.getTodayState()) {
       storage.setTodayState(entry.state)

@@ -84,7 +84,12 @@ export default function App() {
       // 갓 로그인한 세션에만 정확한 카카오 토큰이 실려 온다 (INITIAL_SESSION의 옛 토큰으로 덮어쓰기 금지)
       if (event === 'SIGNED_IN') saveKakaoTokens(session)
       if (newUser) {
-        reconcileOnLogin(newUser.id).finally(() => startSync(newUser.id))
+        reconcileOnLogin(newUser.id).finally(() => {
+          startSync(newUser.id)
+          // 서버에서 받아온 최신 프로필(닉네임·코치)을 화면에도 반영
+          setNickname(storage.getNickname())
+          setCoach(storage.getCoach())
+        })
       } else {
         stopSync()
       }
