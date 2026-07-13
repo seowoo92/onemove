@@ -15,6 +15,14 @@ dist-ssr
 # Test scripts
 test-solar.js
 
+# 비공개 발표 자료·내부 작업 파일 (깃허브 업로드 금지)
+docs/ppt-build/
+docs/오늘만큼-MVP-발표.pptx
+docs/발표-스크립트.md
+docs/오늘만큼-발표-스크립트.pdf
+prompt.md
+.claude/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
