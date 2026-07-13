@@ -196,6 +196,8 @@ S0 진입 → S1 코치 선택 → S2 마음 날씨 → S3 루틴 홈 → S4 코
 - Supabase Auth ↔ 카카오 OAuth 연결: Redirect URI, REST API 키·시크릿, Site URL/Redirect URLs 등록
 - src/lib/supabase.js: createClient(VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY), env 미설정 시 null 반환
 - App.jsx에서 getSession + onAuthStateChange 구독, redirectTo는 origin + BASE_URL (로컬/배포 자동 대응)
+- **getSession은 3초 제한(Promise.race)** — 백엔드가 응답 없으면(예: Supabase 무료플랜 자동 일시정지) 게스트로 진행해 흰 화면 방지 (7/6 장애의 재발 방지책)
+- **전역 ErrorBoundary** (src/components/ErrorBoundary.jsx, main.jsx에서 App 래핑) — 렌더링 오류 시 흰 화면 대신 안내 화면 + 새로고침 버튼
 - 로그인은 선택사항 — 미로그인도 모든 핵심 기능 정상 작동
 - KOE205 트러블슈팅: Supabase가 account_email 스코프 강제 요청 → 개인 앱에서 해결 불가 → 비즈앱 전환으로 해결 (Supabase 이슈 #36878)
 
@@ -213,19 +215,21 @@ S0 진입 → S1 코치 선택 → S2 마음 날씨 → S3 루틴 홈 → S4 코
 - 앱 아이콘·파비콘 제공됨
 - 시안 원본 .dc.html: docs/design/ (참고용, 배포 비포함)
 
-## 현재 상태 (2026-06-19)
-- 디자인 시안 적용 완료: 웰컴·코치선택·마음날씨·홈·코치모달·완료축하카드·기록·설정·데스크톱 소개패널
-- 날짜 버그(UTC→KST)·"16/4" 누적 버그 수정 완료
-- 6/19 하루 5차례 배포 (최신 커밋 bf64092), 모든 화면 라이브 동작 확인
-- 상세 작업 기록: docs/devlog/2026-06-19.md
+## 현재 상태 (2026-07-13)
+- 6/19 MVP 발표 완료 (디자인 시안 적용·버그 수정·5차 배포, 상세: docs/devlog/2026-06-19.md)
+- 7/6 Supabase 무료플랜 자동 일시정지로 인한 흰 화면 장애 진단·복구 (대시보드 Resume)
+- 7/10 강사님 멘토링 1차 (기능 피드백 5건) + 대회 공식 평가기준 5항목 확보
+- 7/11 OG 공유 이미지(1200×630) 제작·배포 — 링크 미리보기 404 해결
+- 7/13 2차 스프린트 시작: 코드 하드닝(getSession 3초 제한 + ErrorBoundary), git 계정 연결, .gitignore 정비 (상세: docs/devlog/2026-07-13-재정비기간-정리.md)
 
-## 남은 일 (8월 버전)
-- 카카오 보내기: 루틴 카드 카카오톡 전송 (talk_message 권한 심사 후)
-- Supabase Edge Function 전환 (Solar API 키 은닉)
-- 난이도 3단계 (아주 쉬움/쉬움/보통)
-- og-image.png 실제 이미지 제작 후 public/ 추가
-- 보안: 발표 후 Solar API 키 폐기 (업스테이지 콘솔)
-- (선택) complete-banner.png JPG 전환 추가 경량화, 닉네임 변경 prompt → 인라인 입력
+## 남은 일 (2차 스프린트 · ~7/28 예선 마감)
+- **localStorage → Supabase 전환** (로그인 사용자 데이터 동기화) — 게스트는 localStorage 유지(하이브리드)
+- **카카오 '나에게 보내기'(talk_message) 알림**: ① 루틴 확정 시 오늘의 루틴 카드 발송 ② 오후 미완료 루틴 리마인더 (Edge Function + 스케줄, 토큰 저장·갱신 필요)
+- 디자인 리뉴얼 + 탭 4개 개편(오늘·기록·코치·설정) + 기록 탭 대시보드 승격(캘린더형 마음 날씨)
+- PWA manifest (홈 화면 설치) — Web Push는 카카오 알림으로 대체(컷)
+- Solar API 키 Supabase Edge Function 이전 (키 은닉)
+- 여유 시: 완료 무지개 효과, 랜덤 힐링 문구, 루틴 확장(28→42)
+- 발표 준비(7/23~): 발표자료(개인 서사·AI 이해·윤리/저작권)·데모 동선·리허설
 
 ## 기술 부채 / 알려진 이슈 (이어서 개발 시 참고)
 - **Solar API 키 노출**: VITE_ 접두사로 번들에 포함 → 브라우저 노출. 발표 후 업스테이지 콘솔에서 폐기, 8월 Supabase Edge Function으로 이전
