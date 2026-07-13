@@ -26,38 +26,47 @@ function getRawValue(key) {
   } catch { return null }
 }
 
+// 저장 변경 구독 — 로그인 사용자의 Supabase 동기화(sync.js)가 사용.
+// localStorage는 같은 탭에서 이벤트를 내지 않으므로 여기서 직접 알린다.
+const listeners = new Set()
+export function onStorageChange(fn) {
+  listeners.add(fn)
+  return () => listeners.delete(fn)
+}
+const notify = () => listeners.forEach((fn) => { try { fn() } catch { /* 구독자 오류가 저장을 막지 않게 */ } })
+
 export const storage = {
   // 코치 성격 (날짜 무관 유지)
   getCoach: () => localStorage.getItem('onemove_coach'),
-  setCoach: (v) => localStorage.setItem('onemove_coach', v),
+  setCoach: (v) => { localStorage.setItem('onemove_coach', v); notify() },
 
   // 오늘 상태 (날짜 기반 리셋)
   getTodayState: () => getKeyed('onemove_state'),
-  setTodayState: (v) => setKeyed('onemove_state', v),
+  setTodayState: (v) => { setKeyed('onemove_state', v); notify() },
 
   // 오늘 루틴 ID 목록
   getTodayRoutineIds: () => getKeyed('onemove_routines'),
-  setTodayRoutineIds: (ids) => setKeyed('onemove_routines', ids),
+  setTodayRoutineIds: (ids) => { setKeyed('onemove_routines', ids); notify() },
   // 날짜 무관 — 어제 루틴 저장용
   getRawRoutineIds: () => getRawValue('onemove_routines'),
 
   // 완료된 루틴 ID
   getCompletedIds: () => getKeyed('onemove_completed') ?? [],
-  setCompletedIds: (ids) => setKeyed('onemove_completed', ids),
+  setCompletedIds: (ids) => { setKeyed('onemove_completed', ids); notify() },
   addCompleted(id) {
     this.setCompletedIds([...new Set([...this.getCompletedIds(), id])])
   },
 
   // 쉬운 버전으로 전환된 루틴 ID
   getEasyIds: () => getKeyed('onemove_easy') ?? [],
-  setEasyIds: (ids) => setKeyed('onemove_easy', ids),
+  setEasyIds: (ids) => { setKeyed('onemove_easy', ids); notify() },
   addEasy(id) {
     this.setEasyIds([...new Set([...this.getEasyIds(), id])])
   },
 
   // 오늘은 쉬어가기 선택 루틴 ID
   getSkippedIds: () => getKeyed('onemove_skipped') ?? [],
-  setSkippedIds: (ids) => setKeyed('onemove_skipped', ids),
+  setSkippedIds: (ids) => { setKeyed('onemove_skipped', ids); notify() },
   addSkipped(id) {
     this.setSkippedIds([...new Set([...this.getSkippedIds(), id])])
   },
@@ -71,11 +80,11 @@ export const storage = {
 
   // 닉네임 (영구 보존)
   getNickname: () => localStorage.getItem('onemove_nickname') ?? '',
-  setNickname: (v) => localStorage.setItem('onemove_nickname', v),
+  setNickname: (v) => { localStorage.setItem('onemove_nickname', v); notify() },
 
   // 카카오톡 알림 on/off (영구 보존)
   getNotify: () => localStorage.getItem('onemove_notify') === 'true',
-  setNotify: (bool) => localStorage.setItem('onemove_notify', bool ? 'true' : 'false'),
+  setNotify: (bool) => { localStorage.setItem('onemove_notify', bool ? 'true' : 'false'); notify() },
 
   // 오늘 날짜 키 (로컬 기준) — 기록 저장 시 화면 날짜와 일치시키기 위해 사용
   getTodayKey: () => today(),
@@ -90,6 +99,7 @@ export const storage = {
     const history = this.getHistory()
     history[dateKey] = { state, completed: [...completedNames], total }
     localStorage.setItem('onemove_history', JSON.stringify(history))
+    notify()
   },
   // 마음 날씨 다시 고르기 등으로 그 날을 새로 시작할 때 기록 초기화
   removeHistoryEntry(dateKey) {
@@ -97,6 +107,7 @@ export const storage = {
     if (dateKey in history) {
       delete history[dateKey]
       localStorage.setItem('onemove_history', JSON.stringify(history))
+      notify()
     }
   },
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { storage } from './lib/storage'
 import { supabase } from './lib/supabase'
+import { reconcileOnLogin, startSync, stopSync } from './lib/sync'
 import AppLayout from './components/AppLayout'
 import WelcomeScreen from './screens/WelcomeScreen'
 import CoachSelect from './screens/CoachSelect'
@@ -49,6 +50,11 @@ export default function App() {
         }
       }
       setUser(currentUser)
+      if (currentUser) {
+        // 서버 기록 보충(기기 간 이어쓰기)은 2.5초 안에 안 되면 건너뛴다 — 화면 진입을 막지 않게
+        await Promise.race([reconcileOnLogin(currentUser.id), new Promise((r) => setTimeout(r, 2500))])
+        startSync(currentUser.id)
+      }
       const stored = storage.getNickname()
       setNickname(stored)
       if (!stored) applyKakaoNickname(currentUser)
@@ -74,6 +80,11 @@ export default function App() {
       const newUser = session?.user ?? null
       setUser(newUser)
       if (newUser && !storage.getNickname()) applyKakaoNickname(newUser)
+      if (newUser) {
+        reconcileOnLogin(newUser.id).finally(() => startSync(newUser.id))
+      } else {
+        stopSync()
+      }
     })
     return () => subscription.unsubscribe()
   }, [])
