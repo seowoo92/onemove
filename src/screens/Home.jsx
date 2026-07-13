@@ -3,6 +3,7 @@ import { ROUTINE_MAP } from '../data/routines'
 import { storage } from '../lib/storage'
 import { pickRoutines } from '../lib/routinePicker'
 import { generateCoachMessage } from '../lib/solar'
+import { sendRoutineCard } from '../lib/kakao'
 import CoachModal from '../components/CoachModal'
 import { COACH_INFO } from '../lib/coaches'
 
@@ -97,6 +98,12 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
       storage.setTodayRoutineIds(newIds)
       storage.setEasyIds(initialEasyIds)
       ids = newIds
+      // 오늘의 루틴이 막 확정된 순간 — 카톡 루틴 카드 발송 (로그인+알림 동의 시, 하루 1회)
+      const cardNames = newIds.map((id) => {
+        const base = ROUTINE_MAP[id]
+        return (initialEasyIds.includes(id) ? base?.easyVersion?.name : base?.name) ?? '루틴'
+      })
+      sendRoutineCard(cardNames)
     }
     setRoutineIds(ids)
     setCompletedIds(new Set(storage.getCompletedIds()))

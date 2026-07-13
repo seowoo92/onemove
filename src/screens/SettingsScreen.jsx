@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { storage } from '../lib/storage'
 import { supabase } from '../lib/supabase'
+import { KAKAO_SCOPES } from '../lib/kakao'
 import { COACH_INFO } from '../lib/coaches'
 
 const CRISIS = [
@@ -53,7 +54,7 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
       if (window.confirm('카카오 로그아웃할까요?')) await supabase.auth.signOut()
     } else {
       const redirectTo = window.location.origin + import.meta.env.BASE_URL
-      await supabase.auth.signInWithOAuth({ provider: 'kakao', options: { redirectTo } })
+      await supabase.auth.signInWithOAuth({ provider: 'kakao', options: { redirectTo, scopes: KAKAO_SCOPES } })
     }
   }
 
@@ -97,7 +98,7 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
             <span style={{ position: 'absolute', top: 3, left: notify ? 23 : 3, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left .2s', display: 'block' }} />
           </button>
         </div>
-        <p style={{ fontSize: 12, fontWeight: 500, color: '#B7AFA4', margin: '7px 0 0', paddingLeft: 4 }}>알림 발송은 카카오 채널 연동 후 제공돼요</p>
+        <p style={{ fontSize: 12, fontWeight: 500, color: '#B7AFA4', margin: '7px 0 0', paddingLeft: 4 }}>카카오 로그인 후 켜면, 오늘의 루틴 카드를 카카오톡(나와의 채팅)으로 보내드려요</p>
 
         {/* AI 코치 */}
         <SectionLabel>AI 코치</SectionLabel>

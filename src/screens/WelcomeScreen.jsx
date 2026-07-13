@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase'
+import { KAKAO_SCOPES } from '../lib/kakao'
 
 export default function WelcomeScreen({ onSkip }) {
   async function handleKakaoLogin() {
@@ -6,7 +7,7 @@ export default function WelcomeScreen({ onSkip }) {
     const redirectTo = window.location.origin + import.meta.env.BASE_URL
     await supabase.auth.signInWithOAuth({
       provider: 'kakao',
-      options: { redirectTo },
+      options: { redirectTo, scopes: KAKAO_SCOPES },
     })
   }
 

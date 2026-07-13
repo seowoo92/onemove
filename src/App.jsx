@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { storage } from './lib/storage'
 import { supabase } from './lib/supabase'
 import { reconcileOnLogin, startSync, stopSync } from './lib/sync'
+import { saveKakaoTokens } from './lib/kakao'
 import AppLayout from './components/AppLayout'
 import WelcomeScreen from './screens/WelcomeScreen'
 import CoachSelect from './screens/CoachSelect'
@@ -76,10 +77,12 @@ export default function App() {
     init()
 
     if (!supabase) return
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       const newUser = session?.user ?? null
       setUser(newUser)
       if (newUser && !storage.getNickname()) applyKakaoNickname(newUser)
+      // 갓 로그인한 세션에만 정확한 카카오 토큰이 실려 온다 (INITIAL_SESSION의 옛 토큰으로 덮어쓰기 금지)
+      if (event === 'SIGNED_IN') saveKakaoTokens(session)
       if (newUser) {
         reconcileOnLogin(newUser.id).finally(() => startSync(newUser.id))
       } else {
