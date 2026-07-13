@@ -9,7 +9,6 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 const KAKAO_REST_KEY = Deno.env.get('KAKAO_REST_API_KEY') ?? ''
 const KAKAO_SECRET = Deno.env.get('KAKAO_CLIENT_SECRET') ?? ''
 const APP_URL = 'https://seowoo92.github.io/onemove/'
-const CARD_IMAGE = `${APP_URL}og-image.png`
 
 // service role — kakao_tokens 조회·갱신용 (RLS 우회, 서버 전용)
 const admin = createClient(
@@ -55,18 +54,14 @@ export async function getValidAccessToken(userId: string): Promise<string> {
   return stale ? await refreshKakaoToken(userId, row.refresh_token) : row.access_token
 }
 
-export async function sendMemo(accessToken: string, title: string, description: string) {
+// 텍스트 템플릿 사용: 피드(카드) 템플릿은 본문을 2줄까지만 보여줘 루틴 목록이 잘린다.
+// 텍스트 템플릿은 전문(최대 200자)이 그대로 표시됨.
+export async function sendMemo(accessToken: string, text: string) {
   const template = {
-    object_type: 'feed',
-    content: {
-      title,
-      description,
-      image_url: CARD_IMAGE,
-      image_width: 1200,
-      image_height: 630,
-      link: { web_url: APP_URL, mobile_web_url: APP_URL },
-    },
-    buttons: [{ title: '오늘만큼 열기', link: { web_url: APP_URL, mobile_web_url: APP_URL } }],
+    object_type: 'text',
+    text,
+    link: { web_url: APP_URL, mobile_web_url: APP_URL },
+    button_title: '오늘만큼 열기',
   }
   const res = await fetch('https://kapi.kakao.com/v2/api/talk/memo/default/send', {
     method: 'POST',
@@ -105,8 +100,8 @@ Deno.serve(async (req) => {
     const weather = WEATHER[state] ?? ''
     const title = nickname ? `${nickname}님, 오늘의 루틴이 도착했어요` : '오늘의 루틴이 도착했어요'
     const list = routine_names.slice(0, 4).map((n: string) => `· ${n}`).join('\n')
-    const description = `${weather ? `오늘 마음 날씨 · ${weather}\n` : ''}${list}\n오늘 할 수 있는 만큼만, 가볍게 시작해요.`
-    await sendMemo(accessToken, title, description)
+    const text = `${title}${weather ? `\n오늘 마음 날씨 · ${weather}` : ''}\n\n${list}\n\n오늘 할 수 있는 만큼만, 가볍게 시작해요.`
+    await sendMemo(accessToken, text)
 
     return new Response(JSON.stringify({ ok: true }), {
       headers: { ...CORS, 'Content-Type': 'application/json' },
