@@ -1,4 +1,9 @@
 const COMMON_RULES = `
+자연스러운 한국어 (번역투 금지):
+- 조사를 생략하지 않습니다. (나쁜 예: '스트레칭 해냈네요' / 좋은 예: '스트레칭을 해냈네요')
+- 사물에는 '에게'를 쓰지 않습니다. (나쁜 예: '몸에게 여유를 선물했어요' / 좋은 예: '몸을 챙겼어요', '몸에 여유를 줬어요')
+- 소리 내어 읽었을 때 어색한 문장은 쓰지 않습니다. 일상 대화에서 쓰는 입말로만 씁니다.
+
 메시지 구조 (반드시 지킬 것):
 - 정확히 2문장으로 씁니다.
 - 첫 문장: 사용자가 오늘 한 일(또는 선택)을 인정합니다.
@@ -183,7 +188,7 @@ function cleanMessage(text) {
 
 function buildUserPrompt(state, routineName, situation, nickname) {
   const nameHint = nickname
-    ? `사용자의 이름은 '${nickname}'입니다. 메시지에서 자연스러울 때 이름을 불러주되, 억지로 매 문장 넣지는 마세요.\n`
+    ? `사용자의 이름은 '${nickname}'입니다. 부를 때는 반드시 '${nickname}님'처럼 이름 뒤에 '님'을 붙이세요. 자연스러울 때만 부르고, 억지로 매 문장 넣지는 마세요.\n`
     : ''
   return `${nameHint}오늘 상태: ${state}
 루틴: ${routineName}
@@ -229,7 +234,13 @@ export async function generateCoachMessage({ personality, state, routineName, si
         const data = await res.json()
         const raw = data.choices?.[0]?.message?.content?.trim()
         if (raw) {
-          const message = cleanMessage(raw)
+          let message = cleanMessage(raw)
+          // 번역투·호칭 보정: 닉네임엔 반드시 '님', 무생물 '에게'는 '에'로
+          if (nickname) {
+            const safe = nickname.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+            message = message.replace(new RegExp(`${safe}(?!님)`, 'g'), `${nickname}님`)
+          }
+          message = message.replace(/몸에게/g, '몸에')
           // 품질 게이트: 짧거나 1문장이거나 반말 섞임 — 어느 하나라도 걸리면 예비 메시지가 낫다
           const sentences = message.match(/[^.!?]+[.!?]+/g) ?? []
           const politeEnding = personality === '진중' ? /[다까요]$/ : /[요죠까]$/
