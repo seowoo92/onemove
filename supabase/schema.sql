@@ -21,12 +21,16 @@ create table if not exists public.daily_entries (
   entry_date    date not null,
   state         text check (state in ('좋아요', '보통이에요', '힘들어요')),
   routine_ids   jsonb not null default '[]',
+  routine_names jsonb not null default '[]', -- 표시용 이름 (routine_ids와 같은 순서, 오후 리마인더용)
   completed_ids jsonb not null default '[]',
   easy_ids      jsonb not null default '[]',
   skipped_ids   jsonb not null default '[]',
   updated_at    timestamptz not null default now(),
   primary key (user_id, entry_date)
 );
+
+-- (기존 테이블에 컬럼 추가할 때) 2026-07-13 오후 리마인더용
+alter table public.daily_entries add column if not exists routine_names jsonb not null default '[]';
 
 -- 3) 카카오 토큰 — '나에게 보내기' 발송용 (Edge Function이 갱신·사용)
 create table if not exists public.kakao_tokens (

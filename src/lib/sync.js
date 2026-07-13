@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
 import { storage, onStorageChange } from './storage'
+import { ROUTINE_MAP } from '../data/routines'
 
 // 로그인 사용자의 프로필·오늘 기록을 Supabase에 동기화한다.
 // 게스트는 이 모듈이 동작하지 않고 localStorage만 사용(하이브리드).
@@ -21,6 +22,12 @@ function snapshot() {
       entry_date: storage.getTodayKey(),
       state: storage.getTodayState(),
       routine_ids: storage.getTodayRoutineIds() ?? [],
+      // 표시용 이름도 함께 저장 — 오후 리마인더(서버)가 루틴 이름을 알 수 있도록.
+      // 쉬운 버전으로 바꾼 루틴은 쉬운 버전 이름으로. routine_ids와 같은 순서.
+      routine_names: (storage.getTodayRoutineIds() ?? []).map((id) => {
+        const base = ROUTINE_MAP[id]
+        return (storage.getEasyIds().includes(id) ? base?.easyVersion?.name : base?.name) ?? '루틴'
+      }),
       completed_ids: storage.getCompletedIds(),
       easy_ids: storage.getEasyIds(),
       skipped_ids: storage.getSkippedIds(),
