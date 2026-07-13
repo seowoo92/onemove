@@ -35,9 +35,19 @@ export default function App() {
 
   useEffect(() => {
     async function init() {
-      const currentUser = supabase
-        ? (await supabase.auth.getSession()).data.session?.user ?? null
-        : null
+      // 백엔드가 응답하지 않아도(예: Supabase 무료플랜 자동 일시정지) 앱은 게스트로 계속 뜨도록 3초 제한
+      let currentUser = null
+      if (supabase) {
+        try {
+          const { data } = await Promise.race([
+            supabase.auth.getSession(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('auth timeout')), 3000)),
+          ])
+          currentUser = data.session?.user ?? null
+        } catch {
+          currentUser = null
+        }
+      }
       setUser(currentUser)
       const stored = storage.getNickname()
       setNickname(stored)
