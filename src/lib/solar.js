@@ -1,3 +1,5 @@
+import { supabase } from './supabase'
+
 const COMMON_RULES = `
 자연스러운 한국어 (번역투 금지):
 - 조사를 생략하지 않습니다. (나쁜 예: '스트레칭 해냈네요' / 좋은 예: '스트레칭을 해냈네요')
@@ -203,8 +205,8 @@ function buildUserPrompt(state, routineName, situation, nickname) {
 }
 
 /**
- * Solar API로 코치 메시지를 생성합니다.
- * API 실패 시 FALLBACK 메시지로 자동 대체됩니다.
+ * Solar API로 코치 메시지를 생성합니다. (solar-chat Edge Function 프록시 경유 — API 키는 서버에만 보관)
+ * 프록시 실패 시 FALLBACK 메시지로 자동 대체됩니다.
  *
  * @param {object} params
  * @param {'유쾌'|'진중'|'다정'} params.personality - 코치 성격
@@ -214,49 +216,38 @@ function buildUserPrompt(state, routineName, situation, nickname) {
  * @returns {Promise<{ message: string, source: 'solar'|'fallback' }>}
  */
 export async function generateCoachMessage({ personality, state, routineName, situation, nickname = '' }) {
-  const apiKey = import.meta.env.VITE_SOLAR_API_KEY
-
-  if (apiKey) {
+  if (supabase) {
     try {
-      const res = await fetch('https://api.upstage.ai/v1/solar/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: 'solar-pro',
+      const { data, error } = await supabase.functions.invoke('solar-chat', {
+        body: {
           messages: [
             { role: 'system', content: SYSTEM_PROMPTS[personality] },
             { role: 'user', content: buildUserPrompt(state, routineName, situation, nickname) },
           ],
           temperature: 0.8,
           max_tokens: 150,
-        }),
+        },
       })
 
-      if (res.ok) {
-        const data = await res.json()
-        const raw = data.choices?.[0]?.message?.content?.trim()
-        if (raw) {
-          let message = cleanMessage(raw)
-          // 번역투·호칭 보정: 닉네임엔 반드시 '님', 무생물 '에게'는 '에'로
-          if (nickname) {
-            const safe = nickname.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-            message = message.replace(new RegExp(`${safe}(?!님)`, 'g'), `${nickname}님`)
-          }
-          message = message.replace(/몸에게/g, '몸에')
-          // 품질 게이트: 짧거나 1문장이거나 반말 섞임 — 어느 하나라도 걸리면 예비 메시지가 낫다
-          const sentences = message.match(/[^.!?]+[.!?]+/g) ?? []
-          const politeEnding = personality === '진중' ? /[다까요]$/ : /[요죠까]$/
-          const allPolite = sentences.every((s) => politeEnding.test(s.replace(/[.!?\s]+$/, '').trim()))
-          if (message.length >= 16 && sentences.length >= 2 && allPolite) {
-            return { message, source: 'solar' }
-          }
+      const raw = error ? '' : (data?.content ?? '').trim()
+      if (raw) {
+        let message = cleanMessage(raw)
+        // 번역투·호칭 보정: 닉네임엔 반드시 '님', 무생물 '에게'는 '에'로
+        if (nickname) {
+          const safe = nickname.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+          message = message.replace(new RegExp(`${safe}(?!님)`, 'g'), `${nickname}님`)
+        }
+        message = message.replace(/몸에게/g, '몸에')
+        // 품질 게이트: 짧거나 1문장이거나 반말 섞임 — 어느 하나라도 걸리면 예비 메시지가 낫다
+        const sentences = message.match(/[^.!?]+[.!?]+/g) ?? []
+        const politeEnding = personality === '진중' ? /[다까요]$/ : /[요죠까]$/
+        const allPolite = sentences.every((s) => politeEnding.test(s.replace(/[.!?\s]+$/, '').trim()))
+        if (message.length >= 16 && sentences.length >= 2 && allPolite) {
+          return { message, source: 'solar' }
         }
       }
     } catch {
-      // API 실패 시 fallback으로
+      // 프록시 실패 시 fallback으로
     }
   }
 
