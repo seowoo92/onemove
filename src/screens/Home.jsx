@@ -64,6 +64,21 @@ const SECONDARY_BTN = {
   cursor: 'pointer',
 }
 
+// 매일 루틴(★) 토글 — 고정하면 매일 추천에 항상 포함
+function PinStar({ active, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label={active ? '매일 루틴 해제' : '매일 루틴으로 고정'}
+      style={{ background: 'none', border: 'none', padding: 2, cursor: 'pointer', display: 'flex', flex: 'none' }}
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill={active ? '#F3D978' : 'none'} stroke={active ? '#C9A94E' : '#B9C2BB'} strokeWidth="1.8" strokeLinejoin="round">
+        <path d="M12 3.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8-5.3-2.8-5.3 2.8 1-5.8-4.2-4.1 5.9-.9z" />
+      </svg>
+    </button>
+  )
+}
+
 function Chip({ bg, color, weight = 600, children }) {
   return (
     <span
@@ -87,14 +102,32 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
   const [completedIds, setCompletedIds] = useState(new Set())
   const [easyIds, setEasyIds] = useState(new Set())
   const [skippedIds, setSkippedIds] = useState(new Set())
+  const [pinned, setPinned] = useState(storage.getPinnedIds())
   const [modal, setModal] = useState(null) // { loading, message, source } | null
+
+  function togglePin(routineId) {
+    const cur = storage.getPinnedIds()
+    if (cur.includes(routineId)) {
+      const next = cur.filter((id) => id !== routineId)
+      storage.setPinnedIds(next)
+      setPinned(next)
+      return
+    }
+    if (cur.length >= 3) {
+      window.alert('매일 루틴은 3개까지 고정할 수 있어요.')
+      return
+    }
+    const next = [...cur, routineId]
+    storage.setPinnedIds(next)
+    setPinned(next)
+  }
 
   useEffect(() => {
     let ids = storage.getTodayRoutineIds()
     if (!ids) {
       const prev = storage.getRawRoutineIds()
       if (prev) storage.setYesterdayIds(prev)
-      const { routineIds: newIds, initialEasyIds } = pickRoutines(todayState, storage.getYesterdayIds())
+      const { routineIds: newIds, initialEasyIds } = pickRoutines(todayState, storage.getYesterdayIds(), storage.getPinnedIds())
       storage.setTodayRoutineIds(newIds)
       storage.setEasyIds(initialEasyIds)
       ids = newIds
@@ -255,6 +288,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
                     <div style={{ fontSize: 18, fontWeight: 800, color: '#24523F', marginTop: 5 }}>{base.easyVersion.name}</div>
                   </div>
                   <div style={{ flex: 'none', display: 'flex', gap: 6, alignItems: 'center', marginTop: 2 }}>
+                    <PinStar active={pinned.includes(id)} onClick={() => togglePin(id)} />
                     <Chip bg={DIFF_CHIP.bg} color={DIFF_CHIP.color} weight={700}>{routine.difficulty}</Chip>
                     <Chip bg={areaChip.bg} color={areaChip.color}>{routine.area}</Chip>
                   </div>
@@ -273,6 +307,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
                 <div style={{ fontSize: 18, fontWeight: 700, color: '#24523F', flex: 1, minWidth: 0 }}>{routine.name}</div>
                 <div style={{ flex: 'none', display: 'flex', gap: 6, alignItems: 'center', marginTop: 2 }}>
+                  <PinStar active={pinned.includes(id)} onClick={() => togglePin(id)} />
                   <Chip bg={DIFF_CHIP.bg} color={DIFF_CHIP.color} weight={700}>{routine.difficulty}</Chip>
                   <Chip bg={areaChip.bg} color={areaChip.color}>{routine.area}</Chip>
                 </div>

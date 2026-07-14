@@ -17,6 +17,7 @@ function snapshot() {
       nickname: storage.getNickname() || null,
       coach: storage.getCoach() || null,
       notify_enabled: storage.getNotify(),
+      pinned_ids: storage.getPinnedIds(),
     },
     entry: {
       entry_date: storage.getTodayKey(),
@@ -68,10 +69,11 @@ export async function reconcileOnLogin(id) {
     if (prof) {
       const serverTs = Date.parse(prof.updated_at ?? '') || 0
       if (serverTs > storage.getProfileTs()) {
-        // 서버 프로필이 이 기기의 마지막 변경보다 최신 — 다른 기기에서 바꾼 닉네임·코치·알림을 반영
+        // 서버 프로필이 이 기기의 마지막 변경보다 최신 — 다른 기기에서 바꾼 닉네임·코치·알림·매일 루틴을 반영
         if (prof.nickname) storage.setNickname(prof.nickname)
         if (prof.coach) storage.setCoach(prof.coach)
         storage.setNotify(!!prof.notify_enabled)
+        if (Array.isArray(prof.pinned_ids)) storage.setPinnedIds(prof.pinned_ids)
       } else {
         // 로컬이 최신이거나 비교 불가 — 빈 값만 서버로 보충
         if (!storage.getNickname() && prof.nickname) storage.setNickname(prof.nickname)

@@ -32,6 +32,9 @@ create table if not exists public.daily_entries (
 -- (기존 테이블에 컬럼 추가할 때) 2026-07-13 오후 리마인더용
 alter table public.daily_entries add column if not exists routine_names jsonb not null default '[]';
 
+-- (기존 테이블에 컬럼 추가할 때) 2026-07-14 매일 루틴(★)용
+alter table public.profiles add column if not exists pinned_ids jsonb not null default '[]';
+
 -- 3) 카카오 토큰 — '나에게 보내기' 발송용 (Edge Function이 갱신·사용)
 create table if not exists public.kakao_tokens (
   user_id       uuid primary key references auth.users(id) on delete cascade,

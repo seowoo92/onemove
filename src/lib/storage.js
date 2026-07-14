@@ -82,6 +82,17 @@ export const storage = {
   },
   setYesterdayIds: (ids) => localStorage.setItem('onemove_yesterday', JSON.stringify(ids)),
 
+  // 매일 루틴(★) — 항상 오늘 추천에 포함되는 고정 루틴 ID (최대 3개, 영구 보존)
+  getPinnedIds: () => {
+    try { return JSON.parse(localStorage.getItem('onemove_pinned') ?? '[]') }
+    catch { return [] }
+  },
+  setPinnedIds(ids) {
+    localStorage.setItem('onemove_pinned', JSON.stringify(ids))
+    this.touchProfileTs()
+    notify()
+  },
+
   // 닉네임 (영구 보존)
   getNickname: () => localStorage.getItem('onemove_nickname') ?? '',
   setNickname(v) { localStorage.setItem('onemove_nickname', v); this.touchProfileTs(); notify() },
