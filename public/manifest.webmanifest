@@ -1,0 +1,25 @@
+{
+  "name": "오늘만큼 — 오늘 할 수 있는 만큼만",
+  "short_name": "오늘만큼",
+  "description": "무기력한 날에도 오늘 할 수 있는 만큼만. AI 코치가 제안하는 나만의 회복 루틴.",
+  "id": "/onemove/",
+  "start_url": "/onemove/",
+  "scope": "/onemove/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF6F0",
+  "theme_color": "#FAF6F0",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "/onemove/app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/onemove/app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
