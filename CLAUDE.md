@@ -13,17 +13,20 @@
 ## 기술 스택
 - 프레임워크: Vite + React 19 + Tailwind CSS v4
 - 폰트: Pretendard Variable (CDN, 폴백 -apple-system, sans-serif)
-- AI: 업스테이지 Solar API (model: solar-pro)
-- 인증/서버: Supabase Auth (카카오 OAuth 연동 완료, 앱 ID 1489350)
+- AI: 업스테이지 Solar (model: solar-pro) — **solar-chat Edge Function 프록시 경유** (키는 서버에만)
+- 인증/서버: Supabase (Auth 카카오 OAuth · DB · Edge Functions 3개 · pg_cron) — 백엔드 지도: docs/handoff-linux.md 4절
+- 알림: 카카오 '나에게 보내기' — 루틴 확정 시 카드 + 매일 18:00 KST 미완료 리마인더 (나와의 채팅, 무음 도착)
 - 배포: GitHub Pages (push to main 시 자동 배포)
-- 데이터 저장: localStorage (서버 DB 없음, MVP 기간)
+- 데이터 저장: localStorage 정본 + 로그인 사용자는 Supabase 동기화(하이브리드, sync.js) — 게스트는 localStorage만
+- PWA: manifest 홈 화면 설치 지원 (Web Push 없음)
 - 차트: recharts ^3.8.1 (기록 탭 막대 그래프)
 
 ## 환경변수
-- VITE_SOLAR_API_KEY: 업스테이지 Solar API 키 (GitHub Secret + .env.local)
 - VITE_SUPABASE_URL: Supabase 프로젝트 URL
 - VITE_SUPABASE_ANON_KEY: Supabase anon public 키
-- .env.local은 .gitignore에 포함 — 절대 커밋 금지
+- VITE_SOLAR_API_KEY: (선택) 클라이언트는 더 이상 사용 안 함(프록시 전환) — 프롬프트 테스트 스크립트용
+- .env.local은 .gitignore에 포함 — 절대 커밋 금지. 값 얻는 곳: docs/handoff-linux.md 3절
+- 서버 비밀값(Supabase Edge Function Secrets): UPSTAGE_API_KEY · KAKAO_REST_API_KEY · KAKAO_CLIENT_SECRET · CRON_SECRET
 
 ## 디자인 시스템
 > 색·타이포·간격·컴포넌트·화면별 사양의 상세 기준은 docs/design-handoff.md (1차 시안 핸드오프). 디자인 작업 시 그 문서를 우선 따른다.
@@ -127,19 +130,18 @@ S0 진입 → S1 코치 선택 → S2 마음 날씨 → S3 루틴 홈 → S4 코
 - 클레이 3점 브랜드 마크 + 헤드라인("오늘 할 수 있는 / 만큼만.") + 핵심 3가지 + 구분선 + **QR 코드**(public/images/qr-onemove.svg, 라이브 주소, 휴대폰 스캔 유도) + 슬로건("오늘만큼, 딱 그만큼 / One move a day")
 
 ## 루틴 추천 로직 (routinePicker.js)
-- 좋아요: 4개 (보통3 + 쉬움1)
-- 보통이에요: 3개 (보통1 + 쉬움2)
-- 힘들어요: 2개 (쉬움2)
+- 좋아요: 4개 (보통3 + 쉬움1) / 보통이에요: 3개 (보통1 + 쉬움2) / 힘들어요: 2개 (쉬움2)
+- **매일 루틴(★, onemove_pinned)**: 항상 추천 맨 앞에 포함(최대 3개), 어제 제외 룰 미적용, 남는 슬롯만 랜덤. 매일 루틴이 그날 개수 이상이면 매일 루틴만 표시
 - 쉬움 루틴 추출 시: 기본 난이도가 쉬움인 루틴 + 보통 루틴의 easyVersion 모두 후보
-- 영역(area) 분산 원칙: 추천 루틴들의 area가 서로 겹치지 않도록 선발
-- 어제 추천된 루틴 제외 (onemove_yesterday 기준)
+- 영역(area) 분산 원칙: 추천 루틴들의 area가 서로 겹치지 않도록 선발 (매일 루틴 area 포함)
+- 어제 추천된 루틴 제외 (onemove_yesterday 기준, 매일 루틴 예외)
 
 ## 루틴 데이터 구조 (routines.js)
-- 총 28개 (7개 영역 × 4개)
+- **총 70개 (7개 영역 × 10개)** — 2026-07-14 확장 (routine_29~70 신규, 문구는 사용자 검수 확정본)
 - 영역: 몸 깨우기 / 자기돌봄 / 에너지 / 공간 / 바깥 / 연결 / 성취
 - 각 루틴마다 쉬운 버전(easyVersion) 1:1로 짝지어짐
 - 필드: id, name, area, difficulty('보통'|'쉬움'), easyVersion{id, name, area, difficulty}
-- 난이도 분포: 보통 22개 / 쉬움 6개 (기본 루틴 기준)
+- 루틴 문구 작성 기준(확장 때 정립): 물건·재고 가정 금지 / 시간대 제약 금지 / 애매한 동작 반복 지시 지양 / 감성·오글 표현 배제 / '쉬기'가 아닌 구체적 행동
 
 ## Solar AI 코치 (solar.js)
 - 함수: generateCoachMessage({ personality, state, routineName, situation, nickname })
@@ -173,8 +175,11 @@ S0 진입 → S1 코치 선택 → S2 마음 날씨 → S3 루틴 홈 → S4 코
 | `onemove_easy` | 쉬운버전으로 전환된 루틴 ID 배열 | 매일 |
 | `onemove_skipped` | 오늘은 쉬어가기 선택 루틴 ID 배열 | 매일 |
 | `onemove_yesterday` | 어제 추천된 루틴 ID 배열 (중복 방지용) | 유지 |
+| `onemove_pinned` | 매일 루틴(★) ID 배열 (최대 3개) | 유지 |
 | `onemove_nickname` | 앱 내 닉네임 (최대 12자) | 유지 |
 | `onemove_notify` | 카카오톡 알림 수신 동의 ('true'\|'false') | 유지 |
+| `onemove_profile_ts` | 프로필(닉네임·코치·알림·매일루틴) 마지막 로컬 변경 시각 — 기기 간 동기화 최신 비교용 | 유지 |
+| `onemove_card_sent` | 오늘 루틴 카드 발송 여부 (날짜 문자열, 하루 1회 제한) | 매일 |
 | `onemove_history` | 날짜별 완료 기록 `{"YYYY-MM-DD": {state, completed:[], total}}` | 영구 (날짜 리셋 없음) |
 
 ## 개발 명령어
@@ -215,7 +220,20 @@ S0 진입 → S1 코치 선택 → S2 마음 날씨 → S3 루틴 홈 → S4 코
 - 앱 아이콘·파비콘 제공됨
 - 시안 원본 .dc.html: docs/design/ (참고용, 배포 비포함)
 
-## 현재 상태 (2026-07-13)
+## 작업 환경·워크플로우 (2026-07-14 리눅스 서버 이관)
+- 셋업·계정·백엔드 지도: **docs/handoff-linux.md** (클론 직후 git config 작성자 설정 필수)
+- 화면 변경은 적용 전 시안 컨펌 / 콘텐츠(루틴 문구·코치 멘트)는 사용자 확정 후 반영
+- 사용자의 "오늘 작업 마감" 신호 → 그날 devlog 작성 + 마무리 커밋·푸시
+- 매일 작업 단위 커밋 (대회 제출 요건: 날짜별 기록). 날짜 소급 등 기록 조작 금지
+
+## 현재 상태 (2026-07-14)
+- 알림 시스템 완성: 루틴 확정 시 카카오 루틴 카드 + 매일 18:00 KST 미완료 리마인더(pg_cron) — 실기기 수신 검증
+- PWA 홈 화면 설치(아이폰 확인) · Solar 키 은닉(solar-chat 프록시) · 루틴 70개 확장 + 매일 루틴(★)
+- 쉬어가기 멘트 톤 교정(축하→안심) 포함 코치 프롬프트 고도화 완료
+- 대기 확인: profiles.pinned_ids ALTER 실행 여부 (schema.sql 마지막 줄)
+- 상세: docs/devlog/2026-07-14.md
+
+## 지난 상태 (2026-07-13)
 - 6/19 MVP 발표 완료 (디자인 시안 적용·버그 수정·5차 배포, 상세: docs/devlog/2026-06-19.md)
 - 7/6 Supabase 무료플랜 자동 일시정지로 인한 흰 화면 장애 진단·복구 (대시보드 Resume)
 - 7/10 강사님 멘토링 1차 (기능 피드백 5건) + 대회 공식 평가기준 5항목 확보
@@ -224,12 +242,10 @@ S0 진입 → S1 코치 선택 → S2 마음 날씨 → S3 루틴 홈 → S4 코
 - 알려둘 것: '나와의 채팅'은 카카오 정책상 푸시 알림·안읽음 배지 없음(조용한 도착). 카카오 메시지는 텍스트 템플릿 사용(피드는 2줄 잘림). 링크 동작엔 카카오 앱 Web 플랫폼 도메인 등록 필요(완료)
 
 ## 남은 일 (2차 스프린트 · ~7/28 예선 마감)
-- **오후 미완료 리마인더 마무리(#7)**: 코드 완성·푸시됨 — 남은 것: ALTER(routine_names)·CRON_SECRET 등록·remind-incomplete 함수 배포·pg_cron 예약 (사용자 대시보드 작업) + 수동 트리거 테스트
-- 디자인 리뉴얼 + 탭 4개 개편(오늘·기록·코치·설정) + 기록 탭 대시보드 승격(캘린더형 마음 날씨)
-- PWA manifest (홈 화면 설치) — Web Push는 컷했으나 '울리는 알림' 필요 시 재검토(나와의 채팅 무알림 한계)
-- Solar API 키 Supabase Edge Function 이전 (키 은닉)
-- 여유 시: 완료 무지개 효과, 랜덤 힐링 문구, 루틴 확장(28→42)
+- **디자인 리뉴얼 + 탭 4개 개편(오늘·기록·코치·설정) + 기록 탭 대시보드 승격(캘린더형 마음 날씨)** — 사용자 시안 대기
 - 발표 준비(7/23~): 발표자료(개인 서사·AI 이해·윤리/저작권)·데모 동선(라이브 카톡 수신 장면)·리허설
+- 7/26 재검토: ① 과거 커밋 작성자 정정 + 발표 문서 2건 히스토리 삭제(백업 후 force push) ② 업스테이지 Solar 키 재발급·구키 폐기 ③ 에러 안내화면 디자인 다듬기
+- 여유 시: 완료 무지개 효과, 랜덤 힐링 문구, '울리는 알림'(Web Push) 재검토(나와의 채팅 무알림 한계)
 
 ## 기술 부채 / 알려진 이슈 (이어서 개발 시 참고)
 - **Solar API 키 노출**: VITE_ 접두사로 번들에 포함 → 브라우저 노출. 발표 후 업스테이지 콘솔에서 폐기, 8월 Supabase Edge Function으로 이전
