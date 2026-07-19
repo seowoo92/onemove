@@ -24,14 +24,14 @@ export function countSeasonCompleted(history, season) {
 // x·y: 배경 왼쪽 위 기준 % (요소 중심점) / w: 컨테이너 너비 대비 % / z: 겹침 순서
 // motion: garden.css의 애니메이션 종류 / shadow: 접지 그림자 종류 (하늘 요소는 none — 본체 drop-shadow만)
 export const GARDEN_ELEMENTS = [
-  { id: 'sprout', name: '새싹', threshold: 2, file: 'garden-summer-sprout.png', x: 19, y: 86, w: 11, motion: 'sway', shadow: 'ground-sm', z: 32 },
-  { id: 'cloud', name: '구름', threshold: 5, file: 'garden-summer-cloud.png', x: 50, y: 18, w: 28, motion: 'cross', shadow: 'none', z: 10 },
-  { id: 'flower-a', name: '여름 꽃', threshold: 9, file: 'garden-summer-flower-a.png', x: 47, y: 72, w: 24, motion: 'sway', shadow: 'none', z: 18 },
+  { id: 'sprout', name: '새싹', threshold: 2, file: 'garden-summer-sprout.png', x: 14, y: 86, w: 11, motion: 'sway', shadow: 'ground-sm', z: 32 },
+  { id: 'cloud', name: '구름', threshold: 5, file: 'garden-summer-cloud.png', x: 50, y: 23, w: 28, motion: 'cross', shadow: 'none', z: 10 },
+  { id: 'flower-a', name: '여름 꽃', threshold: 9, file: 'garden-summer-flower-a.png', x: 47, y: 69, w: 19, motion: 'sway', shadow: 'none', z: 18 },
   { id: 'butterfly', name: '나비', threshold: 14, file: 'garden-summer-butterfly.png', x: 47, y: 46, w: 12, motion: 'fly', shadow: 'none', z: 45 },
   { id: 'tree-small', name: '작은 나무', threshold: 20, file: 'garden-summer-tree-small.png', x: 80, y: 57, w: 30, motion: 'tree', shadow: 'ground-md', z: 25 },
   { id: 'sun', name: '햇님', threshold: 27, file: 'garden-summer-sun.png', x: 66, y: 17, w: 20, motion: 'breathe', shadow: 'none', z: 8 },
   { id: 'flower-b', name: '들꽃', threshold: 36, file: 'garden-summer-flower-b.png', x: 77, y: 83, w: 28, motion: 'sway-alt', shadow: 'ground-md', z: 35 },
-  { id: 'bird', name: '새', threshold: 47, file: 'garden-summer-bird.png', x: 91, y: 84, w: 11, motion: 'nod', shadow: 'ground-sm', z: 44 },
+  { id: 'bird', name: '새', threshold: 47, file: 'garden-summer-bird.png', x: 91, y: 82, w: 11, motion: 'nod', shadow: 'ground-sm', z: 44 },
   { id: 'pond', name: '연못', threshold: 60, file: 'garden-summer-pond.png', x: 50, y: 88, w: 40, motion: 'pond', shadow: 'ground-wide', z: 20, wide: true },
   { id: 'tree-big', name: '큰 나무', threshold: 75, file: 'garden-summer-tree-big.png', x: 22, y: 55, w: 42, motion: 'tree', shadow: 'ground-lg', z: 24 },
 ]
