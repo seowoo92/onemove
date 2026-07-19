@@ -24,16 +24,16 @@ export function countSeasonCompleted(history, season) {
 // x·y: 배경 왼쪽 위 기준 % (요소 중심점) / w: 컨테이너 너비 대비 % / z: 겹침 순서
 // motion: garden.css의 애니메이션 종류 / shadow: 접지 그림자 종류 (하늘 요소는 none — 본체 drop-shadow만)
 export const GARDEN_ELEMENTS = [
-  { id: 'sprout', name: '새싹', threshold: 2, file: 'garden-sprout.png', x: 38, y: 85, w: 10, motion: 'sway', shadow: 'ground-sm', z: 32 },
-  { id: 'cloud', name: '구름', threshold: 5, file: 'garden-cloud.png', x: 18, y: 15, w: 22, motion: 'drift', shadow: 'none', z: 10 },
-  { id: 'flower-a', name: '여름 꽃', threshold: 9, file: 'garden-flower-a.png', x: 29, y: 79, w: 13, motion: 'sway', shadow: 'ground-sm', z: 34 },
-  { id: 'butterfly', name: '나비', threshold: 14, file: 'garden-butterfly.png', x: 36, y: 58, w: 11, motion: 'fly', shadow: 'none', z: 45 },
-  { id: 'tree-small', name: '작은 나무', threshold: 20, file: 'garden-tree-small.png', x: 80, y: 61, w: 21, motion: 'tree', shadow: 'ground-md', z: 25 },
-  { id: 'sun', name: '햇님', threshold: 27, file: 'garden-sun.png', x: 79, y: 13, w: 16, motion: 'breathe', shadow: 'none', z: 8 },
-  { id: 'flower-b', name: '들꽃', threshold: 36, file: 'garden-flower-b.png', x: 68, y: 81, w: 13, motion: 'sway-alt', shadow: 'ground-sm', z: 35 },
-  { id: 'bird', name: '새', threshold: 47, file: 'garden-bird.png', x: 79, y: 46, w: 10, motion: 'nod', shadow: 'none', z: 44 },
-  { id: 'pond', name: '연못', threshold: 60, file: 'garden-pond.png', x: 50, y: 90, w: 32, motion: 'pond', shadow: 'ground-wide', z: 20, wide: true },
-  { id: 'tree-big', name: '큰 나무', threshold: 75, file: 'garden-tree-big.png', x: 15, y: 57, w: 38, motion: 'tree', shadow: 'ground-lg', z: 24 },
+  { id: 'sprout', name: '새싹', threshold: 2, file: 'garden-sprout.png', x: 33, y: 87, w: 11, motion: 'sway', shadow: 'ground-sm', z: 32 },
+  { id: 'cloud', name: '구름', threshold: 5, file: 'garden-cloud.png', x: 28, y: 17, w: 24, motion: 'drift', shadow: 'none', z: 10 },
+  { id: 'flower-a', name: '여름 꽃', threshold: 9, file: 'garden-flower-a.png', x: 24, y: 77, w: 16, motion: 'sway', shadow: 'ground-sm', z: 34 },
+  { id: 'butterfly', name: '나비', threshold: 14, file: 'garden-butterfly.png', x: 40, y: 52, w: 12, motion: 'fly', shadow: 'none', z: 45 },
+  { id: 'tree-small', name: '작은 나무', threshold: 20, file: 'garden-tree-small.png', x: 82, y: 60, w: 26, motion: 'tree', shadow: 'ground-md', z: 25 },
+  { id: 'sun', name: '햇님', threshold: 27, file: 'garden-sun.png', x: 68, y: 12, w: 17, motion: 'breathe', shadow: 'none', z: 8 },
+  { id: 'flower-b', name: '들꽃', threshold: 36, file: 'garden-flower-b.png', x: 77, y: 83, w: 16, motion: 'sway-alt', shadow: 'ground-sm', z: 35 },
+  { id: 'bird', name: '새', threshold: 47, file: 'garden-bird.png', x: 81.5, y: 45, w: 7, motion: 'nod', shadow: 'none', z: 44 },
+  { id: 'pond', name: '연못', threshold: 60, file: 'garden-pond.png', x: 56, y: 89, w: 38, motion: 'pond', shadow: 'ground-wide', z: 20, wide: true },
+  { id: 'tree-big', name: '큰 나무', threshold: 75, file: 'garden-tree-big.png', x: 16, y: 56, w: 42, motion: 'tree', shadow: 'ground-lg', z: 24 },
 ]
 
 export function getUnlockedElements(count) {
