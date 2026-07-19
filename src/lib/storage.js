@@ -104,6 +104,10 @@ export const storage = {
   // 오늘 날짜 키 (로컬 기준) — 기록 저장 시 화면 날짜와 일치시키기 위해 사용
   getTodayKey: () => today(),
 
+  // 하루 마무리(회고) 메시지 — 하루 1회 생성 후 재사용, 자정 리셋
+  getTodayReview: () => getKeyed('onemove_review'),
+  setTodayReview: (v) => setKeyed('onemove_review', v),
+
   // 날짜별 기록 (자정 리셋 없음, 영구 보존)
   getHistory() {
     try { return JSON.parse(localStorage.getItem('onemove_history') ?? '{}') }

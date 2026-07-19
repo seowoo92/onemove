@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { ROUTINE_MAP } from '../data/routines'
 import { storage } from '../lib/storage'
 import { pickRoutines } from '../lib/routinePicker'
-import { generateCoachMessage } from '../lib/solar'
+import { generateCoachMessage, generateDailyReview } from '../lib/solar'
 import { sendRoutineCard } from '../lib/kakao'
 import CoachModal from '../components/CoachModal'
 import { COACH_INFO } from '../lib/coaches'
@@ -104,6 +104,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
   const [skippedIds, setSkippedIds] = useState(new Set())
   const [pinned, setPinned] = useState(storage.getPinnedIds())
   const [modal, setModal] = useState(null) // { loading, message, source } | null
+  const [review, setReview] = useState(null) // { loading } | { message, source } | null
 
   function togglePin(routineId) {
     const cur = storage.getPinnedIds()
@@ -186,7 +187,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
       const ok = window.confirm('마음 날씨를 다시 고르면 오늘 기록이 초기화돼요. 계속할까요?')
       if (!ok) return
     }
-    ;['onemove_state', 'onemove_routines', 'onemove_completed', 'onemove_easy', 'onemove_skipped']
+    ;['onemove_state', 'onemove_routines', 'onemove_completed', 'onemove_easy', 'onemove_skipped', 'onemove_review']
       .forEach(k => localStorage.removeItem(k))
     storage.removeHistoryEntry(storage.getTodayKey())
     onGoToStateCheck()
@@ -203,6 +204,28 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
   const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
   const allResolved = totalCount > 0 && routineIds.every((id) => completedIds.has(id) || skippedIds.has(id))
   const coachName = COACH_INFO[coach]?.name ?? '코치'
+
+  // 하루 마무리(회고) — 모든 루틴이 정리되면 하루 1회 생성, 이후엔 저장본 재사용
+  useEffect(() => {
+    if (!allResolved) { setReview(null); return }
+    const saved = storage.getTodayReview()
+    if (saved) { setReview(saved); return }
+    let cancelled = false
+    setReview({ loading: true })
+    const completedList = routineIds.filter((id) => completedIds.has(id)).map((id) => {
+      const b = ROUTINE_MAP[id]
+      const r = easyIds.has(id) ? b?.easyVersion : b
+      return { name: r?.name ?? '루틴', area: r?.area ?? '' }
+    })
+    generateDailyReview({ personality: coach, state: todayState, completedList, skippedCount: skippedIds.size, nickname })
+      .then((result) => {
+        if (cancelled) return
+        const value = { message: result.message, source: result.source }
+        storage.setTodayReview(value)
+        setReview(value)
+      })
+    return () => { cancelled = true }
+  }, [allResolved]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div style={{ minHeight: '100%', backgroundColor: '#FAF6F0' }}>
@@ -340,6 +363,21 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
                 <div style={{ width: 22, height: 22, borderRadius: '50%', background: CLAY[coach] ?? CLAY['유쾌'] }} />
                 <span style={{ fontSize: 12.5, fontWeight: 600, color: '#24523F' }}>{coachName}{subjectParticle(coachName)} 오늘의 너를 안아줘요</span>
               </div>
+
+              {/* 하루 마무리 — 오늘 수행한 루틴 영역을 종합한 코치의 회고 한마디 */}
+              {review && (
+                <div style={{ marginTop: 14, background: '#FAF6F0', borderRadius: 14, padding: '12px 15px', textAlign: 'left' }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: 11.5, fontWeight: 700, color: '#9AA69D', letterSpacing: '0.02em' }}>하루 마무리</span>
+                    {!review.loading && (
+                      <span style={{ fontSize: 10.5, fontWeight: 500, color: '#B7AFA4' }}>출처 · {review.source === 'solar' ? 'AI' : '예비'}</span>
+                    )}
+                  </div>
+                  <p style={{ fontSize: 13.5, fontWeight: 500, color: '#3A4A40', lineHeight: 1.6, margin: '6px 0 0', wordBreak: 'keep-all' }}>
+                    {review.loading ? '코치가 오늘 하루를 돌아보고 있어요...' : review.message}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}

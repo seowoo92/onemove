@@ -216,43 +216,106 @@ function buildUserPrompt(state, routineName, situation, nickname) {
  * @returns {Promise<{ message: string, source: 'solar'|'fallback' }>}
  */
 export async function generateCoachMessage({ personality, state, routineName, situation, nickname = '' }) {
-  if (supabase) {
-    try {
-      const { data, error } = await supabase.functions.invoke('solar-chat', {
-        body: {
-          messages: [
-            { role: 'system', content: SYSTEM_PROMPTS[personality] },
-            { role: 'user', content: buildUserPrompt(state, routineName, situation, nickname) },
-          ],
-          temperature: 0.8,
-          max_tokens: 150,
-        },
-      })
-
-      const raw = error ? '' : (data?.content ?? '').trim()
-      if (raw) {
-        let message = cleanMessage(raw)
-        // 번역투·호칭 보정: 닉네임엔 반드시 '님', 무생물 '에게'는 '에'로
-        if (nickname) {
-          const safe = nickname.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-          message = message.replace(new RegExp(`${safe}(?!님)`, 'g'), `${nickname}님`)
-        }
-        message = message.replace(/몸에게/g, '몸에')
-        // 품질 게이트: 짧거나 1문장이거나 반말 섞임 — 어느 하나라도 걸리면 예비 메시지가 낫다
-        const sentences = message.match(/[^.!?]+[.!?]+/g) ?? []
-        const politeEnding = personality === '진중' ? /[다까요]$/ : /[요죠까]$/
-        const allPolite = sentences.every((s) => politeEnding.test(s.replace(/[.!?\s]+$/, '').trim()))
-        if (message.length >= 16 && sentences.length >= 2 && allPolite) {
-          return { message, source: 'solar' }
-        }
-      }
-    } catch {
-      // 프록시 실패 시 fallback으로
-    }
-  }
+  const message = await requestSolar(personality, buildUserPrompt(state, routineName, situation, nickname), nickname)
+  if (message) return { message, source: 'solar' }
 
   const fallbackFn = FALLBACK[personality]?.[situation]
   const base = fallbackFn ? fallbackFn(routineName) : '오늘도 잘했어요.'
+  const raw = nickname ? `${nickname}님, ${base}` : base
+  return { message: cleanMessage(raw), source: 'fallback' }
+}
+
+// Solar 프록시 호출 + 후처리 + 품질 게이트 — 통과 못 하면 null (호출부가 예비 메시지로 대체)
+async function requestSolar(personality, userPrompt, nickname) {
+  if (!supabase) return null
+  try {
+    const { data, error } = await supabase.functions.invoke('solar-chat', {
+      body: {
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPTS[personality] },
+          { role: 'user', content: userPrompt },
+        ],
+        temperature: 0.8,
+        max_tokens: 150,
+      },
+    })
+
+    const raw = error ? '' : (data?.content ?? '').trim()
+    if (!raw) return null
+
+    let message = cleanMessage(raw)
+    // 번역투·호칭 보정: 닉네임엔 반드시 '님', 무생물 '에게'는 '에'로
+    if (nickname) {
+      const safe = nickname.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      message = message.replace(new RegExp(`${safe}(?!님)`, 'g'), `${nickname}님`)
+    }
+    message = message.replace(/몸에게/g, '몸에')
+    // 품질 게이트: 짧거나 1문장이거나 반말 섞임 — 어느 하나라도 걸리면 예비 메시지가 낫다
+    const sentences = message.match(/[^.!?]+[.!?]+/g) ?? []
+    const politeEnding = personality === '진중' ? /[다까요]$/ : /[요죠까]$/
+    const allPolite = sentences.every((s) => politeEnding.test(s.replace(/[.!?\s]+$/, '').trim()))
+    if (message.length >= 16 && sentences.length >= 2 && allPolite) return message
+    return null
+  } catch {
+    return null
+  }
+}
+
+// 하루 마무리(회고) — 성격 × (완료 있음/전부 쉬어감) 예비 메시지
+const REVIEW_FALLBACK = {
+  유쾌: {
+    some: '이야, 오늘 하기로 한 거 다 했네요! 이제 발 뻗고 쉬어도 돼요.',
+    none: '오늘은 쉬는 날이었네요! 그런 날도 있는 거죠.',
+  },
+  진중: {
+    some: '오늘 하려던 일을 다 하셨습니다. 남은 시간은 편하게 보내셔도 됩니다.',
+    none: '오늘은 쉬어가는 날이었습니다. 그런 날도 있습니다.',
+  },
+  다정: {
+    some: '오늘도 애 많이 썼어요. 이제 푹 쉬어요.',
+    none: '오늘은 쉬고 싶은 날이었나 봐요. 푹 쉬는 것도 필요한 일이에요.',
+  },
+}
+
+function buildReviewPrompt(state, completedList, skippedCount, nickname) {
+  const nameHint = nickname
+    ? `사용자의 이름은 '${nickname}'입니다. 부를 때는 반드시 '${nickname}님'처럼 이름 뒤에 '님'을 붙이세요. 자연스러울 때만 부르고, 억지로 넣지는 마세요.\n`
+    : ''
+  if (completedList.length === 0) {
+    return `${nameHint}오늘 상태: ${state}
+오늘 완료한 루틴: 없음 (오늘 루틴을 모두 쉬어가기로 정리했습니다)
+상황: 하루를 마무리하며 오늘 전체를 돌아봅니다.
+오늘 하루를 마무리하는 메시지를 써줘.
+- 첫 문장: 오늘은 쉬어간 날임을 있는 그대로 받아들여줘. 아쉬워하거나 과하게 격려하지 마.
+- 둘째 문장: 부담을 덜어주는 말로 하루를 편안하게 닫아줘. 내일 더 하자는 다짐·권유·목표 제시는 금지.
+출력 형식: 괄호·번호·설명·주석 없이, 각각 마침표나 느낌표로 끝나는 두 문장만 출력해.`
+  }
+  const listText = completedList.map(({ name, area }) => `${name}(${area})`).join(', ')
+  return `${nameHint}오늘 상태: ${state}
+오늘 완료한 루틴 ${completedList.length}개: ${listText}
+오늘 쉬어간 루틴: ${skippedCount}개
+상황: 하루를 마무리하며 오늘 전체를 돌아봅니다.
+오늘 하루를 마무리하는 메시지를 써줘.
+- 첫 문장: 완료한 루틴들의 영역을 묶어 오늘이 어떤 하루였는지 종합해서 인정해. (예: 몸을 깨우고 바깥 공기도 쐰 하루) 루틴 이름을 그대로 나열하지 말고 하루의 느낌으로 종합해.
+- 둘째 문장: 하루를 부드럽게 닫아줘. 편안한 밤 인사나 내일 다시 만나자는 가벼운 인사는 좋아. 내일 더 하자는 다짐·권유·목표 제시는 금지.
+출력 형식: 괄호·번호·설명·주석 없이, 각각 마침표나 느낌표로 끝나는 두 문장만 출력해.`
+}
+
+/**
+ * 하루 마무리(회고) 메시지 — 모든 루틴이 완료/쉬어가기로 정리됐을 때 하루 전체를 종합합니다.
+ *
+ * @param {object} params
+ * @param {'유쾌'|'진중'|'다정'} params.personality
+ * @param {string} params.state - 오늘 마음 날씨 (예: "보통이에요")
+ * @param {Array<{name: string, area: string}>} params.completedList - 완료한 루틴 이름·영역
+ * @param {number} params.skippedCount - 쉬어간 루틴 개수
+ * @returns {Promise<{ message: string, source: 'solar'|'fallback' }>}
+ */
+export async function generateDailyReview({ personality, state, completedList, skippedCount, nickname = '' }) {
+  const message = await requestSolar(personality, buildReviewPrompt(state, completedList, skippedCount, nickname), nickname)
+  if (message) return { message, source: 'solar' }
+
+  const base = REVIEW_FALLBACK[personality]?.[completedList.length > 0 ? 'some' : 'none'] ?? '오늘 하루도 여기까지 왔어요.'
   const raw = nickname ? `${nickname}님, ${base}` : base
   return { message: cleanMessage(raw), source: 'fallback' }
 }

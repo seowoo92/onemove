@@ -42,7 +42,7 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
       const ok = window.confirm('마음 날씨를 다시 고르면 오늘 기록이 초기화돼요. 계속할까요?')
       if (!ok) return
     }
-    ;['onemove_state', 'onemove_routines', 'onemove_completed', 'onemove_easy', 'onemove_skipped']
+    ;['onemove_state', 'onemove_routines', 'onemove_completed', 'onemove_easy', 'onemove_skipped', 'onemove_review']
       .forEach(k => localStorage.removeItem(k))
     storage.removeHistoryEntry(storage.getTodayKey())
     onGoToStateCheck()
