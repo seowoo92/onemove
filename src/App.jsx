@@ -8,6 +8,7 @@ import WelcomeScreen from './screens/WelcomeScreen'
 import CoachSelect from './screens/CoachSelect'
 import StateCheck from './screens/StateCheck'
 import Home from './screens/Home'
+import GardenScreen from './screens/GardenScreen'
 import RecordScreen from './screens/RecordScreen'
 import SettingsScreen from './screens/SettingsScreen'
 
@@ -182,6 +183,7 @@ export default function App() {
           {activeTab === 'home' && !todayState && (
             <StateCheck onSelect={handleStateSelect} onBack={() => setScreen('coach-select')} />
           )}
+          {activeTab === 'garden' && <GardenScreen />}
           {activeTab === 'record' && <RecordScreen />}
           {activeTab === 'settings' && (
             <SettingsScreen

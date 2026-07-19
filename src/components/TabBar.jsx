@@ -6,6 +6,14 @@ const ICONS = {
       <path d="M10 19.5V14h4v5.5" />
     </svg>
   ),
+  garden: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 20v-7" />
+      <path d="M12 13c0-3.2-2.3-5.5-5.8-5.5C6.2 11 8.5 13 12 13Z" />
+      <path d="M12 11c0-2.8 2-4.8 5-4.8C17 9.2 15 11 12 11Z" />
+      <path d="M5.5 20h13" />
+    </svg>
+  ),
   record: (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <rect x="5" y="4" width="14" height="17" rx="2.6" />
@@ -27,7 +35,8 @@ const ICONS = {
 }
 
 const TABS = [
-  { key: 'home', label: '홈' },
+  { key: 'home', label: '오늘' },
+  { key: 'garden', label: '정원' },
   { key: 'record', label: '기록' },
   { key: 'settings', label: '설정' },
 ]
