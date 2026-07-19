@@ -108,6 +108,10 @@ export const storage = {
   getTodayReview: () => getKeyed('onemove_review'),
   setTodayReview: (v) => setKeyed('onemove_review', v),
 
+  // 정원에서 마지막으로 본 완료 수 — 그 이후 새로 열린 요소만 등장 연출 (영구 보존)
+  getGardenSeen: () => Number(localStorage.getItem('onemove_garden_seen') ?? 0),
+  setGardenSeen: (n) => localStorage.setItem('onemove_garden_seen', String(n)),
+
   // 날짜별 기록 (자정 리셋 없음, 영구 보존)
   getHistory() {
     try { return JSON.parse(localStorage.getItem('onemove_history') ?? '{}') }

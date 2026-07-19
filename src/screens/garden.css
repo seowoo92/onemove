@@ -1,0 +1,187 @@
+/* 정원 상시 애니메이션 — 본체(.garden-body)만 움직이고 접지 그림자(.garden-shadow)는 바닥에 고정.
+   transform·opacity만 사용 (성능), prefers-reduced-motion 시 전부 정지. */
+
+.garden-item {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  aspect-ratio: 1 / 1;
+  pointer-events: none;
+}
+.garden-item--wide {
+  aspect-ratio: 2 / 1;
+}
+
+.garden-body,
+.garden-shadow {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+.garden-body {
+  z-index: 2;
+  will-change: transform;
+}
+.garden-body img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ── 접지 그림자 (본체와 분리, 살짝만 호흡) ── */
+.garden-shadow {
+  z-index: 1;
+  top: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: rgba(34, 48, 42, 0.14);
+  filter: blur(7px);
+}
+.garden-shadow--ground-sm { width: 58%; height: 11%; bottom: 0; }
+.garden-shadow--ground-md { width: 70%; height: 10%; bottom: 1%; filter: blur(9px); background: rgba(34, 48, 42, 0.13); }
+.garden-shadow--ground-lg { width: 76%; height: 9%; bottom: 0; filter: blur(12px); background: rgba(34, 48, 42, 0.15); }
+.garden-shadow--ground-wide { width: 88%; height: 14%; bottom: 5%; filter: blur(10px); background: rgba(34, 48, 42, 0.11); }
+
+/* 하늘·공중 요소는 타원 그림자 대신 본체에 약한 그림자/발광만 */
+.garden-item--butterfly .garden-body img,
+.garden-item--bird .garden-body img {
+  filter: drop-shadow(0 4px 5px rgba(34, 48, 42, 0.1));
+}
+.garden-item--cloud .garden-body img {
+  filter: drop-shadow(0 5px 8px rgba(80, 112, 126, 0.08));
+}
+.garden-item--sun .garden-body img {
+  filter: drop-shadow(0 0 8px rgba(243, 217, 120, 0.42)) drop-shadow(0 0 18px rgba(243, 217, 120, 0.24));
+}
+
+/* ── 회전축: 바닥 요소는 밑동 기준 ── */
+.garden-item--sprout .garden-body,
+.garden-item--flower-a .garden-body,
+.garden-item--flower-b .garden-body,
+.garden-item--tree-small .garden-body,
+.garden-item--tree-big .garden-body {
+  transform-origin: 50% 100%;
+}
+
+/* ── 움직임 ── */
+[data-motion='sway'] .garden-body { animation: garden-sway 4.8s ease-in-out infinite; }
+[data-motion='sway-alt'] .garden-body { animation: garden-sway-alt 5.3s ease-in-out infinite; }
+[data-motion='sway'] .garden-shadow,
+[data-motion='sway-alt'] .garden-shadow { animation: garden-shadow-soft 4.8s ease-in-out infinite; }
+
+@keyframes garden-sway {
+  0%, 100% { transform: rotate(-1.4deg); }
+  50% { transform: rotate(1.8deg); }
+}
+@keyframes garden-sway-alt {
+  0%, 100% { transform: rotate(1.2deg); }
+  50% { transform: rotate(-1.6deg); }
+}
+@keyframes garden-shadow-soft {
+  0%, 100% { transform: translateX(-50%) scaleX(0.97); opacity: 0.82; }
+  50% { transform: translateX(-48%) scaleX(1.03); opacity: 1; }
+}
+
+/* 나무: 줄기와 잎이 한 장이라 전체를 아주 작게만 (잎만 크게 흔들면 줄기가 휘어 보임) */
+[data-motion='tree'] .garden-body { animation: garden-tree-breathe 7.5s ease-in-out infinite; }
+[data-motion='tree'] .garden-shadow { animation: garden-tree-shadow 7.5s ease-in-out infinite; }
+
+@keyframes garden-tree-breathe {
+  0%, 100% { transform: rotate(-0.35deg) scale(1); }
+  50% { transform: rotate(0.45deg) scale(1.004); }
+}
+@keyframes garden-tree-shadow {
+  0%, 100% { transform: translateX(-50%) scaleX(0.99); }
+  50% { transform: translateX(-50%) scaleX(1.015); }
+}
+
+/* 구름: 제자리 주변을 천천히 떠다님 */
+[data-motion='drift'] .garden-body { animation: garden-cloud-drift 18s ease-in-out infinite alternate; }
+
+@keyframes garden-cloud-drift {
+  from { transform: translate3d(-8%, 0, 0); }
+  to { transform: translate3d(10%, 2%, 0); }
+}
+
+/* 햇님: 은은한 숨쉬기 */
+[data-motion='breathe'] .garden-body { animation: garden-sun-breathe 5.5s ease-in-out infinite; }
+
+@keyframes garden-sun-breathe {
+  0%, 100% { transform: scale(0.985); opacity: 0.96; }
+  50% { transform: scale(1.025); opacity: 1; }
+}
+
+/* 나비: 곡선 비행(래퍼) + 날갯짓(이미지) — 한 요소에 합치면 서로 덮어써서 분리 */
+[data-motion='fly'] .garden-body { animation: garden-fly 7.2s ease-in-out infinite alternate; }
+[data-motion='fly'] .garden-body img { animation: garden-flutter 0.55s ease-in-out infinite alternate; }
+
+@keyframes garden-fly {
+  0% { transform: translate3d(-10%, 4%, 0) rotate(-3deg); }
+  32% { transform: translate3d(6%, -8%, 0) rotate(2deg); }
+  65% { transform: translate3d(13%, 3%, 0) rotate(4deg); }
+  100% { transform: translate3d(-4%, -4%, 0) rotate(-2deg); }
+}
+@keyframes garden-flutter {
+  from { transform: scaleX(0.95) scaleY(1.01); }
+  to { transform: scaleX(1) scaleY(0.99); }
+}
+
+/* 새: 이따금 콕콕 갸웃 */
+[data-motion='nod'] .garden-body {
+  animation: garden-bird-nod 4.6s ease-in-out infinite;
+  transform-origin: 46% 72%;
+}
+
+@keyframes garden-bird-nod {
+  0%, 66%, 100% { transform: rotate(0deg) translateY(0); }
+  72% { transform: rotate(3deg) translateY(1%); }
+  78% { transform: rotate(-1.5deg) translateY(0); }
+  84% { transform: rotate(2deg) translateY(1%); }
+}
+
+/* 연못: 본체는 고정, 수면 반짝임만 흐름 */
+[data-motion='pond'] .garden-body::after {
+  content: '';
+  position: absolute;
+  inset: 27% 17% 30%;
+  border-radius: 50%;
+  background: linear-gradient(105deg, transparent 25%, rgba(255, 255, 255, 0.28) 46%, transparent 62%);
+  transform: translateX(-40%);
+  mix-blend-mode: screen;
+  animation: garden-pond-shimmer 5.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes garden-pond-shimmer {
+  0%, 18% { transform: translateX(-45%); opacity: 0; }
+  35% { opacity: 0.75; }
+  62% { transform: translateX(45%); opacity: 0.35; }
+  78%, 100% { transform: translateX(45%); opacity: 0; }
+}
+
+/* 새로 열린 요소: 한 번만 등장 연출 */
+.garden-item--new .garden-body {
+  animation: garden-unlock 700ms cubic-bezier(0.2, 0.85, 0.3, 1.18) both;
+}
+.garden-item--new[data-motion] .garden-body {
+  animation: garden-unlock 700ms cubic-bezier(0.2, 0.85, 0.3, 1.18) both;
+}
+
+@keyframes garden-unlock {
+  from { opacity: 0; transform: translateY(10%) scale(0.72); }
+  65% { opacity: 1; transform: translateY(-2%) scale(1.04); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 접근성: 동작 줄이기 설정 시 정원 전체 정지 */
+@media (prefers-reduced-motion: reduce) {
+  .garden-scene *,
+  .garden-scene *::before,
+  .garden-scene *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

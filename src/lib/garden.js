@@ -21,17 +21,19 @@ export function countSeasonCompleted(history, season) {
 
 // 여름 정원 요소 — 열리는 순서대로. 초반은 촘촘히, 뒤로 갈수록 느슨하게.
 // 퇴보 없음: 한번 열린 요소는 사라지지 않는다 (쉬어간 날 페널티 없음 원칙)
+// x·y: 배경 왼쪽 위 기준 % (요소 중심점) / w: 컨테이너 너비 대비 % / z: 겹침 순서
+// motion: garden.css의 애니메이션 종류 / shadow: 접지 그림자 종류 (하늘 요소는 none — 본체 drop-shadow만)
 export const GARDEN_ELEMENTS = [
-  { id: 'sprout', name: '새싹', threshold: 2 },
-  { id: 'cloud', name: '구름', threshold: 5 },
-  { id: 'flower-a', name: '여름 꽃', threshold: 9 },
-  { id: 'butterfly', name: '나비', threshold: 14 },
-  { id: 'tree-small', name: '작은 나무', threshold: 20 },
-  { id: 'sun', name: '햇님', threshold: 27 },
-  { id: 'flower-b', name: '들꽃', threshold: 36 },
-  { id: 'bird', name: '새', threshold: 47 },
-  { id: 'pond', name: '연못', threshold: 60 },
-  { id: 'tree-big', name: '큰 나무', threshold: 75 },
+  { id: 'sprout', name: '새싹', threshold: 2, file: 'garden-sprout.png', x: 42, y: 84, w: 8, motion: 'sway', shadow: 'ground-sm', z: 32 },
+  { id: 'cloud', name: '구름', threshold: 5, file: 'garden-cloud.png', x: 18, y: 16, w: 18, motion: 'drift', shadow: 'none', z: 10 },
+  { id: 'flower-a', name: '여름 꽃', threshold: 9, file: 'garden-flower-a.png', x: 30, y: 78, w: 10, motion: 'sway', shadow: 'ground-sm', z: 34 },
+  { id: 'butterfly', name: '나비', threshold: 14, file: 'garden-butterfly.png', x: 35, y: 60, w: 9, motion: 'fly', shadow: 'none', z: 45 },
+  { id: 'tree-small', name: '작은 나무', threshold: 20, file: 'garden-tree-small.png', x: 80, y: 62, w: 16, motion: 'tree', shadow: 'ground-md', z: 25 },
+  { id: 'sun', name: '햇님', threshold: 27, file: 'garden-sun.png', x: 78, y: 14, w: 13, motion: 'breathe', shadow: 'none', z: 8 },
+  { id: 'flower-b', name: '들꽃', threshold: 36, file: 'garden-flower-b.png', x: 63, y: 80, w: 10, motion: 'sway-alt', shadow: 'ground-sm', z: 35 },
+  { id: 'bird', name: '새', threshold: 47, file: 'garden-bird.png', x: 76, y: 50, w: 9, motion: 'nod', shadow: 'none', z: 44 },
+  { id: 'pond', name: '연못', threshold: 60, file: 'garden-pond.png', x: 52, y: 91, w: 28, motion: 'pond', shadow: 'ground-wide', z: 20, wide: true },
+  { id: 'tree-big', name: '큰 나무', threshold: 75, file: 'garden-tree-big.png', x: 14, y: 58, w: 32, motion: 'tree', shadow: 'ground-lg', z: 24 },
 ]
 
 export function getUnlockedElements(count) {
