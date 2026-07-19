@@ -278,6 +278,7 @@ S0 진입 → S1 코치 선택 → S2 마음 날씨 → S3 루틴 홈 → S4 코
 - **경량화 여지**: complete-banner.png 389KB(PNG) → JPG 전환 시 더 작아짐
 - **UX 개선 여지**: 설정 닉네임 "변경"이 window.prompt 기반 → 인라인 입력으로 개선 가능
 - **미리보기**: 로컬은 `npm run dev`(base `/onemove/`). 새 세션에서 화면 확인 시 dev 서버 띄워 검증할 것 (사용자는 비개발자라 결과 화면으로 판단)
+- **실화면 스크린샷**: `npm i puppeteer --no-save` 후 헤드리스 촬영 가능 (Chrome 시스템 라이브러리 설치됨, ~/.cache/puppeteer에 브라우저 캐시). 온보딩 건너뛰기는 evaluateOnNewDocument로 onemove_coach·onemove_state(날짜 키 형식) 시딩. 주의: `npm i <pkg> --no-save`는 기존 임시 패키지를 지우므로 jimp와 동시 필요 시 한 명령으로 설치
 
 ## 주의사항
 - .env.local 절대 커밋 금지
