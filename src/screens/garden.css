@@ -46,8 +46,7 @@
 .garden-shadow--ground-wide { width: 88%; height: 14%; bottom: 5%; filter: blur(10px); background: rgba(34, 48, 42, 0.11); }
 
 /* 하늘·공중 요소는 타원 그림자 대신 본체에 약한 그림자/발광만 */
-.garden-item--butterfly .garden-body img,
-.garden-item--bird .garden-body img {
+.garden-item--butterfly .garden-body img {
   filter: drop-shadow(0 4px 5px rgba(34, 48, 42, 0.1));
 }
 .garden-item--cloud .garden-body img {
