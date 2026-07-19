@@ -15,6 +15,8 @@ export default function GardenScreen() {
   const unlocked = getUnlockedElements(count)
   const next = getNextElement(count)
 
+  const [showAlbumInfo, setShowAlbumInfo] = useState(false)
+
   // 마지막으로 본 완료 수 이후 새로 열린 요소만 등장 연출 (1초 뒤 상시 움직임으로 전환)
   const [newIds, setNewIds] = useState(() => {
     const seen = isPreview ? 0 : storage.getGardenSeen()
@@ -93,7 +95,7 @@ export default function GardenScreen() {
         {/* 성장 현황 */}
         <div style={{ background: '#FFFFFF', borderRadius: 16, padding: '13px 16px', boxShadow: CARD_SHADOW, marginTop: 14 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: 14, fontWeight: 700, color: '#24523F' }}>이번 {season.name} 완료 {count}개</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#24523F' }}>이번 {season.name}에 완료한 루틴 {count}개</span>
             <span style={{ fontSize: 12, fontWeight: 500, color: '#9AA39C' }}>
               요소 {unlocked.length} / {GARDEN_ELEMENTS.length}
             </span>
@@ -111,7 +113,7 @@ export default function GardenScreen() {
                 />
               </div>
               <p style={{ fontSize: 12, fontWeight: 500, color: '#8A9E94', margin: '7px 0 0' }}>
-                다음 요소 '{next.name}'까지 {next.threshold - count}개 남았어요
+                루틴 {next.threshold - count}개를 더 완료하면 '{next.name}'이(가) 정원에 와요
               </p>
             </>
           ) : (
@@ -119,15 +121,81 @@ export default function GardenScreen() {
               이번 {season.name} 정원의 요소가 모두 열렸어요
             </p>
           )}
+
+          {/* 요소 도감: 열린 요소는 썸네일, 안 열린 요소는 물음표 원 */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
+            {unlocked.map((el) => (
+              <div
+                key={el.id}
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: '50%',
+                  background: '#F4F8F3',
+                  border: '1.5px solid #DCE7DD',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  overflow: 'hidden',
+                }}
+              >
+                <img src={`/onemove/images/${el.file}`} alt={el.name} style={{ width: 32, height: 32, objectFit: 'contain', display: 'block' }} />
+              </div>
+            ))}
+            {GARDEN_ELEMENTS.filter((el) => count < el.threshold).map((el) => (
+              <div
+                key={el.id}
+                aria-label="아직 열리지 않은 요소"
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: '50%',
+                  border: '1.5px dashed #CFC8BD',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#C4BCB0',
+                  fontSize: 15,
+                  fontWeight: 700,
+                }}
+              >
+                ?
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* 앨범 안내 */}
+        {/* 앨범 안내 — 설명은 물음표 버튼으로 접어둠 */}
         <div style={{ background: '#FFFFFF', borderRadius: 16, padding: '13px 16px', boxShadow: CARD_SHADOW, marginTop: 12 }}>
-          <p style={{ fontSize: 14, fontWeight: 700, color: '#24523F', margin: 0 }}>사계절 앨범</p>
-          <p style={{ fontSize: 12, fontWeight: 500, color: '#8A9E94', margin: '3px 0 0', lineHeight: 1.55 }}>
-            {season.name}이 끝나면 완성된 정원이 앨범에 한 장으로 저장되고, 새 계절 정원이 시작돼요.
-            열심히 못 한 계절도 그 계절만큼의 정원으로 남아요.
-          </p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: '#24523F', margin: 0 }}>사계절 앨범</p>
+            <button
+              onClick={() => setShowAlbumInfo((v) => !v)}
+              aria-label="사계절 앨범 설명 보기"
+              aria-expanded={showAlbumInfo}
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: '50%',
+                border: '1.5px solid #DCD5C9',
+                background: showAlbumInfo ? '#F0EDE8' : '#FFFFFF',
+                color: '#9AA69D',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+                lineHeight: 1,
+                padding: 0,
+              }}
+            >
+              ?
+            </button>
+          </div>
+          {showAlbumInfo && (
+            <p style={{ fontSize: 12, fontWeight: 500, color: '#8A9E94', margin: '8px 0 0', lineHeight: 1.55 }}>
+              {season.name}이 끝나면 완성된 정원이 앨범에 한 장으로 저장되고, 새 계절 정원이 시작돼요.
+              열심히 못 한 계절도 그 계절만큼의 정원으로 남아요.
+            </p>
+          )}
         </div>
       </div>
     </div>
