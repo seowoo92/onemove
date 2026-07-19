@@ -119,7 +119,8 @@ S0 진입 → S1 코치 선택 → S2 마음 날씨 → S3 루틴 홈 → S4 코
 - 별도 저장 없음 — onemove_history(게스트)/daily_entries(로그인)에서 계산. 요소 정의(배치 %좌표·모션·그림자 종류)·계절 계산은 src/lib/garden.js
 - **본 화면 구현됨 (7/19)**: 4:3 장면(배경 garden-summer-bg.jpg) 위에 언락 요소를 %좌표 자동 배치. **본체·접지 그림자 분리** — 에셋엔 자체 음영만, 타원 그림자는 CSS(바닥 요소만, 하늘 요소는 drop-shadow/발광). 상시 애니메이션(garden.css): 꽃 살랑·나무 호흡·구름 부유·햇님 숨쉬기·나비 곡선 비행+날갯짓·새 갸웃·연못 반짝임, prefers-reduced-motion 시 정지. 새로 열린 요소는 onemove_garden_seen 비교로 1회 등장 연출
 - **?garden=숫자** URL 파라미터: 완료 수 가상 지정 미리보기 (개발 확인·발표 데모용, 저장 영향 없음)
-- 에셋: public/images/garden-*.png 10종 + garden-summer-bg.jpg (원본·QC 자료: docs/design/garden/)
+- 에셋: public/images/garden-summer-*.png 10종 + garden-summer-bg.jpg — **여름 최종 세트 (7/19 확정)**: 재생성 7장(무광 펠트 질감·여름 녹음·수국/해바라기 군락) + 유지 4장(해·새·나비·연못). 계절 접두사 네이밍(garden-{season}-{slot}), 마젠타 원본: docs/design/garden/summer-src/
+- 마젠타 배경 제거 파이프라인: 테두리 flood-fill + 프린지 정리 + 고립 마젠타 제거 (수국처럼 보라 계열 에셋은 고립 제거 패스 제외 주의)
 
 ### 기록 탭 (RecordScreen.jsx) — 대시보드
 - **월간 마음 날씨 캘린더** (MonthCalendar.jsx): 날짜 칸에 그날 날씨 아이콘, ◀▶ 월 이동(미래 달 불가), 오늘 칸 연녹 하이라이트, 하단에 그 달 요약(기록일·완료 수)
