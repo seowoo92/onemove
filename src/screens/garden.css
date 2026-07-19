@@ -105,6 +105,17 @@
   to { transform: translate3d(10%, 2%, 0); }
 }
 
+/* 구름 가로지르기: 오른쪽 밖에서 왼쪽 밖으로 두둥실 (일정 속도 + 잔잔한 상하 흔들림) */
+[data-motion='cross'] .garden-body { animation: garden-cloud-cross 75s linear infinite; }
+
+@keyframes garden-cloud-cross {
+  0% { transform: translate3d(240%, 0, 0); }
+  25% { transform: translate3d(120%, 2.5%, 0); }
+  50% { transform: translate3d(0, 0, 0); }
+  75% { transform: translate3d(-120%, 2.5%, 0); }
+  100% { transform: translate3d(-240%, 0, 0); }
+}
+
 /* 햇님: 은은한 숨쉬기 */
 [data-motion='breathe'] .garden-body { animation: garden-sun-breathe 5.5s ease-in-out infinite; }
 
