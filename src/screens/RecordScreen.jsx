@@ -1,6 +1,7 @@
 import { storage } from '../lib/storage'
 import { getWeatherInfo } from '../lib/weather'
 import { ResponsiveContainer, BarChart, Bar, Cell } from 'recharts'
+import MonthCalendar from '../components/MonthCalendar'
 
 function getTodayStr() {
   const now = new Date()
@@ -37,6 +38,24 @@ const LEGEND = ['좋아요', '보통이에요', '힘들어요'].map((state) => {
   return { image: info.image, label: info.weather }
 })
 
+// 오늘(기록 없으면 어제)부터 거꾸로 이어진 기록 일수
+function getStreak(history, todayStr) {
+  const [y, m, d] = todayStr.split('-').map(Number)
+  let cursor = new Date(y, m - 1, d)
+  const key = (date) => [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, '0'),
+    String(date.getDate()).padStart(2, '0'),
+  ].join('-')
+  if (!history[key(cursor)]) cursor.setDate(cursor.getDate() - 1)
+  let streak = 0
+  while (history[key(cursor)]) {
+    streak += 1
+    cursor.setDate(cursor.getDate() - 1)
+  }
+  return streak
+}
+
 export default function RecordScreen() {
   const history = storage.getHistory()
   const todayStr = getTodayStr()
@@ -56,7 +75,8 @@ export default function RecordScreen() {
     .filter(dateStr => !!history[dateStr])
     .reverse()
 
-  const hasAnyRecord = timelineEntries.length > 0
+  const hasAnyRecord = Object.keys(history).length > 0
+  const streak = getStreak(history, todayStr)
 
   return (
     <div className="h-full" style={{ backgroundColor: '#FAF6F0' }}>
@@ -64,11 +84,24 @@ export default function RecordScreen() {
       <div className="w-full max-w-[480px] mx-auto px-6 pt-6 pb-24">
 
         {/* 헤더 */}
-        <h2 className="text-2xl font-bold mb-1" style={{ color: '#24523F' }}>기록</h2>
-        <p className="text-xs mb-6" style={{ color: '#8A9E94' }}>최근 14일 · 멈춘 날도 기록이에요</p>
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="text-2xl font-bold" style={{ color: '#24523F' }}>기록</h2>
+          {streak >= 2 && (
+            <span
+              className="text-xs rounded-full px-3 py-1.5"
+              style={{ backgroundColor: '#EFF4EE', color: '#24523F', fontWeight: 700 }}
+            >
+              {streak}일 연속 기록 중
+            </span>
+          )}
+        </div>
+        <p className="text-xs mb-6" style={{ color: '#8A9E94' }}>마음 날씨 캘린더 · 멈춘 날도 기록이에요</p>
+
+        {/* 월간 마음 날씨 캘린더 — 기록이 없어도 항상 표시 */}
+        <MonthCalendar history={history} todayStr={todayStr} />
 
         {!hasAnyRecord ? (
-          <p className="text-sm text-center py-16" style={{ color: '#8A9E94' }}>
+          <p className="text-sm text-center py-10" style={{ color: '#8A9E94' }}>
             아직 기록이 없어요. 오늘 첫 루틴을 완료해보세요.
           </p>
         ) : (
