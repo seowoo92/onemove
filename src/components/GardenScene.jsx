@@ -35,7 +35,7 @@ export default function GardenScene({ elements, bg, count, newIds, hiddenIds, ar
           {el.shadow !== 'none' && <span className={`garden-shadow garden-shadow--${el.shadow}`} />}
           <span
             className="garden-body"
-            style={newIds?.has(el.id) ? { animationDelay: `${newList.indexOf(el.id) * 0.13}s` } : undefined}
+            style={newIds?.has(el.id) ? { animationDelay: `${newList.indexOf(el.id) * 0.22}s` } : undefined}
           >
             <img src={`/onemove/images/${el.file}`} alt="" draggable="false" decoding="async" />
           </span>

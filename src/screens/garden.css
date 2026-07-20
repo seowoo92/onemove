@@ -172,17 +172,16 @@
   78%, 100% { transform: translateX(45%); opacity: 0; }
 }
 
-/* 새로 열린 요소: 한 번만 등장 연출 */
+/* 새로 열린 요소: 한 번만 등장 연출 — 바운스 없이 아래에서 부드럽게 떠오르며 스르르 */
 .garden-item--new .garden-body {
-  animation: garden-unlock 700ms cubic-bezier(0.2, 0.85, 0.3, 1.18) both;
+  animation: garden-unlock 1100ms cubic-bezier(0.25, 0.6, 0.3, 1) both;
 }
 .garden-item--new[data-motion] .garden-body {
-  animation: garden-unlock 700ms cubic-bezier(0.2, 0.85, 0.3, 1.18) both;
+  animation: garden-unlock 1100ms cubic-bezier(0.25, 0.6, 0.3, 1) both;
 }
 
 @keyframes garden-unlock {
-  from { opacity: 0; transform: translateY(10%) scale(0.72); }
-  65% { opacity: 1; transform: translateY(-2%) scale(1.04); }
+  from { opacity: 0; transform: translateY(4%) scale(0.94); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 

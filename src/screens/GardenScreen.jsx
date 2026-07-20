@@ -42,7 +42,7 @@ export default function GardenScreen() {
     setRevealIds(pendingIds)
     setPendingIds(new Set())
     // 등장 연출(0.7초 + 스태거)이 끝나면 상시 움직임으로 전환
-    setTimeout(() => setRevealIds(new Set()), 900 + pendingIds.size * 130)
+    setTimeout(() => setRevealIds(new Set()), 1300 + pendingIds.size * 220)
   }
 
   return (
