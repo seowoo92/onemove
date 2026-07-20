@@ -160,8 +160,8 @@ export default function GardenScreen() {
           </div>
           {showAlbumInfo && (
             <p style={{ fontSize: 12, fontWeight: 500, color: '#8A9E94', margin: '8px 0 0', lineHeight: 1.55 }}>
-              {season.name}이 끝나면 완성된 정원이 앨범에 한 장으로 저장되고, 새 계절 정원이 시작돼요.
-              열심히 못 한 계절도 그 계절만큼의 정원으로 남아요.
+              계절이 끝날 때마다 그 계절의 정원이 앨범에 한 장씩 모여요.
+              <br />봄(3~5월) · 여름(6~8월) · 가을(9~11월) · 겨울(12~2월)
             </p>
           )}
           {/* 연도별 페이지: 계절 슬롯 2×2 — 채워진 계절은 폴라로이드, 빈 계절은 점선 프레임 */}
