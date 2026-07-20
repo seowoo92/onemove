@@ -5,6 +5,9 @@ import GardenScene from '../components/GardenScene'
 
 const CARD_SHADOW = '0 8px 18px -14px rgba(36,82,63,.2)'
 
+const SEASON_NAMES = ['봄', '여름', '가을', '겨울']
+const SEASON_EN = { 봄: 'spring', 여름: 'summer', 가을: 'autumn', 겨울: 'winter' }
+
 export default function GardenScreen() {
   const history = storage.getHistory()
   const todayKey = storage.getTodayKey()
@@ -20,13 +23,11 @@ export default function GardenScreen() {
   const [showAlbumInfo, setShowAlbumInfo] = useState(false)
   const [albumOpen, setAlbumOpen] = useState(null) // 열람 중인 지난 계절 | null
 
-  // 앨범: 기록에서 지난 계절 계산 + ?album=숫자 데모 미리보기 (작년 같은 계절 샘플)
+  // 앨범: 기록에서 지난 계절 계산 (별도 저장 없음)
   const pastSeasons = getPastSeasons(history, todayKey)
-  const albumPreview = Number(params.get('album'))
-  if (Number.isFinite(albumPreview) && albumPreview > 0) {
-    pastSeasons.unshift({ key: 'album-preview', name: season.name, year: season.year - 1, count: albumPreview })
-  }
   const albumEntries = pastSeasons.filter((s) => SEASON_SETS[s.name])
+  // 앨범 페이지는 당분간 올해만 표시 (이전 연도는 데이터가 쌓인 뒤 노출 검토 — 사용자 결정 2026-07-20)
+  const albumYears = [season.year]
 
   // 마지막으로 본 완료 수 이후 새로 열린 요소만 등장 연출 (1초 뒤 상시 움직임으로 전환)
   const [newIds, setNewIds] = useState(() => {
@@ -80,7 +81,7 @@ export default function GardenScreen() {
                 />
               </div>
               <p style={{ fontSize: 12, fontWeight: 500, color: '#8A9E94', margin: '7px 0 0' }}>
-                루틴 {next.threshold - count}개를 더 완료하면 '{next.name}'이(가) 정원에 와요
+                루틴 {next.threshold - count}개를 더 완료하면 {next.arrival}
               </p>
             </>
           ) : (
@@ -89,14 +90,13 @@ export default function GardenScreen() {
             </p>
           )}
 
-          {/* 요소 도감: 열린 요소는 썸네일, 안 열린 요소는 물음표 원 */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
+          {/* 요소 도감: 한 줄 10개 — 열린 요소는 썸네일, 안 열린 요소는 물음표 원 */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(10, 1fr)', gap: 4, marginTop: 12 }}>
             {unlocked.map((el) => (
               <div
                 key={el.id}
                 style={{
-                  width: 44,
-                  height: 44,
+                  aspectRatio: '1',
                   borderRadius: '50%',
                   background: '#F4F8F3',
                   border: '1.5px solid #DCE7DD',
@@ -106,7 +106,7 @@ export default function GardenScreen() {
                   overflow: 'hidden',
                 }}
               >
-                <img src={`/onemove/images/${el.file}`} alt={el.name} style={{ width: 32, height: 32, objectFit: 'contain', display: 'block' }} />
+                <img src={`/onemove/images/${el.file}`} alt={el.name} style={{ width: '88%', height: '88%', objectFit: 'contain', display: 'block' }} />
               </div>
             ))}
             {GARDEN_ELEMENTS.filter((el) => count < el.threshold).map((el) => (
@@ -114,15 +114,14 @@ export default function GardenScreen() {
                 key={el.id}
                 aria-label="아직 열리지 않은 요소"
                 style={{
-                  width: 44,
-                  height: 44,
+                  aspectRatio: '1',
                   borderRadius: '50%',
                   border: '1.5px dashed #CFC8BD',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: '#C4BCB0',
-                  fontSize: 15,
+                  fontSize: 12,
                   fontWeight: 700,
                 }}
               >
@@ -163,32 +162,100 @@ export default function GardenScreen() {
               열심히 못 한 계절도 그 계절만큼의 정원으로 남아요.
             </p>
           )}
-          {albumEntries.length === 0 ? (
-            <p style={{ fontSize: 12, fontWeight: 500, color: '#B7AFA4', margin: '8px 0 0' }}>
-              아직 모인 계절이 없어요. {season.name}이 끝나면 첫 장이 저장돼요.
-            </p>
-          ) : (
-            <div style={{ display: 'flex', gap: 10, marginTop: 11, overflowX: 'auto', paddingBottom: 4 }}>
-              {albumEntries.map((s) => (
-                <button
-                  key={s.key}
-                  onClick={() => setAlbumOpen(s)}
-                  aria-label={`${s.year} ${s.name} 정원 열람`}
-                  style={{ flex: 'none', width: 132, background: 'none', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'left' }}
-                >
-                  <GardenScene
-                    elements={SEASON_SETS[s.name].elements}
-                    bg={SEASON_SETS[s.name].bg}
-                    count={s.count}
-                    style={{ borderRadius: 12, pointerEvents: 'none', border: '1px solid #F0EDE8' }}
-                  />
-                  <span style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#5E6F63', marginTop: 5 }}>
-                    {s.year} {s.name}
-                  </span>
-                </button>
-              ))}
+          {/* 연도별 페이지: 계절 슬롯 2×2 — 채워진 계절은 폴라로이드, 빈 계절은 점선 프레임 */}
+          {albumYears.map((year) => (
+            <div key={year}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '13px 0 10px' }}>
+                <span style={{ flex: 1, height: 1, background: '#EDE7DC' }} />
+                <span style={{ fontSize: 12, fontWeight: 800, color: '#9AA69D', letterSpacing: '0.06em' }}>{year}년</span>
+                <span style={{ flex: 1, height: 1, background: '#EDE7DC' }} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                {SEASON_NAMES.map((name, i) => {
+                  const key = `${year}-${SEASON_EN[name]}`
+                  const isCurrent = key === season.key
+                  const filled = isCurrent
+                    ? { key, name, year, count }
+                    : albumEntries.find((s) => s.key === key)
+                  const tilt = [-2.2, 1.8, 1.6, -1.8][i]
+
+                  if (!filled) {
+                    // 계절 시작일과 오늘을 비교 — 미래는 기다림, 과거는 조용히 지나감
+                    const startMonth = { spring: '03', summer: '06', autumn: '09', winter: '12' }[SEASON_EN[name]]
+                    const isFuture = `${year}-${startMonth}-01` > todayKey
+                    return (
+                      <div
+                        key={key}
+                        aria-label={`${year}년 ${name} — 비어 있음`}
+                        style={{
+                          border: '1.5px dashed #D8D1C5',
+                          borderRadius: 10,
+                          minHeight: 132,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 3,
+                        }}
+                      >
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#C4BCB0' }}>{name}</span>
+                        <span style={{ fontSize: 10.5, fontWeight: 500, color: '#D3CCC0' }}>
+                          {isFuture ? '아직 오지 않았어요' : '조용히 지나갔어요'}
+                        </span>
+                      </div>
+                    )
+                  }
+
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => setAlbumOpen(filled)}
+                      aria-label={`${year}년 ${name} 정원 열람`}
+                      style={{
+                        background: '#FFFFFF',
+                        border: 'none',
+                        borderRadius: 6,
+                        padding: '6px 6px 0',
+                        cursor: 'pointer',
+                        boxShadow: '0 5px 14px -6px rgba(36,82,63,.3), 0 1px 3px rgba(36,82,63,.12)',
+                        transform: `rotate(${tilt}deg)`,
+                        position: 'relative',
+                        textAlign: 'center',
+                      }}
+                    >
+                      <GardenScene
+                        elements={SEASON_SETS[name].elements}
+                        bg={SEASON_SETS[name].bg}
+                        count={filled.count}
+                        style={{ borderRadius: 3, pointerEvents: 'none' }}
+                      />
+                      <span style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#5E6F63', padding: '5px 0 7px' }}>
+                        {name}
+                      </span>
+                      {isCurrent && (
+                        <span
+                          style={{
+                            position: 'absolute',
+                            top: -7,
+                            right: -6,
+                            background: '#F3D978',
+                            color: '#5A4B18',
+                            fontSize: 10,
+                            fontWeight: 800,
+                            borderRadius: 999,
+                            padding: '3px 8px',
+                            boxShadow: '0 2px 6px rgba(0,0,0,.12)',
+                          }}
+                        >
+                          가꾸는 중
+                        </span>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
-          )}
+          ))}
         </div>
       </div>
 
