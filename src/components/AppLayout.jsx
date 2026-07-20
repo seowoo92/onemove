@@ -74,11 +74,11 @@ function ScrollHint({ scrollRef, bottom }) {
       <style>{`@keyframes scrollHintBob{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}`}</style>
       <div
         style={{
-          width: 36,
-          height: 36,
+          width: 30,
+          height: 30,
           borderRadius: '50%',
-          backgroundColor: '#24523F',
-          boxShadow: '0 8px 18px -5px rgba(36,82,63,.5)',
+          backgroundColor: 'rgba(36,82,63,.55)',
+          boxShadow: '0 6px 14px -6px rgba(36,82,63,.4)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -129,7 +129,10 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             }}
           />
         )}
-        {/* ScrollHint는 당분간 비표시 — 탭 화면들이 한 화면에 정돈돼 스크롤 안내가 불필요 (2026-07-20 사용자 결정) */}
+        {/* ScrollHint: 스크롤 콘텐츠가 있는 기록 탭에서만 표시 (2026-07-21) */}
+        {showTabBar && activeTab === 'record' && (
+          <ScrollHint scrollRef={null} bottom={'calc(64px + max(calc(env(safe-area-inset-bottom) - 12px), 5px))'} />
+        )}
       </>
     )
   }
@@ -242,6 +245,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
                 style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40 }}
               />
             )}
+            {showTabBar && activeTab === 'record' && <ScrollHint scrollRef={bezelRef} bottom={66} />}
           </div>
         </div>
       </div>

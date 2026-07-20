@@ -128,13 +128,13 @@ export default function RecordScreen() {
         ) : (
           <>
             {/* 2. 그래프 카드: 내부 좌우 여백 확보, 범례 간격 추가 */}
-            <div className="rounded-2xl p-5 mb-6" style={{ backgroundColor: '#FFFFFF' }}>
-              <div className="flex items-center justify-between mb-4">
+            <div className="rounded-2xl p-4 mb-3" style={{ backgroundColor: '#FFFFFF' }}>
+              <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-semibold" style={{ color: '#22302A' }}>최근 14일</span>
                 <span className="text-xs" style={{ color: '#9AA39C' }}>완료율 · 마음 날씨</span>
               </div>
 
-              <ResponsiveContainer width="100%" height={160}>
+              <ResponsiveContainer width="100%" height={140}>
                 <BarChart
                   data={chartData}
                   barCategoryGap="35%"
@@ -150,7 +150,7 @@ export default function RecordScreen() {
               </ResponsiveContainer>
 
               {/* 범례: mt-3→mt-5 */}
-              <div className="flex items-center justify-center gap-5 mt-5">
+              <div className="flex items-center justify-center gap-5 mt-2">
                 {LEGEND.map(({ image, label }) => (
                   <div key={label} className="flex items-center gap-1.5">
                     <img

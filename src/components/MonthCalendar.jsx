@@ -43,9 +43,9 @@ export default function MonthCalendar({ history, todayStr }) {
   })
 
   return (
-    <div className="rounded-2xl p-5 mb-4" style={{ backgroundColor: '#FFFFFF' }}>
+    <div className="rounded-2xl p-4 mb-3" style={{ backgroundColor: '#FFFFFF' }}>
       {/* 월 이동 헤더 */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-2">
         <button onClick={() => move(-1)} style={navBtn(false)} aria-label="이전 달">‹</button>
         <span className="text-sm font-bold" style={{ color: '#22302A' }}>
           {ym.y}년 {ym.m}월
@@ -105,7 +105,7 @@ export default function MonthCalendar({ history, todayStr }) {
       </div>
 
       {/* 이 달 요약 */}
-      <div className="flex items-center justify-center gap-4 mt-3 pt-3" style={{ borderTop: '1px solid #F0EDE8' }}>
+      <div className="flex items-center justify-center gap-4 mt-2 pt-2" style={{ borderTop: '1px solid #F0EDE8' }}>
         <span style={{ fontSize: 12, fontWeight: 600, color: '#8A9E94' }}>
           기록 <span style={{ color: '#24523F', fontWeight: 800 }}>{monthEntries.length}</span>일
         </span>
