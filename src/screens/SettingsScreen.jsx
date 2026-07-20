@@ -3,6 +3,7 @@ import { storage } from '../lib/storage'
 import { supabase } from '../lib/supabase'
 import { KAKAO_SCOPES } from '../lib/kakao'
 import { COACH_INFO } from '../lib/coaches'
+import ScreenHeader from '../components/ScreenHeader'
 
 const CRISIS = [
   { name: '국립정신건강센터\n정신건강상담', number: '1577-0199', tel: '1577-0199' },
@@ -61,7 +62,7 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
   return (
     <div style={{ minHeight: '100%', backgroundColor: '#FAF6F0' }}>
       <div style={{ width: '100%', maxWidth: 480, margin: '0 auto', padding: '8px 20px 14px' }}>
-        <h2 style={{ fontSize: 23, fontWeight: 800, color: '#24523F', margin: '0 0 12px' }}>설정</h2>
+        <ScreenHeader title="설정" subtitle="알림과 코치를 나에게 맞게" />
 
         {/* 프로필 헤더 */}
         <div style={{ background: '#fff', borderRadius: 20, padding: '15px 18px', boxShadow: CARD_SHADOW }}>

@@ -109,7 +109,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             backgroundColor: '#FAF6F0',
             boxShadow: mode === 'tablet' ? '0 8px 30px rgba(0,0,0,0.08)' : 'none',
           }}>
-            <div style={{ paddingTop: '6px', paddingBottom: showTabBar ? 'calc(66px + env(safe-area-inset-bottom))' : 0, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ paddingTop: '6px', paddingBottom: showTabBar ? 'calc(58px + env(safe-area-inset-bottom))' : 0, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
               {children}
             </div>
           </div>
@@ -129,7 +129,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             }}
           />
         )}
-        <ScrollHint scrollRef={null} bottom={showTabBar ? 'calc(72px + env(safe-area-inset-bottom))' : 18} />
+        {/* ScrollHint는 당분간 비표시 — 탭 화면들이 한 화면에 정돈돼 스크롤 안내가 불필요 (2026-07-20 사용자 결정) */}
       </>
     )
   }
@@ -232,7 +232,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             className="[&::-webkit-scrollbar]:hidden"
             style={{ height: '812px', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'none', backgroundColor: '#FAF6F0' }}
           >
-            <div style={{ paddingTop: '48px', paddingLeft: '8px', paddingRight: '8px', paddingBottom: showTabBar ? '66px' : 0, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ paddingTop: '48px', paddingLeft: '8px', paddingRight: '8px', paddingBottom: showTabBar ? '58px' : 0, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
               {children}
             </div>
             {showTabBar && (
@@ -242,7 +242,6 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
                 style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40 }}
               />
             )}
-            <ScrollHint scrollRef={bezelRef} bottom={showTabBar ? 64 : 18} />
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@ import { storage } from '../lib/storage'
 import { getWeatherInfo } from '../lib/weather'
 import { ResponsiveContainer, BarChart, Bar, Cell } from 'recharts'
 import MonthCalendar from '../components/MonthCalendar'
+import ScreenHeader from '../components/ScreenHeader'
 
 function getTodayStr() {
   const now = new Date()
@@ -81,21 +82,20 @@ export default function RecordScreen() {
   return (
     <div className="h-full" style={{ backgroundColor: '#FAF6F0' }}>
       {/* 1. pt-10→pt-16, px-5→px-6 */}
-      <div className="w-full max-w-[480px] mx-auto px-6 pt-6 pb-24">
+      <div className="w-full max-w-[480px] mx-auto px-5 pt-2 pb-24">
 
-        {/* 헤더 */}
-        <div className="flex items-center justify-between mb-1">
-          <h2 className="text-2xl font-bold" style={{ color: '#24523F' }}>기록</h2>
-          {streak >= 2 && (
+        <ScreenHeader
+          title="기록"
+          subtitle="마음 날씨 캘린더 · 멈춘 날도 기록이에요"
+          right={streak >= 2 ? (
             <span
               className="text-xs rounded-full px-3 py-1.5"
               style={{ backgroundColor: '#EFF4EE', color: '#24523F', fontWeight: 700 }}
             >
               {streak}일 연속 기록 중
             </span>
-          )}
-        </div>
-        <p className="text-xs mb-6" style={{ color: '#8A9E94' }}>마음 날씨 캘린더 · 멈춘 날도 기록이에요</p>
+          ) : null}
+        />
 
         {/* 월간 마음 날씨 캘린더 — 기록이 없어도 항상 표시 */}
         <MonthCalendar history={history} todayStr={todayStr} />

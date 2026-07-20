@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { storage } from '../lib/storage'
 import { getSeason, countSeasonCompleted, GARDEN_ELEMENTS, getUnlockedElements, getNextElement, SEASON_SETS, getPastSeasons } from '../lib/garden'
 import GardenScene from '../components/GardenScene'
+import ScreenHeader from '../components/ScreenHeader'
 
 const CARD_SHADOW = '0 8px 18px -14px rgba(36,82,63,.2)'
 
@@ -44,10 +45,7 @@ export default function GardenScreen() {
   return (
     <div style={{ minHeight: '100%', backgroundColor: '#FAF6F0' }}>
       <div style={{ width: '100%', maxWidth: 480, margin: '0 auto', padding: '8px 20px 16px' }}>
-        <h2 style={{ fontSize: 23, fontWeight: 800, color: '#24523F', margin: '0 0 2px' }}>나의 정원</h2>
-        <p style={{ fontSize: 12, fontWeight: 500, color: '#8A9E94', margin: '0 0 16px' }}>
-          {season.year} {season.name} · 루틴을 완료하면 정원이 자라나요
-        </p>
+        <ScreenHeader title="나의 정원" subtitle={`${season.year} ${season.name} · 루틴을 완료하면 정원이 자라나요`} />
 
         {/* 이번 계절 정원 장면 — 요소들이 상시로 살아 움직임 */}
         <GardenScene
