@@ -1,13 +1,13 @@
 const ICONS = {
   home: (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M4 10.8L12 4l8 6.8" />
       <path d="M6 10v9.5h12V10" />
       <path d="M10 19.5V14h4v5.5" />
     </svg>
   ),
   garden: (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M12 20v-7" />
       <path d="M12 13c0-3.2-2.3-5.5-5.8-5.5C6.2 11 8.5 13 12 13Z" />
       <path d="M12 11c0-2.8 2-4.8 5-4.8C17 9.2 15 11 12 11Z" />
@@ -15,7 +15,7 @@ const ICONS = {
     </svg>
   ),
   record: (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <rect x="5" y="4" width="14" height="17" rx="2.6" />
       <path d="M9 9h6" />
       <path d="M9 13h6" />
@@ -23,7 +23,7 @@ const ICONS = {
     </svg>
   ),
   settings: (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M4 8h11" />
       <path d="M19 8h1" />
       <circle cx="16" cy="8" r="2.3" fill="#FFFFFF" />
@@ -46,7 +46,7 @@ export default function TabBar({ activeTab, onTabChange, style }) {
     <div
       style={{
         display: 'flex',
-        padding: '5px 0 calc(1px + env(safe-area-inset-bottom))',
+        padding: '4px 0 max(calc(env(safe-area-inset-bottom) - 12px), 5px)',
         backgroundColor: '#FFFFFF',
         borderTop: '1px solid #ECE6DC',
         ...style,
@@ -64,13 +64,13 @@ export default function TabBar({ activeTab, onTabChange, style }) {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 3,
+              gap: 2,
               color: active ? '#24523F' : '#9AA39C',
               cursor: 'pointer',
             }}
           >
             {ICONS[key]}
-            <span style={{ fontSize: '12.5px', fontWeight: active ? 800 : 500 }}>{label}</span>
+            <span style={{ fontSize: '13.5px', fontWeight: active ? 800 : 500 }}>{label}</span>
           </div>
         )
       })}

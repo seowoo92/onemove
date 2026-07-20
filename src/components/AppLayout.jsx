@@ -109,7 +109,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             backgroundColor: '#FAF6F0',
             boxShadow: mode === 'tablet' ? '0 8px 30px rgba(0,0,0,0.08)' : 'none',
           }}>
-            <div style={{ paddingTop: '6px', paddingBottom: showTabBar ? 'calc(58px + env(safe-area-inset-bottom))' : 0, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ paddingTop: '6px', paddingBottom: showTabBar ? 'calc(56px + max(calc(env(safe-area-inset-bottom) - 12px), 5px))' : 0, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
               {children}
             </div>
           </div>
