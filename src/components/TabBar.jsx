@@ -46,7 +46,7 @@ export default function TabBar({ activeTab, onTabChange, style }) {
     <div
       style={{
         display: 'flex',
-        height: '56px',
+        padding: '9px 0 calc(9px + env(safe-area-inset-bottom))',
         backgroundColor: '#FFFFFF',
         borderTop: '1px solid #ECE6DC',
         ...style,

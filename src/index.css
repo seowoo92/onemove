@@ -10,5 +10,7 @@
   body {
     font-family: 'Pretendard Variable', -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
+    /* 모바일 상태바·오버스크롤 영역까지 크림색으로 (데스크톱·태블릿은 각 레이아웃이 흰 배경을 덮음) */
+    background-color: #faf6f0;
   }
 }

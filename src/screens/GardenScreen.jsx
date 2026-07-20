@@ -43,8 +43,8 @@ export default function GardenScreen() {
 
   return (
     <div style={{ minHeight: '100%', backgroundColor: '#FAF6F0' }}>
-      <div style={{ width: '100%', maxWidth: 480, margin: '0 auto', padding: '8px 20px 96px' }}>
-        <h2 style={{ fontSize: 23, fontWeight: 800, color: '#24523F', margin: '0 0 2px' }}>정원</h2>
+      <div style={{ width: '100%', maxWidth: 480, margin: '0 auto', padding: '8px 20px 16px' }}>
+        <h2 style={{ fontSize: 23, fontWeight: 800, color: '#24523F', margin: '0 0 2px' }}>나의 정원</h2>
         <p style={{ fontSize: 12, fontWeight: 500, color: '#8A9E94', margin: '0 0 16px' }}>
           {season.year} {season.name} · 루틴을 완료하면 정원이 자라나요
         </p>
@@ -261,6 +261,13 @@ export default function GardenScreen() {
               </div>
             </div>
           ))}
+
+          {/* 다음 해 자리 미리 마련 — 표기만 (해마다 새 계절 요소로 이어지는 로드맵) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '14px 0 2px' }}>
+            <span style={{ flex: 1, height: 1, background: '#EDE7DC' }} />
+            <span style={{ fontSize: 12, fontWeight: 800, color: '#C9C2B6', letterSpacing: '0.06em' }}>{season.year + 1}년</span>
+            <span style={{ flex: 1, height: 1, background: '#EDE7DC' }} />
+          </div>
         </div>
       </div>
 

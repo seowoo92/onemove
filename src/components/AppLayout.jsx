@@ -101,7 +101,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
   if (mode !== 'desktop') {
     return (
       <>
-        <div style={{ height: '100vh', backgroundColor: '#FFFFFF', display: 'flex', justifyContent: 'center' }}>
+        <div style={{ height: '100vh', backgroundColor: mode === 'tablet' ? '#FFFFFF' : '#FAF6F0', display: 'flex', justifyContent: 'center' }}>
           <div style={{
             width: '100%',
             maxWidth: mode === 'tablet' ? '480px' : '100%',
@@ -109,7 +109,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             backgroundColor: '#FAF6F0',
             boxShadow: mode === 'tablet' ? '0 8px 30px rgba(0,0,0,0.08)' : 'none',
           }}>
-            <div style={{ paddingTop: '16px', paddingBottom: showTabBar ? '56px' : 0, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ paddingTop: '6px', paddingBottom: showTabBar ? 'calc(66px + env(safe-area-inset-bottom))' : 0, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
               {children}
             </div>
           </div>
@@ -129,7 +129,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             }}
           />
         )}
-        <ScrollHint scrollRef={null} bottom={showTabBar ? 64 : 18} />
+        <ScrollHint scrollRef={null} bottom={showTabBar ? 'calc(72px + env(safe-area-inset-bottom))' : 18} />
       </>
     )
   }
@@ -232,7 +232,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             className="[&::-webkit-scrollbar]:hidden"
             style={{ height: '812px', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'none', backgroundColor: '#FAF6F0' }}
           >
-            <div style={{ paddingTop: '48px', paddingLeft: '8px', paddingRight: '8px', paddingBottom: showTabBar ? '56px' : 0, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ paddingTop: '48px', paddingLeft: '8px', paddingRight: '8px', paddingBottom: showTabBar ? '66px' : 0, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
               {children}
             </div>
             {showTabBar && (
