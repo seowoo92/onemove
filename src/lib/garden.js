@@ -43,3 +43,23 @@ export function getUnlockedElements(count) {
 export function getNextElement(count) {
   return GARDEN_ELEMENTS.find((el) => count < el.threshold) ?? null
 }
+
+// 계절별 에셋 세트 — 가을·겨울·봄은 에셋 도착 시 등록 (docs/garden-asset-guide.md 1절)
+export const SEASON_SETS = {
+  여름: { bg: 'garden-summer-bg.jpg', elements: GARDEN_ELEMENTS },
+}
+
+// 앨범: 기록에서 지난 계절들을 계산 (별도 저장 없음 — 로그인 사용자는 동기화로 자동 복원)
+// 완료가 1개라도 있는 계절만, 최신순
+export function getPastSeasons(history, todayKey) {
+  const currentKey = getSeason(todayKey).key
+  const map = new Map()
+  for (const [date, entry] of Object.entries(history)) {
+    const s = getSeason(date)
+    if (s.key === currentKey) continue
+    const acc = map.get(s.key) ?? { ...s, count: 0 }
+    acc.count += entry.completed?.length ?? 0
+    map.set(s.key, acc)
+  }
+  return [...map.values()].filter((s) => s.count > 0).sort((a, b) => (a.start < b.start ? 1 : -1))
+}
