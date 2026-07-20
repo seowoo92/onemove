@@ -3,6 +3,7 @@ import { getWeatherInfo } from '../lib/weather'
 import { ResponsiveContainer, BarChart, Bar, Cell } from 'recharts'
 import MonthCalendar from '../components/MonthCalendar'
 import ScreenHeader from '../components/ScreenHeader'
+import { buildDemoHistory } from '../lib/demoRecord'
 
 function getTodayStr() {
   const now = new Date()
@@ -58,8 +59,10 @@ function getStreak(history, todayStr) {
 }
 
 export default function RecordScreen() {
-  const history = storage.getHistory()
   const todayStr = getTodayStr()
+  // ?record=demo — 발표 시연용 데모 기록 (실제 저장 데이터 영향 없음)
+  const isDemo = new URLSearchParams(window.location.search).get('record') === 'demo'
+  const history = isDemo ? buildDemoHistory(todayStr) : storage.getHistory()
   const last14 = getLast14Days()
 
   const chartData = last14.map(dateStr => {
