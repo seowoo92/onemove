@@ -106,7 +106,11 @@ export default function GardenScreen() {
                   overflow: 'hidden',
                 }}
               >
-                <img src={`/onemove/images/${el.file}`} alt={el.name} style={{ width: '88%', height: '88%', objectFit: 'contain', display: 'block' }} />
+                <img
+                  src={`/onemove/images/${el.file.replace('.png', '-thumb.png')}`}
+                  alt={el.name}
+                  style={{ width: '90%', height: '90%', objectFit: 'contain', display: 'block' }}
+                />
               </div>
             ))}
             {GARDEN_ELEMENTS.filter((el) => count < el.threshold).map((el) => (
@@ -170,14 +174,14 @@ export default function GardenScreen() {
                 <span style={{ fontSize: 12, fontWeight: 800, color: '#9AA69D', letterSpacing: '0.06em' }}>{year}년</span>
                 <span style={{ flex: 1, height: 1, background: '#EDE7DC' }} />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginTop: 2 }}>
                 {SEASON_NAMES.map((name, i) => {
                   const key = `${year}-${SEASON_EN[name]}`
                   const isCurrent = key === season.key
                   const filled = isCurrent
                     ? { key, name, year, count }
                     : albumEntries.find((s) => s.key === key)
-                  const tilt = [-2.2, 1.8, 1.6, -1.8][i]
+                  const tilt = [-1.6, 1.4, 1.2, -1.4][i]
 
                   if (!filled) {
                     // 계절 시작일과 오늘을 비교 — 미래는 기다림, 과거는 조용히 지나감
@@ -189,18 +193,18 @@ export default function GardenScreen() {
                         aria-label={`${year}년 ${name} — 비어 있음`}
                         style={{
                           border: '1.5px dashed #D8D1C5',
-                          borderRadius: 10,
-                          minHeight: 132,
+                          borderRadius: 8,
                           display: 'flex',
                           flexDirection: 'column',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          gap: 3,
+                          gap: 2,
+                          minHeight: 82,
                         }}
                       >
-                        <span style={{ fontSize: 13, fontWeight: 700, color: '#C4BCB0' }}>{name}</span>
-                        <span style={{ fontSize: 10.5, fontWeight: 500, color: '#D3CCC0' }}>
-                          {isFuture ? '아직 오지 않았어요' : '조용히 지나갔어요'}
+                        <span style={{ fontSize: 12, fontWeight: 700, color: '#C4BCB0' }}>{name}</span>
+                        <span style={{ fontSize: 9.5, fontWeight: 500, color: '#D3CCC0' }}>
+                          {isFuture ? '곧 만나요' : '지나갔어요'}
                         </span>
                       </div>
                     )
@@ -214,10 +218,10 @@ export default function GardenScreen() {
                       style={{
                         background: '#FFFFFF',
                         border: 'none',
-                        borderRadius: 6,
-                        padding: '6px 6px 0',
+                        borderRadius: 5,
+                        padding: '4px 4px 0',
                         cursor: 'pointer',
-                        boxShadow: '0 5px 14px -6px rgba(36,82,63,.3), 0 1px 3px rgba(36,82,63,.12)',
+                        boxShadow: '0 4px 10px -5px rgba(36,82,63,.3), 0 1px 3px rgba(36,82,63,.12)',
                         transform: `rotate(${tilt}deg)`,
                         position: 'relative',
                         textAlign: 'center',
@@ -227,9 +231,9 @@ export default function GardenScreen() {
                         elements={SEASON_SETS[name].elements}
                         bg={SEASON_SETS[name].bg}
                         count={filled.count}
-                        style={{ borderRadius: 3, pointerEvents: 'none' }}
+                        style={{ borderRadius: 2, pointerEvents: 'none' }}
                       />
-                      <span style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#5E6F63', padding: '5px 0 7px' }}>
+                      <span style={{ display: 'block', fontSize: 10.5, fontWeight: 700, color: '#5E6F63', padding: '4px 0 5px' }}>
                         {name}
                       </span>
                       {isCurrent && (
@@ -237,14 +241,15 @@ export default function GardenScreen() {
                           style={{
                             position: 'absolute',
                             top: -7,
-                            right: -6,
+                            right: -5,
                             background: '#F3D978',
                             color: '#5A4B18',
-                            fontSize: 10,
+                            fontSize: 9,
                             fontWeight: 800,
                             borderRadius: 999,
-                            padding: '3px 8px',
+                            padding: '2px 6px',
                             boxShadow: '0 2px 6px rgba(0,0,0,.12)',
+                            whiteSpace: 'nowrap',
                           }}
                         >
                           가꾸는 중
