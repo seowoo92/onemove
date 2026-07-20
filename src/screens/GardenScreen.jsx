@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { storage } from '../lib/storage'
 import { getSeason, countSeasonCompleted, GARDEN_ELEMENTS, getUnlockedElements, getNextElement, SEASON_SETS, getPastSeasons } from '../lib/garden'
 import GardenScene from '../components/GardenScene'
@@ -30,33 +30,66 @@ export default function GardenScreen() {
   // 앨범 페이지는 당분간 올해만 표시 (이전 연도는 데이터가 쌓인 뒤 노출 검토 — 사용자 결정 2026-07-20)
   const albumYears = [season.year]
 
-  // 마지막으로 본 완료 수 이후 새로 열린 요소만 등장 연출 (1초 뒤 상시 움직임으로 전환)
-  const [newIds, setNewIds] = useState(() => {
+  // 새로 열린 요소는 바로 배치하지 않고 '맞이하기'로 대기 — 화면을 탭하면 순서대로 피어난다
+  const [pendingIds, setPendingIds] = useState(() => {
     const seen = isPreview ? 0 : storage.getGardenSeen()
     return new Set(GARDEN_ELEMENTS.filter((el) => el.threshold > seen && count >= el.threshold).map((el) => el.id))
   })
-  useEffect(() => {
+  const [revealIds, setRevealIds] = useState(new Set())
+  function handleReveal() {
+    if (pendingIds.size === 0) return
     if (!isPreview) storage.setGardenSeen(count)
-    if (newIds.size === 0) return
-    const t = setTimeout(() => setNewIds(new Set()), 1000)
-    return () => clearTimeout(t)
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    setRevealIds(pendingIds)
+    setPendingIds(new Set())
+    // 등장 연출(0.7초 + 스태거)이 끝나면 상시 움직임으로 전환
+    setTimeout(() => setRevealIds(new Set()), 900 + pendingIds.size * 130)
+  }
 
   return (
     <div style={{ minHeight: '100%', backgroundColor: '#FAF6F0' }}>
       <div style={{ width: '100%', maxWidth: 480, margin: '0 auto', padding: '8px 20px 16px' }}>
         <ScreenHeader title="나의 정원" subtitle={`${season.year} ${season.name} · 루틴을 완료하면 정원이 자라나요`} />
 
-        {/* 이번 계절 정원 장면 — 요소들이 상시로 살아 움직임 */}
-        <GardenScene
-          elements={SEASON_SETS[season.name]?.elements ?? GARDEN_ELEMENTS}
-          bg={SEASON_SETS[season.name]?.bg ?? 'garden-summer-bg.jpg'}
-          count={count}
-          newIds={newIds}
-          ariaLabel={`나의 ${season.name} 정원 — 요소 ${unlocked.length}개`}
-          emptyHint="루틴을 완료하면 첫 요소가 찾아와요"
-          style={{ borderRadius: 20, boxShadow: CARD_SHADOW }}
-        />
+        {/* 이번 계절 정원 장면 — 새 요소가 기다리면 탭해서 맞이한다 */}
+        <div
+          onClick={handleReveal}
+          role={pendingIds.size > 0 ? 'button' : undefined}
+          aria-label={pendingIds.size > 0 ? '새 요소 맞이하기' : undefined}
+          style={{ position: 'relative', cursor: pendingIds.size > 0 ? 'pointer' : 'default' }}
+        >
+          <GardenScene
+            elements={SEASON_SETS[season.name]?.elements ?? GARDEN_ELEMENTS}
+            bg={SEASON_SETS[season.name]?.bg ?? 'garden-summer-bg.jpg'}
+            count={count}
+            newIds={revealIds}
+            hiddenIds={pendingIds}
+            ariaLabel={`나의 ${season.name} 정원 — 요소 ${unlocked.length}개`}
+            emptyHint={pendingIds.size > 0 ? null : '루틴을 완료하면 첫 요소가 찾아와요'}
+            style={{ borderRadius: 20, boxShadow: CARD_SHADOW }}
+          />
+          {pendingIds.size > 0 && (
+            <div
+              className="garden-pending-pill"
+              style={{
+                position: 'absolute',
+                left: '50%',
+                top: '42%',
+                transform: 'translate(-50%, -50%)',
+                background: 'rgba(255,255,255,.9)',
+                borderRadius: 999,
+                padding: '10px 18px',
+                fontSize: 13,
+                fontWeight: 700,
+                color: '#24523F',
+                whiteSpace: 'nowrap',
+                pointerEvents: 'none',
+                boxShadow: '0 6px 16px -8px rgba(36,82,63,.35)',
+              }}
+            >
+              정원을 채워나갈 요소가 생겼어요
+            </div>
+          )}
+        </div>
 
         {/* 성장 현황 */}
         <div style={{ background: '#FFFFFF', borderRadius: 16, padding: '13px 16px', boxShadow: CARD_SHADOW, marginTop: 14 }}>

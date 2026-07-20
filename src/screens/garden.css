@@ -186,6 +186,16 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+/* 새 요소 대기 안내 필: 은은한 깜빡임 */
+.garden-pending-pill {
+  animation: garden-pill-blink 1.6s ease-in-out infinite;
+}
+
+@keyframes garden-pill-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
 /* 접근성: 동작 줄이기 설정 시 정원 전체 정지 */
 @media (prefers-reduced-motion: reduce) {
   .garden-scene *,

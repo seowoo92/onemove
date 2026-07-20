@@ -2,8 +2,9 @@ import '../screens/garden.css'
 
 // 정원 장면 (4:3) — 정원 탭 본 화면과 앨범 열람이 공용으로 사용.
 // count 기준으로 열린 요소만 배치하고, garden.css의 상시 애니메이션이 그대로 적용된다.
-export default function GardenScene({ elements, bg, count, newIds, ariaLabel, emptyHint, style }) {
-  const unlocked = elements.filter((el) => count >= el.threshold)
+export default function GardenScene({ elements, bg, count, newIds, hiddenIds, ariaLabel, emptyHint, style }) {
+  const unlocked = elements.filter((el) => count >= el.threshold && !hiddenIds?.has(el.id))
+  const newList = newIds ? [...newIds] : []
   return (
     <div
       className="garden-scene"
@@ -32,7 +33,10 @@ export default function GardenScene({ elements, bg, count, newIds, ariaLabel, em
           style={{ left: `${el.x}%`, top: `${el.y}%`, width: `${el.w}%`, zIndex: el.z }}
         >
           {el.shadow !== 'none' && <span className={`garden-shadow garden-shadow--${el.shadow}`} />}
-          <span className="garden-body">
+          <span
+            className="garden-body"
+            style={newIds?.has(el.id) ? { animationDelay: `${newList.indexOf(el.id) * 0.13}s` } : undefined}
+          >
             <img src={`/onemove/images/${el.file}`} alt="" draggable="false" decoding="async" />
           </span>
         </div>
