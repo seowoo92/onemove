@@ -107,7 +107,7 @@ export default function RecordScreen() {
 
         <ScreenHeader
           title="기록"
-          subtitle="마음 날씨 캘린더 · 멈춘 날도 기록이에요"
+          subtitle="모아보면 제법 든든한 날들"
           right={streak >= 2 ? (
             <span
               className="text-xs rounded-full px-3 py-1.5"
