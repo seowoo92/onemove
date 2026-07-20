@@ -30,7 +30,7 @@ export default function GardenScene({ elements, bg, count, newIds, hiddenIds, ar
           className={`garden-item garden-item--${el.id}${el.wide ? ' garden-item--wide' : ''}${newIds?.has(el.id) ? ' garden-item--new' : ''}`}
           data-motion={el.motion}
           aria-hidden="true"
-          style={{ left: `${el.x}%`, top: `${el.y}%`, width: `${el.w}%`, zIndex: el.z }}
+          style={{ left: `${el.x}%`, top: `${el.y}%`, width: `${el.w}%`, zIndex: el.z, ...(el.rotate ? { transform: `translate(-50%, -50%) rotate(${el.rotate}deg)` } : {}) }}
         >
           {el.shadow !== 'none' && <span className={`garden-shadow garden-shadow--${el.shadow}`} />}
           <span

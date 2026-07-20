@@ -40,9 +40,9 @@
   background: rgba(34, 48, 42, 0.14);
   filter: blur(7px);
 }
-.garden-shadow--ground-sm { width: 58%; height: 11%; bottom: 0; }
-.garden-shadow--ground-md { width: 70%; height: 10%; bottom: 1%; filter: blur(9px); background: rgba(34, 48, 42, 0.13); }
-.garden-shadow--ground-lg { width: 76%; height: 9%; bottom: 0; filter: blur(12px); background: rgba(34, 48, 42, 0.15); }
+.garden-shadow--ground-sm { width: 58%; height: 9%; bottom: 0; filter: blur(9px); background: rgba(34, 48, 42, 0.09); }
+.garden-shadow--ground-md { width: 62%; height: 9%; bottom: 1%; filter: blur(10px); background: rgba(34, 48, 42, 0.10); }
+.garden-shadow--ground-lg { width: 56%; height: 8%; bottom: 0; filter: blur(14px); background: rgba(34, 48, 42, 0.13); }
 .garden-shadow--ground-wide { width: 88%; height: 14%; bottom: 5%; filter: blur(10px); background: rgba(34, 48, 42, 0.11); }
 
 /* 하늘·공중 요소는 타원 그림자 대신 본체에 약한 그림자/발광만 */
