@@ -5,6 +5,7 @@ import { pickRoutines, pickSwapCandidate } from '../lib/routinePicker'
 import { generateCoachMessage, generateDailyReview } from '../lib/solar'
 import { sendRoutineCard, resendRoutineCard } from '../lib/kakao'
 import CoachModal from '../components/CoachModal'
+import ScreenHeader from '../components/ScreenHeader'
 import { COACH_INFO } from '../lib/coaches'
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토']
@@ -28,7 +29,6 @@ const DIFF_CHIP = { bg: '#EFEAE2', color: '#97907F' }
 // 영역 표시명 — 단독으로 봐도 뜻이 통하도록 보완 (데이터의 area 값은 routines.js 확정본 그대로)
 const AREA_LABEL = {
   '몸 깨우기': '몸 움직이기',
-  '에너지': '에너지 유지',
   '바깥': '바깥 활동',
   '공간': '공간 정리',
   '연결': '마음 연결',
@@ -360,20 +360,19 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
           width: '100%',
           maxWidth: 480,
           margin: '0 auto',
-          padding: '14px 20px 28px',
+          padding: '8px 20px 28px',
           display: 'flex',
           flexDirection: 'column',
           gap: 12,
         }}
       >
-        {/* 헤더 — 인사 + 날짜·마음 날씨 */}
+        {/* 헤더 — 다른 탭과 동일한 공통 ScreenHeader (타이포·위치 통일) */}
         <div>
-          <div style={{ fontSize: 20, fontWeight: 800, color: '#24523F', letterSpacing: '-0.02em' }}>
-            {nickname ? `${nickname}님, 오늘도 와줘서 고마워요` : '오늘도 와줘서 고마워요'}
-          </div>
-          <div style={{ fontSize: 13, fontWeight: 500, color: '#7c8a80', marginTop: 2 }}>
-            {formatDate()} · {todayState}
-          </div>
+          <ScreenHeader
+            title={nickname ? `${nickname}님, 오늘도 와줘서 고마워요` : '오늘도 와줘서 고마워요'}
+            subtitle={`${formatDate()} · ${todayState}`}
+            bottomGap={0}
+          />
         </div>
 
         {/* 진행 카드 (딥그린) */}
