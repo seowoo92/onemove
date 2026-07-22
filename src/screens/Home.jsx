@@ -25,6 +25,14 @@ const AREA_CHIP = {
 }
 const DIFF_CHIP = { bg: '#EFEAE2', color: '#97907F' }
 
+// 영역 표시명 — 단독으로 봐도 뜻이 통하도록 보완 (데이터의 area 값은 routines.js 확정본 그대로)
+const AREA_LABEL = {
+  '바깥': '바깥 활동',
+  '공간': '공간 정리',
+  '연결': '사람 연결',
+}
+const areaLabel = (area) => AREA_LABEL[area] ?? area
+
 // 코치별 클레이 셰이딩 (완료 축하 카드 아바타)
 const CLAY = {
   '유쾌': 'radial-gradient(circle at 34% 30%,#FFEFB6,#F3D978 55%,#E8C24E)',
@@ -377,7 +385,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
                   <div style={{ flex: 'none', display: 'flex', gap: 6, alignItems: 'center', marginTop: 2 }}>
                     <PinStar active={pinned.includes(id)} onClick={() => togglePin(id)} />
                     <Chip bg={DIFF_CHIP.bg} color={DIFF_CHIP.color} weight={700}>{routine.difficulty}</Chip>
-                    <Chip bg={areaChip.bg} color={areaChip.color}>{routine.area}</Chip>
+                    <Chip bg={areaChip.bg} color={areaChip.color}>{areaLabel(routine.area)}</Chip>
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: 9, marginTop: 16 }}>
@@ -402,7 +410,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
                 <div style={{ flex: 'none', display: 'flex', gap: 6, alignItems: 'center', marginTop: 2 }}>
                   <PinStar active={pinned.includes(id)} onClick={() => togglePin(id)} />
                   <Chip bg={DIFF_CHIP.bg} color={DIFF_CHIP.color} weight={700}>{routine.difficulty}</Chip>
-                  <Chip bg={areaChip.bg} color={areaChip.color}>{routine.area}</Chip>
+                  <Chip bg={areaChip.bg} color={areaChip.color}>{areaLabel(routine.area)}</Chip>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 9, marginTop: 15 }}>
