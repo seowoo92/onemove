@@ -11,6 +11,8 @@ export default class ErrorBoundary extends Component {
 
   componentDidCatch(error, info) {
     console.error('[onemove] 렌더링 오류:', error, info?.componentStack)
+    // 초기화 중 오류면 스플래시가 화면을 덮고 있으므로 반드시 걷어낸다
+    window.__hideSplash?.()
   }
 
   render() {
@@ -23,7 +25,6 @@ export default class ErrorBoundary extends Component {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: 10,
           backgroundColor: '#FAF6F0',
           color: '#22302A',
           padding: 24,
@@ -31,8 +32,16 @@ export default class ErrorBoundary extends Component {
           fontFamily: "'Pretendard Variable', -apple-system, sans-serif",
         }}
       >
-        <p style={{ fontSize: 19, fontWeight: 700, color: '#24523F' }}>잠시 문제가 생겼어요</p>
-        <p style={{ fontSize: 14.5, color: '#6B7A72', lineHeight: 1.6 }}>
+        <img
+          src="/onemove/images/weather-rainy.png"
+          alt=""
+          width={64}
+          height={64}
+          style={{ objectFit: 'contain', display: 'block', marginBottom: 14 }}
+          onError={(e) => { e.currentTarget.style.display = 'none' }}
+        />
+        <p style={{ fontSize: 19, fontWeight: 800, color: '#24523F', margin: 0 }}>잠깐 소나기를 만났어요</p>
+        <p style={{ fontSize: 14.5, fontWeight: 500, color: '#6B7A72', lineHeight: 1.65, margin: '9px 0 0' }}>
           새로고침하면 다시 만날 수 있어요.
           <br />
           오늘의 기록은 그대로 남아 있어요.
@@ -40,19 +49,23 @@ export default class ErrorBoundary extends Component {
         <button
           onClick={() => window.location.reload()}
           style={{
-            marginTop: 10,
-            padding: '12px 28px',
-            borderRadius: 12,
+            marginTop: 20,
+            padding: '13px 34px',
+            borderRadius: 14,
             border: 'none',
             backgroundColor: '#24523F',
             color: '#FFFFFF',
             fontSize: 15,
-            fontWeight: 600,
+            fontWeight: 700,
             cursor: 'pointer',
+            boxShadow: '0 10px 22px -10px rgba(36,82,63,.45)',
           }}
         >
           새로고침
         </button>
+        <p style={{ fontSize: 12, fontWeight: 500, color: '#B7AFA4', margin: '16px 0 0' }}>
+          비 오는 날도 지나가요
+        </p>
       </div>
     )
   }

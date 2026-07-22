@@ -13,6 +13,11 @@ import RecordScreen from './screens/RecordScreen'
 import SettingsScreen from './screens/SettingsScreen'
 
 export default function App() {
+  // ?crash=1 — 에러 안내화면(ErrorBoundary) 확인용 (QA·디자인 점검)
+  if (new URLSearchParams(window.location.search).get('crash') === '1') {
+    throw new Error('crash test (?crash=1)')
+  }
+
   const [screen, setScreen] = useState(null)
   const [coach, setCoach] = useState(null)
   const [todayState, setTodayState] = useState(null)
