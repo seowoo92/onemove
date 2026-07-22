@@ -96,3 +96,35 @@ export function pickRoutines(state, yesterdayIds = [], pinnedIds = []) {
 
   return { routineIds: [...pinned, ...shuffle(routineIds)], initialEasyIds }
 }
+
+/**
+ * '다른 루틴으로 바꾸기' — 오늘 세트에서 카드 1개의 교체 후보를 뽑습니다. (카드당 1회 제한은 화면에서 관리)
+ *
+ * - 표시 난이도 유지: '보통' 슬롯은 보통 루틴 그대로, '쉬움' 슬롯은 쉬움 루틴 또는 보통 루틴의 쉬운버전
+ * - 오늘 이미 나온 루틴(currentIds)·오늘 교체로 내보낸 루틴(excludeIds)은 제외
+ * - 우선순위: 다른 카드들과 영역이 안 겹치고 원래 루틴과도 다른 영역 + 어제 미출현
+ *   → 조건을 하나씩 풀어가며 후보를 찾고, 그래도 없으면 null
+ *
+ * @returns {{ id: string, isEasyMode: boolean } | null}
+ */
+export function pickSwapCandidate({ slotDifficulty, oldId, currentIds, excludeIds = [], yesterdayIds = [] }) {
+  const byId = new Map(ROUTINES.map(r => [r.id, r]))
+  const oldArea = byId.get(oldId)?.area
+  const used = new Set([...currentIds, ...excludeIds])
+  const yesterday = new Set(yesterdayIds)
+  const otherAreas = new Set(currentIds.filter(id => id !== oldId).map(id => byId.get(id)?.area).filter(Boolean))
+
+  const pool = ROUTINES
+    .filter(r => !used.has(r.id))
+    .filter(r => slotDifficulty === '쉬움' || r.difficulty === '보통')
+    .map(r => ({ id: r.id, area: r.area, isEasyMode: slotDifficulty === '쉬움' && r.difficulty === '보통' }))
+
+  const tiers = [
+    pool.filter(c => !otherAreas.has(c.area) && c.area !== oldArea && !yesterday.has(c.id)),
+    pool.filter(c => !otherAreas.has(c.area) && !yesterday.has(c.id)),
+    pool.filter(c => !yesterday.has(c.id)),
+    pool,
+  ]
+  const src = tiers.find(t => t.length > 0)
+  return src ? shuffle(src)[0] : null
+}

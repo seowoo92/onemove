@@ -68,6 +68,27 @@ export const storage = {
     this.setEasyIds([...new Set([...this.getEasyIds(), id])])
   },
 
+  // 시스템이 처음부터 쉬운 버전으로 준비한 루틴 ID (배지 문구 분기용 — 사용자가 되돌리면 제거)
+  getAutoEasyIds: () => getKeyed('onemove_easy_auto') ?? [],
+  setAutoEasyIds: (ids) => setKeyed('onemove_easy_auto', ids),
+  removeAutoEasy(id) {
+    this.setAutoEasyIds(this.getAutoEasyIds().filter((x) => x !== id))
+  },
+
+  // '다른 루틴으로 바꾸기' — 교체로 들어온 루틴 ID (카드당 1회 제한: 이 목록의 카드는 다시 교체 불가)
+  getSwapUsedIds: () => getKeyed('onemove_swap_used') ?? [],
+  setSwapUsedIds: (ids) => setKeyed('onemove_swap_used', ids),
+  addSwapUsed(id) {
+    this.setSwapUsedIds([...new Set([...this.getSwapUsedIds(), id])])
+  },
+
+  // '다른 루틴으로 바꾸기' — 교체로 내보낸 루틴 ID (오늘 다시 추천되지 않도록)
+  getSwappedOutIds: () => getKeyed('onemove_swapped_out') ?? [],
+  setSwappedOutIds: (ids) => setKeyed('onemove_swapped_out', ids),
+  addSwappedOut(id) {
+    this.setSwappedOutIds([...new Set([...this.getSwappedOutIds(), id])])
+  },
+
   // 오늘은 쉬어가기 선택 루틴 ID
   getSkippedIds: () => getKeyed('onemove_skipped') ?? [],
   setSkippedIds: (ids) => { setKeyed('onemove_skipped', ids); notify() },

@@ -35,6 +35,15 @@ alter table public.daily_entries add column if not exists routine_names jsonb no
 -- (기존 테이블에 컬럼 추가할 때) 2026-07-14 매일 루틴(★)용
 alter table public.profiles add column if not exists pinned_ids jsonb not null default '[]';
 
+-- (기존 테이블에 컬럼 추가할 때) 2026-07-22 쉬운버전 배지 문구 분기용
+-- 시스템이 처음부터 쉬운 버전으로 준비한 루틴 ID — 기기 간에도 "준비했어요/바꿨어요" 문구가 일치하도록
+alter table public.daily_entries add column if not exists easy_auto_ids jsonb not null default '[]';
+
+-- (기존 테이블에 컬럼 추가할 때) 2026-07-23 '다른 루틴으로 바꾸기'용
+-- swap_used: 교체로 들어온 카드(재교체 불가) / swapped_out: 교체로 내보낸 루틴(오늘 재추천 제외)
+alter table public.daily_entries add column if not exists swap_used_ids   jsonb not null default '[]';
+alter table public.daily_entries add column if not exists swapped_out_ids jsonb not null default '[]';
+
 -- 3) 카카오 토큰 — '나에게 보내기' 발송용 (Edge Function이 갱신·사용)
 create table if not exists public.kakao_tokens (
   user_id       uuid primary key references auth.users(id) on delete cascade,

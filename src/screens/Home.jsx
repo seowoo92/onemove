@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { ROUTINE_MAP } from '../data/routines'
 import { storage } from '../lib/storage'
-import { pickRoutines } from '../lib/routinePicker'
+import { pickRoutines, pickSwapCandidate } from '../lib/routinePicker'
 import { generateCoachMessage, generateDailyReview } from '../lib/solar'
 import { sendRoutineCard } from '../lib/kakao'
 import CoachModal from '../components/CoachModal'
@@ -63,6 +63,16 @@ const SECONDARY_BTN = {
   border: 'none',
   cursor: 'pointer',
 }
+// 카드 하단 작은 텍스트 링크 (원래 버전으로 하기 · 다른 루틴으로 바꾸기)
+const CARD_LINK = {
+  background: 'none',
+  border: 'none',
+  padding: '2px 6px',
+  fontSize: 12.5,
+  fontWeight: 600,
+  color: '#9aa69d',
+  cursor: 'pointer',
+}
 
 // 매일 루틴(★) 토글 — 고정하면 매일 추천에 항상 포함
 function PinStar({ active, onClick }) {
@@ -101,6 +111,8 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
   const [routineIds, setRoutineIds] = useState([])
   const [completedIds, setCompletedIds] = useState(new Set())
   const [easyIds, setEasyIds] = useState(new Set())
+  const [autoEasyIds, setAutoEasyIds] = useState(new Set())
+  const [swapUsedIds, setSwapUsedIds] = useState(new Set())
   const [skippedIds, setSkippedIds] = useState(new Set())
   const [pinned, setPinned] = useState(storage.getPinnedIds())
   const [modal, setModal] = useState(null) // { loading, message, source } | null
@@ -131,6 +143,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
       const { routineIds: newIds, initialEasyIds } = pickRoutines(todayState, storage.getYesterdayIds(), storage.getPinnedIds())
       storage.setTodayRoutineIds(newIds)
       storage.setEasyIds(initialEasyIds)
+      storage.setAutoEasyIds(initialEasyIds)
       ids = newIds
       // 오늘의 루틴이 막 확정된 순간 — 카톡 루틴 카드 발송 (로그인+알림 동의 시, 하루 1회)
       const cardNames = newIds.map((id) => {
@@ -142,6 +155,8 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
     setRoutineIds(ids)
     setCompletedIds(new Set(storage.getCompletedIds()))
     setEasyIds(new Set(storage.getEasyIds()))
+    setAutoEasyIds(new Set(storage.getAutoEasyIds()))
+    setSwapUsedIds(new Set(storage.getSwapUsedIds()))
     setSkippedIds(new Set(storage.getSkippedIds()))
   }, [todayState])
 
@@ -187,7 +202,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
       const ok = window.confirm('마음 날씨를 다시 고르면 오늘 기록이 초기화돼요. 계속할까요?')
       if (!ok) return
     }
-    ;['onemove_state', 'onemove_routines', 'onemove_completed', 'onemove_easy', 'onemove_skipped', 'onemove_review']
+    ;['onemove_state', 'onemove_routines', 'onemove_completed', 'onemove_easy', 'onemove_easy_auto', 'onemove_swap_used', 'onemove_swapped_out', 'onemove_skipped', 'onemove_review']
       .forEach(k => localStorage.removeItem(k))
     storage.removeHistoryEntry(storage.getTodayKey())
     onGoToStateCheck()
@@ -197,6 +212,55 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
     const newEasy = new Set([...easyIds, routineId])
     setEasyIds(newEasy)
     storage.setEasyIds([...newEasy])
+  }
+
+  // '다른 루틴으로 바꾸기' — 하기 싫은 루틴을 같은 난이도의 다른 루틴으로 교체 (카드당 1회)
+  function handleSwapRoutine(routineId) {
+    const slotDifficulty = easyIds.has(routineId) ? '쉬움' : (ROUTINE_MAP[routineId]?.difficulty ?? '보통')
+    const cand = pickSwapCandidate({
+      slotDifficulty,
+      oldId: routineId,
+      currentIds: routineIds,
+      excludeIds: storage.getSwappedOutIds(),
+      yesterdayIds: storage.getYesterdayIds(),
+    })
+    if (!cand) return
+
+    const newIds = routineIds.map((id) => (id === routineId ? cand.id : id))
+    setRoutineIds(newIds)
+    storage.setTodayRoutineIds(newIds)
+
+    // 쉬운버전 상태 이관: 나간 카드 상태 제거, 들어온 카드가 쉬운버전이면 '시스템 준비'로 표시
+    const newEasy = new Set(easyIds)
+    newEasy.delete(routineId)
+    const newAuto = new Set(autoEasyIds)
+    newAuto.delete(routineId)
+    if (cand.isEasyMode) {
+      newEasy.add(cand.id)
+      newAuto.add(cand.id)
+    }
+    setEasyIds(newEasy)
+    storage.setEasyIds([...newEasy])
+    setAutoEasyIds(newAuto)
+    storage.setAutoEasyIds([...newAuto])
+
+    storage.addSwappedOut(routineId)
+    storage.addSwapUsed(cand.id)
+    setSwapUsedIds(new Set(storage.getSwapUsedIds()))
+  }
+
+  // 쉬운 버전 → 원래(보통) 버전으로 되돌리기. 자동 준비 카드였다면 이후엔 사용자 선택으로 취급
+  function handleSwitchToNormal(routineId) {
+    const newEasy = new Set(easyIds)
+    newEasy.delete(routineId)
+    setEasyIds(newEasy)
+    storage.setEasyIds([...newEasy])
+    if (autoEasyIds.has(routineId)) {
+      const newAuto = new Set(autoEasyIds)
+      newAuto.delete(routineId)
+      setAutoEasyIds(newAuto)
+      storage.removeAutoEasy(routineId)
+    }
   }
 
   const completedCount = completedIds.size
@@ -303,7 +367,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
               <div key={id} style={{ position: 'relative', background: '#fff', borderRadius: 22, padding: '18px 19px', boxShadow: '0 14px 28px -15px rgba(36,82,63,.26),inset 0 2px 0 rgba(255,255,255,.9)' }}>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#FBEDE6', borderRadius: 9, padding: '5px 10px', marginBottom: 12 }}>
                   <svg width="13" height="13" viewBox="0 0 13 13"><path d="M6.5 1.5l1.5 3 3.3.5-2.4 2.3.6 3.3-3-1.6-3 1.6.6-3.3L1.7 5l3.3-.5z" fill="#E5B4A4" /></svg>
-                  <span style={{ fontSize: 11.5, fontWeight: 700, color: '#B07E6C' }}>더 쉬운 버전으로 바꿨어요</span>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: '#B07E6C' }}>{autoEasyIds.has(id) ? '오늘은 쉬운 버전으로 준비했어요' : '더 쉬운 버전으로 바꿨어요'}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -319,6 +383,12 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
                 <div style={{ display: 'flex', gap: 9, marginTop: 16 }}>
                   <button onClick={() => handleComplete(id)} style={COMPLETE_BTN}>완료</button>
                   <button onClick={() => handleSkip(id)} style={{ ...SECONDARY_BTN, background: '#FBEDE6', color: '#B07E6C', fontWeight: 700 }}>오늘은 쉬어가기</button>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 14, marginTop: 10 }}>
+                  <button onClick={() => handleSwitchToNormal(id)} style={CARD_LINK}>원래 버전으로 하기 ›</button>
+                  {!pinned.includes(id) && !swapUsedIds.has(id) && (
+                    <button onClick={() => handleSwapRoutine(id)} style={CARD_LINK}>다른 루틴으로 바꾸기 ›</button>
+                  )}
                 </div>
               </div>
             )
@@ -339,6 +409,14 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
                 <button onClick={() => handleComplete(id)} style={COMPLETE_BTN}>완료</button>
                 <button onClick={() => handleSwitchToEasy(id)} style={{ ...SECONDARY_BTN, background: '#F1F5F0', color: '#5c6960' }}>지금은 어려워요</button>
               </div>
+              {!pinned.includes(id) && !swapUsedIds.has(id) && (
+                <button
+                  onClick={() => handleSwapRoutine(id)}
+                  style={{ ...CARD_LINK, display: 'block', margin: '10px auto 0' }}
+                >
+                  다른 루틴으로 바꾸기 ›
+                </button>
+              )}
             </div>
           )
         })}

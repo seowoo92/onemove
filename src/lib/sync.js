@@ -31,6 +31,9 @@ function snapshot() {
       }),
       completed_ids: storage.getCompletedIds(),
       easy_ids: storage.getEasyIds(),
+      easy_auto_ids: storage.getAutoEasyIds(),
+      swap_used_ids: storage.getSwapUsedIds(),
+      swapped_out_ids: storage.getSwappedOutIds(),
       skipped_ids: storage.getSkippedIds(),
     },
   }
@@ -85,6 +88,9 @@ export async function reconcileOnLogin(id) {
       storage.setTodayRoutineIds(entry.routine_ids ?? [])
       storage.setCompletedIds(entry.completed_ids ?? [])
       storage.setEasyIds(entry.easy_ids ?? [])
+      storage.setAutoEasyIds(entry.easy_auto_ids ?? [])
+      storage.setSwapUsedIds(entry.swap_used_ids ?? [])
+      storage.setSwappedOutIds(entry.swapped_out_ids ?? [])
       storage.setSkippedIds(entry.skipped_ids ?? [])
     }
   } catch {
