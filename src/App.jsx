@@ -149,6 +149,11 @@ export default function App() {
     setNickname(newNickname)
   }
 
+  // 첫 화면이 결정되면 스플래시를 부드럽게 걷어낸다 (index.html에 정의)
+  useEffect(() => {
+    if (screen) window.__hideSplash?.()
+  }, [screen])
+
   if (!screen) return null
 
   const showTabBar = !!coach

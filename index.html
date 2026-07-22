@@ -34,6 +34,33 @@
     <meta name="twitter:image" content="https://seowoo92.github.io/onemove/og-image.png" />
   </head>
   <body>
+    <!-- 스플래시 스크린: 앱 코드 로드 전에 먼저 그려지는 브랜드 화면 (App이 준비되면 __hideSplash로 사라짐) -->
+    <div id="splash" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#FAF6F0;transition:opacity .45s ease;">
+      <style>
+        @keyframes splashBreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.045); } }
+        @media (prefers-reduced-motion: reduce) { #splash * { animation: none !important; } }
+      </style>
+      <div style="display:flex;align-items:center;animation:splashBreathe 2.2s ease-in-out infinite;">
+        <div style="width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#F6C6B4,#EFA58F 55%,#E08066);"></div>
+        <div style="width:33px;height:33px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#FFEFB6,#F3D978 55%,#E8C24E);margin-left:-10px;"></div>
+        <div style="width:40px;height:40px;border-radius:50%;background:radial-gradient(circle at 38% 28%,#3C7A5C,#1C4030);margin-left:-10px;"></div>
+      </div>
+      <div style="margin-top:15px;font-family:'Pretendard Variable',-apple-system,sans-serif;font-size:22px;font-weight:800;color:#24523F;letter-spacing:-0.02em;">오늘만큼</div>
+      <div style="margin-top:5px;font-family:'Pretendard Variable',-apple-system,sans-serif;font-size:12.5px;font-weight:500;color:#9AA69D;">오늘 할 수 있는 만큼만</div>
+    </div>
+    <script>
+      window.__splashShownAt = Date.now();
+      window.__hideSplash = function () {
+        var el = document.getElementById('splash');
+        if (!el) return;
+        // 너무 짧게 번쩍이지 않도록 최소 노출 시간 확보
+        var wait = Math.max(0, 600 - (Date.now() - window.__splashShownAt));
+        setTimeout(function () {
+          el.style.opacity = '0';
+          setTimeout(function () { el.remove(); }, 500);
+        }, wait);
+      };
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
