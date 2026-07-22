@@ -27,9 +27,11 @@ const DIFF_CHIP = { bg: '#EFEAE2', color: '#97907F' }
 
 // 영역 표시명 — 단독으로 봐도 뜻이 통하도록 보완 (데이터의 area 값은 routines.js 확정본 그대로)
 const AREA_LABEL = {
+  '몸 깨우기': '몸 움직이기',
+  '에너지': '에너지 유지',
   '바깥': '바깥 활동',
   '공간': '공간 정리',
-  '연결': '사람 연결',
+  '연결': '마음 연결',
 }
 const areaLabel = (area) => AREA_LABEL[area] ?? area
 
