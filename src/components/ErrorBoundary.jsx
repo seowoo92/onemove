@@ -41,15 +41,10 @@ export default class ErrorBoundary extends Component {
           onError={(e) => { e.currentTarget.style.display = 'none' }}
         />
         <p style={{ fontSize: 19, fontWeight: 800, color: '#24523F', margin: 0 }}>잠깐 소나기를 만났어요</p>
-        <p style={{ fontSize: 14.5, fontWeight: 500, color: '#6B7A72', lineHeight: 1.65, margin: '9px 0 0' }}>
-          새로고침하면 다시 만날 수 있어요.
-          <br />
-          오늘의 기록은 그대로 남아 있어요.
-        </p>
         <button
           onClick={() => window.location.reload()}
           style={{
-            marginTop: 20,
+            marginTop: 16,
             padding: '13px 34px',
             borderRadius: 14,
             border: 'none',
@@ -63,8 +58,10 @@ export default class ErrorBoundary extends Component {
         >
           새로고침
         </button>
-        <p style={{ fontSize: 12, fontWeight: 500, color: '#B7AFA4', margin: '16px 0 0' }}>
-          비 오는 날도 지나가요
+        <p style={{ fontSize: 14.5, fontWeight: 500, color: '#6B7A72', lineHeight: 1.65, margin: '16px 0 0' }}>
+          새로고침하면 다시 만날 수 있어요.
+          <br />
+          오늘의 기록은 그대로 남아 있어요.
         </p>
       </div>
     )
