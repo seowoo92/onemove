@@ -73,11 +73,11 @@ const SECONDARY_BTN = {
   padding: '6px 16px',
 }
 
-// '원래 버전으로' — 위아래 맞바꿈 화살표 (쉬운버전 ↔ 원래 버전)
+// '원래 난이도로' — 위아래 맞바꿈 화살표 (쉬운버전 ↔ 원래 버전)
 function VersionToggleLink({ onClick }) {
   return (
     <button onClick={onClick} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3, padding: '2px 4px', fontSize: 12, fontWeight: 600, color: '#9aa69d' }}>
-      원래 버전으로
+      원래 난이도로
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9aa69d" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
         <path d="M4 7.5h13.5M14.5 4l3.5 3.5L14.5 11" />
         <path d="M20 16.5H6.5M9.5 13L6 16.5 9.5 20" />
@@ -363,7 +363,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
           padding: '14px 20px 28px',
           display: 'flex',
           flexDirection: 'column',
-          gap: 14,
+          gap: 12,
         }}
       >
         {/* 헤더 — 인사 + 날짜·마음 날씨 */}
@@ -439,7 +439,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
           // 활성 카드: 칩 행 → 루틴명 한 줄 → (쉬운버전 줄) → 버튼
           // 시안 1·3: 아이콘 왼쪽·칩 오른쪽 / 시안 2: 칩 왼쪽 + 이름·버튼 오른쪽 정렬 / 시안 3: 필 버튼 + 자동 배지 제거
           const chipRow = (
-            <div key="chips" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 9 }}>
+            <div key="chips" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                 <PinStar active={pinned.includes(id)} onClick={() => togglePin(id)} />
                 {canSwap && <SwapIcon onClick={() => handleSwapRoutine(id)} />}
@@ -454,14 +454,14 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
           const nameRow = (
             <div key="name" style={{ fontSize: 16.5, fontWeight: 700, color: '#24523F', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{routine.name}</div>
           )
-          const btnRowStyle = { display: 'flex', alignItems: 'center', gap: 8, marginTop: 13, justifyContent: 'flex-end' }
+          const btnRowStyle = { display: 'flex', alignItems: 'center', gap: 8, marginTop: 9, justifyContent: 'flex-end' }
 
           // 쉬운 버전으로 진행 중인 활성 카드 — 일반 카드와 같은 뼈대.
           // 사용자가 직접 바꾼 경우에만 배지 줄 표시 (시스템 자동 준비 카드는 배지 없음 — 사용자 확정)
           if (isEasy) {
             const isAuto = autoEasyIds.has(id)
             return (
-              <div key={id} style={{ background: '#fff', borderRadius: 20, padding: '14px 16px', boxShadow: '0 12px 24px -15px rgba(36,82,63,.24),inset 0 2px 0 rgba(255,255,255,.9)' }}>
+              <div key={id} style={{ background: '#fff', borderRadius: 20, padding: '12px 15px', boxShadow: '0 12px 24px -15px rgba(36,82,63,.24),inset 0 2px 0 rgba(255,255,255,.9)' }}>
                 {chipRow}
                 {nameRow}
                 {!isAuto && (
@@ -482,7 +482,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
 
           // 일반 활성 카드
           return (
-            <div key={id} style={{ background: '#fff', borderRadius: 20, padding: '14px 16px', boxShadow: '0 12px 24px -15px rgba(36,82,63,.22),inset 0 2px 0 rgba(255,255,255,.9)' }}>
+            <div key={id} style={{ background: '#fff', borderRadius: 20, padding: '12px 15px', boxShadow: '0 12px 24px -15px rgba(36,82,63,.22),inset 0 2px 0 rgba(255,255,255,.9)' }}>
               {chipRow}
               {nameRow}
               <div style={btnRowStyle}>
@@ -532,8 +532,8 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
           </div>
         )}
 
-        {/* 하단 보조 액션 — 마음 날씨 다시 고르기 · (알림 사용자) 루틴 카드 재발송 */}
-        <div style={{ alignSelf: 'center', marginTop: 4, display: 'flex', alignItems: 'center', gap: 16 }}>
+        {/* 하단 보조 액션 — 2단 그리드, 각 칸 가운데 정렬 (알림 미사용자는 1단) */}
+        <div style={{ width: '100%', marginTop: 4, display: 'grid', gridTemplateColumns: storage.getNotify() ? '1fr 1fr' : '1fr', justifyItems: 'center' }}>
           <button
             onClick={handleRequestStateChange}
             style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, color: '#9aa39c' }}
