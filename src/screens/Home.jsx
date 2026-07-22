@@ -3,7 +3,7 @@ import { ROUTINE_MAP } from '../data/routines'
 import { storage } from '../lib/storage'
 import { pickRoutines, pickSwapCandidate } from '../lib/routinePicker'
 import { generateCoachMessage, generateDailyReview } from '../lib/solar'
-import { sendRoutineCard } from '../lib/kakao'
+import { sendRoutineCard, resendRoutineCard } from '../lib/kakao'
 import CoachModal from '../components/CoachModal'
 import { COACH_INFO } from '../lib/coaches'
 
@@ -50,26 +50,40 @@ function subjectParticle(name) {
   return (code - 0xac00) % 28 === 0 ? '가' : '이'
 }
 
+// 완료 — 노랑 필 (사용자 확정: 부드럽고 따뜻한 톤)
 const COMPLETE_BTN = {
-  textAlign: 'center',
   background: '#F7EBBE',
   color: '#24523F',
-  borderRadius: 12,
-  padding: '9px 26px',
+  borderRadius: 999,
+  padding: '7px 24px',
   fontSize: 13.5,
   fontWeight: 700,
   border: 'none',
   cursor: 'pointer',
   boxShadow: '0 8px 16px -7px rgba(214,184,90,.38),inset 0 1px 0 rgba(255,255,255,.6)',
 }
+// 보조 버튼(지금은 어려워요·오늘은 쉬어가기) — 회색 테두리 아웃라인
 const SECONDARY_BTN = {
-  textAlign: 'center',
-  borderRadius: 12,
-  padding: '9px 18px',
-  fontSize: 13.5,
+  background: 'none',
+  border: '1.5px solid #E2DFD6',
+  borderRadius: 999,
+  fontSize: 13,
   fontWeight: 600,
-  border: 'none',
   cursor: 'pointer',
+  padding: '6px 16px',
+}
+
+// '원래 버전으로' — 위아래 맞바꿈 화살표 (쉬운버전 ↔ 원래 버전)
+function VersionToggleLink({ onClick }) {
+  return (
+    <button onClick={onClick} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3, padding: '2px 4px', fontSize: 12, fontWeight: 600, color: '#9aa69d' }}>
+      원래 버전으로
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9aa69d" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 7.5h13.5M14.5 4l3.5 3.5L14.5 11" />
+        <path d="M20 16.5H6.5M9.5 13L6 16.5 9.5 20" />
+      </svg>
+    </button>
+  )
 }
 
 // '다른 루틴으로 바꾸기' — 새로고침 라인 아이콘
@@ -86,25 +100,6 @@ function SwapIcon({ onClick }) {
       </svg>
     </button>
   )
-}
-
-// 완료·쉬어가기 행 취소(X) 아이콘
-function UndoX({ color }) {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.4" strokeLinecap="round" style={{ flex: 'none', opacity: 0.65 }}>
-      <path d="M6 6l12 12M18 6L6 18" />
-    </svg>
-  )
-}
-// 카드 하단 작은 텍스트 링크 (원래 버전으로 하기 · 다른 루틴으로 바꾸기)
-const CARD_LINK = {
-  background: 'none',
-  border: 'none',
-  padding: '2px 6px',
-  fontSize: 12.5,
-  fontWeight: 600,
-  color: '#9aa69d',
-  cursor: 'pointer',
 }
 
 // 매일 루틴(★) 토글 — 고정하면 매일 추천에 항상 포함
@@ -149,6 +144,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
   const [skippedIds, setSkippedIds] = useState(new Set())
   const [pinned, setPinned] = useState(storage.getPinnedIds())
   const [modal, setModal] = useState(null) // { loading, message, source } | null
+  const [sendingCard, setSendingCard] = useState(false) // 루틴 카드 수동 재발송 중
   const [review, setReview] = useState(null) // { loading } | { message, source } | null
 
   function togglePin(routineId) {
@@ -241,6 +237,19 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
       return (easyIds.has(cid) ? b?.easyVersion?.name : b?.name) ?? '루틴'
     })
     storage.setHistoryEntry(storage.getTodayKey(), todayState, completedNames, routineIds.length)
+  }
+
+  // 루틴 카드 수동 재발송 — 교체·난이도 조절로 구성이 바뀐 뒤 사용자가 원할 때
+  async function handleResendCard() {
+    if (sendingCard) return
+    setSendingCard(true)
+    const names = routineIds.map((id) => {
+      const b = ROUTINE_MAP[id]
+      return (easyIds.has(id) ? b?.easyVersion?.name : b?.name) ?? '루틴'
+    })
+    const ok = await resendRoutineCard(names)
+    setSendingCard(false)
+    window.alert(ok ? '카카오톡(나와의 채팅)으로 오늘 루틴을 보냈어요.' : '발송하지 못했어요. 카카오 로그인과 알림 설정을 확인해주세요.')
   }
 
   function handleUndoSkip(routineId) {
@@ -395,23 +404,18 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
           const areaChip = AREA_CHIP[routine.area] ?? { bg: '#F0EDE8', color: '#6B7B6F' }
           const canSwap = !pinned.includes(id) && !swapUsedIds.has(id)
 
-          // 완료된 루틴 — 연녹 행 + 체크 원 (탭하면 완료 취소)
+          // 완료된 루틴 — 연녹 행. 왼쪽 체크 원을 누르면 체크 해제(카드 복원)
           if (isDone) {
             return (
-              <div
-                key={id}
-                onClick={() => handleUndoComplete(id)}
-                role="button"
-                aria-label="탭하면 완료를 취소해요"
-                style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#EFF4EE', borderRadius: 16, padding: '11px 14px', cursor: 'pointer' }}
-              >
-                <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#24523F', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
+              <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#EFF4EE', borderRadius: 16, padding: '9px 14px' }}>
+                <button
+                  onClick={() => handleUndoComplete(id)}
+                  aria-label="체크를 해제하면 루틴 카드로 돌아가요"
+                  style={{ width: 24, height: 24, borderRadius: '50%', background: '#24523F', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                >
                   <svg width="11" height="11" viewBox="0 0 13 13"><path d="M2 7l3 3 6-7" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                </div>
+                </button>
                 <span style={{ fontSize: 15, fontWeight: 600, color: '#5c6960', textDecoration: 'line-through', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{routine.name}</span>
-                <span style={{ marginLeft: 'auto', flex: 'none', display: 'flex' }}>
-                  <UndoX color="#6FB988" />
-                </span>
               </div>
             )
           }
@@ -427,45 +431,50 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
                 style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#F4F1EC', borderRadius: 16, padding: '11px 14px', cursor: 'pointer' }}
               >
                 <span style={{ fontSize: 15, fontWeight: 600, color: '#9aa39c', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{routine.name}</span>
-                <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 7, fontSize: 12.5, fontWeight: 700, color: '#B07E6C', flex: 'none' }}>
-                  오늘은 쉬어가요
-                  <UndoX color="#B07E6C" />
-                </span>
+                <span style={{ marginLeft: 'auto', fontSize: 12.5, fontWeight: 700, color: '#B07E6C', flex: 'none' }}>오늘은 쉬어가요</span>
               </div>
             )
           }
 
-          // 활성 카드 (시안 B 확정): 칩 행 → 루틴명 한 줄 → (쉬운버전이면 배지 줄) → 버튼
+          // 활성 카드: 칩 행 → 루틴명 한 줄 → (쉬운버전 줄) → 버튼
+          // 시안 1·3: 아이콘 왼쪽·칩 오른쪽 / 시안 2: 칩 왼쪽 + 이름·버튼 오른쪽 정렬 / 시안 3: 필 버튼 + 자동 배지 제거
           const chipRow = (
-            <div key="chips" style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 8 }}>
-              <Chip bg={DIFF_CHIP.bg} color={DIFF_CHIP.color} weight={700}>{routine.difficulty}</Chip>
-              <Chip bg={areaChip.bg} color={areaChip.color}>{areaLabel(routine.area)}</Chip>
-              <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5 }}>
+            <div key="chips" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 9 }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                 <PinStar active={pinned.includes(id)} onClick={() => togglePin(id)} />
                 {canSwap && <SwapIcon onClick={() => handleSwapRoutine(id)} />}
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                {isEasy && <VersionToggleLink onClick={() => handleSwitchToNormal(id)} />}
+                <Chip bg={DIFF_CHIP.bg} color={DIFF_CHIP.color} weight={700}>{routine.difficulty}</Chip>
+                <Chip bg={areaChip.bg} color={areaChip.color}>{areaLabel(routine.area)}</Chip>
               </span>
             </div>
           )
           const nameRow = (
             <div key="name" style={{ fontSize: 16.5, fontWeight: 700, color: '#24523F', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{routine.name}</div>
           )
+          const btnRowStyle = { display: 'flex', alignItems: 'center', gap: 8, marginTop: 13, justifyContent: 'flex-end' }
 
-          // 쉬운 버전으로 진행 중인 활성 카드 — 일반 카드와 같은 뼈대 + 이름 아래 배지 줄
+          // 쉬운 버전으로 진행 중인 활성 카드 — 일반 카드와 같은 뼈대.
+          // 사용자가 직접 바꾼 경우에만 배지 줄 표시 (시스템 자동 준비 카드는 배지 없음 — 사용자 확정)
           if (isEasy) {
+            const isAuto = autoEasyIds.has(id)
             return (
-              <div key={id} style={{ background: '#fff', borderRadius: 20, padding: '13px 16px', boxShadow: '0 12px 24px -15px rgba(36,82,63,.24),inset 0 2px 0 rgba(255,255,255,.9)' }}>
+              <div key={id} style={{ background: '#fff', borderRadius: 20, padding: '14px 16px', boxShadow: '0 12px 24px -15px rgba(36,82,63,.24),inset 0 2px 0 rgba(255,255,255,.9)' }}>
                 {chipRow}
                 {nameRow}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 7 }}>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#FBEDE6', borderRadius: 7, padding: '3px 8px', flex: 'none' }}>
-                    <svg width="11" height="11" viewBox="0 0 13 13"><path d="M6.5 1.5l1.5 3 3.3.5-2.4 2.3.6 3.3-3-1.6-3 1.6.6-3.3L1.7 5l3.3-.5z" fill="#E5B4A4" /></svg>
-                    <span style={{ fontSize: 10.5, fontWeight: 700, color: '#B07E6C' }}>{autoEasyIds.has(id) ? '오늘은 쉬운 버전으로 준비했어요' : '더 쉬운 버전으로 바꿨어요'}</span>
+                {!isAuto && (
+                  <div style={{ display: 'flex', alignItems: 'center', marginTop: 6 }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#FBEDE6', borderRadius: 7, padding: '3px 8px', flex: 'none' }}>
+                      <svg width="11" height="11" viewBox="0 0 13 13"><path d="M6.5 1.5l1.5 3 3.3.5-2.4 2.3.6 3.3-3-1.6-3 1.6.6-3.3L1.7 5l3.3-.5z" fill="#E5B4A4" /></svg>
+                      <span style={{ fontSize: 10.5, fontWeight: 700, color: '#B07E6C' }}>더 쉬운 버전으로 바꿨어요</span>
+                    </div>
                   </div>
-                  <button onClick={() => handleSwitchToNormal(id)} style={{ ...CARD_LINK, marginLeft: 'auto', padding: '2px 2px', flex: 'none' }}>원래 버전으로 ›</button>
-                </div>
-                <div style={{ display: 'flex', gap: 8, marginTop: 11 }}>
+                )}
+                <div style={btnRowStyle}>
+                  <button onClick={() => handleSkip(id)} style={{ ...SECONDARY_BTN, color: '#B07E6C', fontWeight: 700 }}>오늘은 쉬어가기</button>
                   <button onClick={() => handleComplete(id)} style={COMPLETE_BTN}>완료</button>
-                  <button onClick={() => handleSkip(id)} style={{ ...SECONDARY_BTN, background: '#FBEDE6', color: '#B07E6C', fontWeight: 700 }}>오늘은 쉬어가기</button>
                 </div>
               </div>
             )
@@ -473,12 +482,12 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
 
           // 일반 활성 카드
           return (
-            <div key={id} style={{ background: '#fff', borderRadius: 20, padding: '13px 16px', boxShadow: '0 12px 24px -15px rgba(36,82,63,.22),inset 0 2px 0 rgba(255,255,255,.9)' }}>
+            <div key={id} style={{ background: '#fff', borderRadius: 20, padding: '14px 16px', boxShadow: '0 12px 24px -15px rgba(36,82,63,.22),inset 0 2px 0 rgba(255,255,255,.9)' }}>
               {chipRow}
               {nameRow}
-              <div style={{ display: 'flex', gap: 8, marginTop: 11 }}>
+              <div style={btnRowStyle}>
+                <button onClick={() => handleSwitchToEasy(id)} style={{ ...SECONDARY_BTN, color: '#8a958c' }}>지금은 어려워요</button>
                 <button onClick={() => handleComplete(id)} style={COMPLETE_BTN}>완료</button>
-                <button onClick={() => handleSwitchToEasy(id)} style={{ ...SECONDARY_BTN, background: '#F1F5F0', color: '#5c6960' }}>지금은 어려워요</button>
               </div>
             </div>
           )
@@ -523,13 +532,24 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
           </div>
         )}
 
-        {/* 마음 날씨 다시 고르기 */}
-        <button
-          onClick={handleRequestStateChange}
-          style={{ alignSelf: 'center', marginTop: 4, background: 'none', border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, color: '#9aa39c' }}
-        >
-          마음 날씨 다시 고르기
-        </button>
+        {/* 하단 보조 액션 — 마음 날씨 다시 고르기 · (알림 사용자) 루틴 카드 재발송 */}
+        <div style={{ alignSelf: 'center', marginTop: 4, display: 'flex', alignItems: 'center', gap: 16 }}>
+          <button
+            onClick={handleRequestStateChange}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, color: '#9aa39c' }}
+          >
+            마음 날씨 다시 고르기
+          </button>
+          {storage.getNotify() && (
+            <button
+              onClick={handleResendCard}
+              disabled={sendingCard}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, color: '#9aa39c', opacity: sendingCard ? 0.5 : 1 }}
+            >
+              {sendingCard ? '카톡으로 보내는 중...' : '오늘 루틴 카톡으로 받기'}
+            </button>
+          )}
+        </div>
       </div>
 
       {modal && (

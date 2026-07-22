@@ -47,3 +47,25 @@ export async function sendRoutineCard(routineNames) {
     // 발송 실패는 조용히 — 다음에 루틴을 새로 뽑을 때 재시도
   }
 }
+
+// 루틴 카드 수동 재발송 — 루틴 교체·난이도 조절로 구성이 바뀐 뒤 사용자가 원할 때.
+// 하루 1회 제한을 두지 않는 대신 반드시 사용자 탭으로만 호출한다. 성공 여부를 돌려줘 화면에서 안내.
+export async function resendRoutineCard(routineNames) {
+  if (!supabase || !storage.getNotify()) return false
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) return false
+    const { error } = await supabase.functions.invoke('send-kakao', {
+      body: {
+        type: 'routine_card',
+        routine_names: routineNames,
+        state: storage.getTodayState(),
+        nickname: storage.getNickname(),
+      },
+    })
+    if (!error) localStorage.setItem('onemove_card_sent', storage.getTodayKey())
+    return !error
+  } catch {
+    return false
+  }
+}
