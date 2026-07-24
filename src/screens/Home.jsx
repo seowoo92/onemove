@@ -139,7 +139,7 @@ function CoachBuddy({ coach }) {
       <div
         aria-hidden={!open}
         style={{
-          maxWidth: 235,
+          maxWidth: 280,
           borderRadius: '16px 16px 16px 4px',
           padding: '10px 13px',
           fontSize: 12.5,
