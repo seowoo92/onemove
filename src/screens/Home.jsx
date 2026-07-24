@@ -146,9 +146,9 @@ function CoachBuddy({ coach }) {
           fontWeight: 600,
           lineHeight: 1.55,
           wordBreak: 'keep-all',
-          background: 'rgba(239,244,238,0.86)',
-          backdropFilter: 'blur(6px)',
-          WebkitBackdropFilter: 'blur(6px)',
+          background: 'rgba(239,244,238,0.66)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
           color: '#2c4a3b',
           boxShadow: '0 10px 24px -10px rgba(36,82,63,.28)',
           opacity: open ? 1 : 0,
@@ -374,6 +374,14 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
   const totalCount = routineIds.length
   const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
   const allResolved = totalCount > 0 && routineIds.every((id) => completedIds.has(id) || skippedIds.has(id))
+  // 진행 카드 우측 단계별 멘트 — 완료 비율 기준이라 루틴 개수(2·3·4)와 무관하게 동작
+  const progressLabel = allResolved
+    ? '오늘 몫 끝!'
+    : completedCount === 0
+      ? '한 걸음씩'
+      : progress >= 50
+        ? '절반 넘었어요'
+        : '시작이 좋아요'
 
   // 하루 마무리(회고) — 모든 루틴이 정리되면 하루 1회 생성, 이후엔 저장본 재사용
   useEffect(() => {
@@ -425,7 +433,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
             <span style={{ fontSize: 16, fontWeight: 600, color: 'rgba(255,255,255,.9)' }}>
               오늘 <b style={{ color: '#fff', fontWeight: 800 }}>{completedCount} / {totalCount}</b>개 완료
             </span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#F3D978' }}>한 걸음씩</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#F3D978' }}>{progressLabel}</span>
           </div>
           <div style={{ marginTop: 11, height: 11, borderRadius: 6, background: 'rgba(255,255,255,.2)', overflow: 'hidden' }}>
             <div style={{ width: `${progress}%`, height: '100%', borderRadius: 6, background: 'linear-gradient(90deg,#D9F2EE,#F3D978)', transition: 'width .5s' }} />
