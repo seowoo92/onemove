@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { COACH_INFO } from '../lib/coaches'
 
-export default function CoachModal({ loading, message, source, onClose, coach }) {
+export default function CoachModal({ loading, message, onClose, coach }) {
   const info = COACH_INFO[coach] ?? { name: '코치', color: '#9AA39C', image: null }
   const [imgError, setImgError] = useState(false)
 
@@ -29,15 +29,10 @@ export default function CoachModal({ loading, message, source, onClose, coach })
           backgroundColor: '#F9F6EE',
           borderRadius: '34px 34px 0 0',
           boxShadow: '0 -20px 50px -10px rgba(0,0,0,.3)',
-          padding: '14px 22px 22px',
+          padding: '22px 22px 22px',
           boxSizing: 'border-box',
         }}
       >
-        {/* 드래그 핸들 */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-          <div style={{ width: 42, height: 5, borderRadius: 3, backgroundColor: '#DDD5C8' }} />
-        </div>
-
         {/* 코치 메시지 말풍선 */}
         <div
           style={{
@@ -60,14 +55,7 @@ export default function CoachModal({ loading, message, source, onClose, coach })
               </div>
             </div>
           ) : (
-            <>
-              <p style={{ fontSize: 19, fontWeight: 700, color: '#24523F', lineHeight: 1.6, margin: 0, wordBreak: 'keep-all' }}>{message}</p>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 12 }}>
-                <span style={{ fontSize: 11.5, fontWeight: 600, color: '#9AA39C', background: '#F4F1EA', borderRadius: 9, padding: '5px 11px' }}>
-                  {source === 'solar' ? '출처 · AI' : '출처 · 예비'}
-                </span>
-              </div>
-            </>
+            <p style={{ fontSize: 16, fontWeight: 700, color: '#24523F', lineHeight: 1.65, margin: 0, wordBreak: 'keep-all' }}>{message}</p>
           )}
           {/* 말풍선 꼬리 (캐릭터 방향) */}
           <div style={{ position: 'absolute', left: 46, bottom: -8, width: 18, height: 18, background: '#fff', transform: 'rotate(45deg)', borderRadius: '0 0 0 5px' }} />

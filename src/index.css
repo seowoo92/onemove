@@ -28,8 +28,9 @@
     from { opacity: 0; }
     to { opacity: 1; }
   }
+  /* fill 모드 없이 — 애니메이션이 끝나면 쌓임 맥락이 풀려 내부 모달(z-50)이 탭바(z-40) 위로 올라올 수 있다 */
   .screen-fade {
-    animation: screen-fade 0.18s ease both;
+    animation: screen-fade 0.18s ease;
   }
 
   @media (prefers-reduced-motion: reduce) {
