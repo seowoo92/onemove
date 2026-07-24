@@ -6,7 +6,6 @@ import { generateCoachMessage, generateDailyReview } from '../lib/solar'
 import { sendRoutineCard, resendRoutineCard } from '../lib/kakao'
 import CoachModal from '../components/CoachModal'
 import ScreenHeader from '../components/ScreenHeader'
-import { COACH_INFO } from '../lib/coaches'
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토']
 function formatDate() {
@@ -34,21 +33,6 @@ const AREA_LABEL = {
   '연결': '마음 연결',
 }
 const areaLabel = (area) => AREA_LABEL[area] ?? area
-
-// 코치별 클레이 셰이딩 (완료 축하 카드 아바타)
-const CLAY = {
-  '유쾌': 'radial-gradient(circle at 34% 30%,#FFEFB6,#F3D978 55%,#E8C24E)',
-  '진중': 'radial-gradient(circle at 38% 28%,#3C7A5C,#24523F)',
-  '다정': 'radial-gradient(circle at 34% 30%,#F6C6B4,#EFA58F 55%,#E08066)',
-}
-
-// 주격 조사 이/가 (받침 있으면 '이')
-function subjectParticle(name) {
-  const last = name[name.length - 1] ?? ''
-  const code = last.charCodeAt(0)
-  if (code < 0xac00 || code > 0xd7a3) return '가'
-  return (code - 0xac00) % 28 === 0 ? '가' : '이'
-}
 
 // 완료 — 노랑 필 (사용자 확정: 부드럽고 따뜻한 톤)
 const COMPLETE_BTN = {
@@ -329,7 +313,6 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
   const totalCount = routineIds.length
   const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
   const allResolved = totalCount > 0 && routineIds.every((id) => completedIds.has(id) || skippedIds.has(id))
-  const coachName = COACH_INFO[coach]?.name ?? '코치'
 
   // 하루 마무리(회고) — 모든 루틴이 정리되면 하루 1회 생성, 이후엔 저장본 재사용
   useEffect(() => {
@@ -508,10 +491,6 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
             <div style={{ padding: '16px 20px 18px', textAlign: 'center' }}>
               <div style={{ fontSize: 18, fontWeight: 800, color: '#24523F' }}>오늘 하루도 잘 해냈어요</div>
               <div style={{ fontSize: 13, fontWeight: 500, color: '#7c8a80', marginTop: 7, lineHeight: 1.55, wordBreak: 'keep-all' }}>완료든 쉬어가기든 모두 오늘의 기록이에요.</div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 14, background: '#F4F8F3', borderRadius: 13, padding: '9px 15px' }}>
-                <div style={{ width: 22, height: 22, borderRadius: '50%', background: CLAY[coach] ?? CLAY['유쾌'] }} />
-                <span style={{ fontSize: 12.5, fontWeight: 600, color: '#24523F' }}>{coachName}{subjectParticle(coachName)} 오늘의 너를 안아줘요</span>
-              </div>
 
               {/* 하루 마무리 — 오늘 수행한 루틴 영역을 종합한 코치의 회고 한마디 */}
               {review && (
@@ -531,24 +510,27 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
           </div>
         )}
 
-        {/* 하단 보조 액션 — 2단 그리드, 각 칸 가운데 정렬 (알림 미사용자는 1단) */}
-        <div style={{ width: '100%', marginTop: 4, display: 'grid', gridTemplateColumns: storage.getNotify() ? '1fr 1fr' : '1fr', justifyItems: 'center' }}>
-          <button
-            onClick={handleRequestStateChange}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, color: '#9aa39c' }}
-          >
-            마음 날씨 다시 고르기
-          </button>
-          {storage.getNotify() && (
+        {/* 하단 보조 액션 — 2단 그리드, 각 칸 가운데 정렬 (알림 미사용자는 1단).
+            오늘 루틴이 모두 정리된 뒤에는 완료 축하 화면만 남도록 숨긴다 */}
+        {!allResolved && (
+          <div style={{ width: '100%', marginTop: 4, display: 'grid', gridTemplateColumns: storage.getNotify() ? '1fr 1fr' : '1fr', justifyItems: 'center' }}>
             <button
-              onClick={handleResendCard}
-              disabled={sendingCard}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, color: '#9aa39c', opacity: sendingCard ? 0.5 : 1 }}
+              onClick={handleRequestStateChange}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, color: '#9aa39c' }}
             >
-              {sendingCard ? '카톡으로 보내는 중...' : '오늘 루틴 카톡으로 받기'}
+              마음 날씨 다시 고르기
             </button>
-          )}
-        </div>
+            {storage.getNotify() && (
+              <button
+                onClick={handleResendCard}
+                disabled={sendingCard}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, color: '#9aa39c', opacity: sendingCard ? 0.5 : 1 }}
+              >
+                {sendingCard ? '카톡으로 보내는 중...' : '오늘 루틴 카톡으로 받기'}
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {modal && (
