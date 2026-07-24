@@ -76,7 +76,7 @@ export default function CoachModal({ loading, message, onClose, coach }) {
         {/* 이름 + 계속하기 (캐릭터 오른쪽) */}
         <div style={{ marginLeft: 168, minHeight: 138, display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: 17, fontWeight: 800, color: '#24523F' }}>{info.name}</div>
-          <div style={{ fontSize: 13, fontWeight: 500, color: '#8A9E94', marginTop: 2, whiteSpace: 'nowrap' }}>코치가 한마디 건네요</div>
+          <div style={{ fontSize: 13, fontWeight: 500, color: '#8A9E94', marginTop: 2, whiteSpace: 'nowrap' }}>방금 도착한 한마디</div>
           <div style={{ flex: 1, minHeight: 18 }} />
           {!loading && (
             <button
