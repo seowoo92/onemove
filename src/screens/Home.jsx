@@ -4,6 +4,7 @@ import { storage } from '../lib/storage'
 import { pickRoutines, pickSwapCandidate } from '../lib/routinePicker'
 import { generateCoachMessage, generateDailyReview } from '../lib/solar'
 import { sendRoutineCard, resendRoutineCard } from '../lib/kakao'
+import { pickTalk } from '../lib/coachTalk'
 import CoachModal from '../components/CoachModal'
 import ScreenHeader from '../components/ScreenHeader'
 
@@ -98,6 +99,66 @@ function PinStar({ active, onClick }) {
         <path d="M12 3.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8-5.3-2.8-5.3 2.8 1-5.8-4.2-4.1 5.9-.9z" />
       </svg>
     </button>
+  )
+}
+
+// 코치 한마디 플로팅 — 좌하단 코치 얼굴 + 연그린 반투명 말풍선.
+// 홈 진입 시 한마디가 나타났다가 자동으로 접히고, 얼굴을 탭하면 다른 한마디가 랜덤으로 열린다.
+const COACH_FACE = { '유쾌': 'coach-face-cheerful.png', '진중': 'coach-face-calm.png', '다정': 'coach-face-warm.png' }
+const BUDDY_AUTO_HIDE_MS = 5000
+
+function CoachBuddy({ coach }) {
+  const [talk, setTalk] = useState(() => pickTalk(coach))
+  const [open, setOpen] = useState(true)
+
+  useEffect(() => {
+    if (!open) return
+    const t = setTimeout(() => setOpen(false), BUDDY_AUTO_HIDE_MS)
+    return () => clearTimeout(t)
+  }, [open, talk])
+
+  function handleToggle() {
+    if (open) { setOpen(false); return }
+    setTalk(pickTalk(coach, talk.index))
+    setOpen(true)
+  }
+
+  return (
+    <div style={{ position: 'fixed', left: 14, bottom: 86, zIndex: 30, display: 'flex', alignItems: 'flex-end', gap: 8, pointerEvents: 'none', maxWidth: 'calc(100% - 28px)' }}>
+      <button
+        onClick={handleToggle}
+        aria-label="코치의 한마디 보기"
+        style={{ width: 48, height: 48, borderRadius: '50%', border: '2.5px solid #fff', background: '#FDF9F2', overflow: 'hidden', padding: 0, cursor: 'pointer', flex: 'none', boxShadow: '0 8px 18px -6px rgba(36,82,63,.35)', pointerEvents: 'auto' }}
+      >
+        <img
+          src={`/onemove/images/${COACH_FACE[coach] ?? COACH_FACE['다정']}`}
+          alt=""
+          style={{ width: '100%', height: '100%', display: 'block' }}
+        />
+      </button>
+      <div
+        aria-hidden={!open}
+        style={{
+          maxWidth: 235,
+          borderRadius: '16px 16px 16px 4px',
+          padding: '10px 13px',
+          fontSize: 12.5,
+          fontWeight: 600,
+          lineHeight: 1.55,
+          wordBreak: 'keep-all',
+          background: 'rgba(239,244,238,0.86)',
+          backdropFilter: 'blur(6px)',
+          WebkitBackdropFilter: 'blur(6px)',
+          color: '#2c4a3b',
+          boxShadow: '0 10px 24px -10px rgba(36,82,63,.28)',
+          opacity: open ? 1 : 0,
+          transform: open ? 'translateY(0)' : 'translateY(6px)',
+          transition: 'opacity .35s ease, transform .35s ease',
+        }}
+      >
+        {talk.text}
+      </div>
+    </div>
   )
 }
 
@@ -532,6 +593,9 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
           </div>
         )}
       </div>
+
+      {/* 코치 한마디 플로팅 — 좌하단, 코치 존재감 강화 (모달 z-50 아래에 깔림) */}
+      <CoachBuddy coach={coach} />
 
       {modal && (
         <CoachModal
