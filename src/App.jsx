@@ -197,9 +197,10 @@ export default function App() {
         />
       )}
       {screen === 'home' && coach && (
-        <>
+        // 탭 전환 페이드인 — key가 바뀔 때마다 새 화면이 살짝 떠오름 (opacity만 사용)
+        <div key={activeTab === 'home' ? `home-${homeKey}` : activeTab} className="screen-fade" style={{ minHeight: '100%' }}>
           {activeTab === 'home' && todayState && (
-            <Home key={homeKey} coach={coach} todayState={todayState} nickname={nickname} onGoToStateCheck={handleGoToStateCheck} />
+            <Home coach={coach} todayState={todayState} nickname={nickname} onGoToStateCheck={handleGoToStateCheck} />
           )}
           {activeTab === 'home' && !todayState && (
             <StateCheck onSelect={handleStateSelect} onBack={() => setScreen('coach-select')} />
@@ -217,7 +218,7 @@ export default function App() {
               onGoToCoachSelect={handleGoToCoachSelectFromSettings}
             />
           )}
-        </>
+        </div>
       )}
     </AppLayout>
   )

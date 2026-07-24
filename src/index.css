@@ -13,4 +13,28 @@
     /* 모바일 상태바·오버스크롤 영역까지 크림색으로 (데스크톱·태블릿은 각 레이아웃이 흰 배경을 덮음) */
     background-color: #faf6f0;
   }
+
+  /* 전역 프레스 피드백 — 누르는 요소 공통 손맛.
+     자체 transform을 쓰는 요소(기울어진 폴라로이드 등)는 .no-press로 제외 */
+  button:not(.no-press) {
+    transition: transform 0.12s ease;
+  }
+  button:not(.no-press):active {
+    transform: scale(0.96);
+  }
+
+  /* 탭·화면 전환 페이드인 — opacity만 사용 (transform은 내부 position:fixed 기준을 깨뜨림) */
+  @keyframes screen-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .screen-fade {
+    animation: screen-fade 0.18s ease both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    button:not(.no-press) { transition: none; }
+    button:not(.no-press):active { transform: none; }
+    .screen-fade { animation: none; }
+  }
 }

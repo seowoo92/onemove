@@ -36,6 +36,7 @@
 - 텍스트: #22302A
 - 카드 배경: #FFFFFF
 - 콘텐츠 최대 폭: 480px, 중앙 정렬
+- **마이크로 인터랙션 (7/24)**: ① 전역 버튼 프레스 피드백(scale .96, index.css — 자체 transform 쓰는 요소는 `.no-press`로 제외) ② 탭·화면 전환 페이드인(App.jsx `.screen-fade`, **opacity만** — transform은 내부 position:fixed 기준을 깨뜨림) ③ 코치 모달 슬라이드업+딤 페이드(CoachModal) ④ 기록 아코디언 부드러운 펼침(grid-rows 0fr↔1fr) ⑤ 마음 날씨 카드 스태거 진입. 모두 prefers-reduced-motion 대응
 
 ## 아이콘·이미지 규칙
 - 시스템 기본 이모지 글리프 사용 금지 (예: ☀️ 😀 🍎 등 OS 내장 이모지)

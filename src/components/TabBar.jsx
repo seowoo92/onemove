@@ -55,9 +55,10 @@ export default function TabBar({ activeTab, onTabChange, style }) {
       {TABS.map(({ key, label }) => {
         const active = activeTab === key
         return (
-          <div
+          <button
             key={key}
             onClick={() => onTabChange(key)}
+            aria-current={active ? 'page' : undefined}
             style={{
               flex: 1,
               display: 'flex',
@@ -67,11 +68,15 @@ export default function TabBar({ activeTab, onTabChange, style }) {
               gap: 2,
               color: active ? '#24523F' : '#9AA39C',
               cursor: 'pointer',
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              font: 'inherit',
             }}
           >
             {ICONS[key]}
             <span style={{ fontSize: '13.5px', fontWeight: active ? 800 : 500 }}>{label}</span>
-          </div>
+          </button>
         )
       })}
     </div>

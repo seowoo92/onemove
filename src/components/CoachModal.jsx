@@ -7,12 +7,20 @@ export default function CoachModal({ loading, message, source, onClose, coach })
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center"
+      className="fixed inset-0 z-50 flex items-end justify-center coach-dim"
       style={{ backgroundColor: 'rgba(20, 46, 34, 0.45)' }}
       onClick={(e) => e.target === e.currentTarget && !loading && onClose()}
     >
-      <style>{`@keyframes coachDot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}`}</style>
+      <style>{`
+        @keyframes coachDot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+        @keyframes coachDim{from{opacity:0}to{opacity:1}}
+        @keyframes coachSheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+        .coach-dim{animation:coachDim .22s ease both}
+        .coach-sheet{animation:coachSheetUp .34s cubic-bezier(.22,.9,.3,1) both}
+        @media (prefers-reduced-motion: reduce){.coach-dim,.coach-sheet{animation:none}}
+      `}</style>
       <div
+        className="coach-sheet"
         style={{
           position: 'relative',
           overflow: 'hidden',

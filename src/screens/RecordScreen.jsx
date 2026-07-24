@@ -172,7 +172,7 @@ export default function RecordScreen() {
               {timelineGroups.map(({ label, dates }) => {
                 const isOpen = openGroups.has(label)
                 return (
-                  <div key={label} style={{ background: '#FFFFFF', borderRadius: 16, padding: isOpen ? '12px 16px 4px' : '12px 16px', boxShadow: '0 8px 18px -14px rgba(36,82,63,.2)' }}>
+                  <div key={label} style={{ background: '#FFFFFF', borderRadius: 16, padding: isOpen ? '12px 16px 4px' : '12px 16px', boxShadow: '0 8px 18px -14px rgba(36,82,63,.2)', transition: 'padding .28s ease' }}>
                     <button
                       onClick={() => toggleGroup(label)}
                       aria-expanded={isOpen}
@@ -190,7 +190,9 @@ export default function RecordScreen() {
                       </span>
                     </button>
 
-                    {isOpen && (
+                    {/* 부드러운 펼침 — grid-rows 0fr↔1fr 트랜지션 (항상 렌더, 접힘 시 높이 0) */}
+                    <div style={{ display: 'grid', gridTemplateRows: isOpen ? '1fr' : '0fr', transition: 'grid-template-rows .28s ease' }}>
+                      <div style={{ overflow: 'hidden' }}>
                       <div className="flex flex-col" style={{ marginTop: 12 }}>
                         {dates.map((dateStr, idx) => {
                           const data = history[dateStr]
@@ -264,7 +266,8 @@ export default function RecordScreen() {
                           )
                         })}
                       </div>
-                    )}
+                      </div>
+                    </div>
                   </div>
                 )
               })}

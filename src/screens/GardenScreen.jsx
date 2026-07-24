@@ -246,6 +246,7 @@ export default function GardenScreen() {
                       key={key}
                       onClick={() => setAlbumOpen(filled)}
                       aria-label={`${year}년 ${name} 정원 열람`}
+                      className="no-press"
                       style={{
                         background: '#FFFFFF',
                         border: 'none',
