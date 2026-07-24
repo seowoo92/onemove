@@ -1,13 +1,12 @@
 import { useState } from 'react'
 import { COACH_INFO, COACH_KEYS } from '../lib/coaches'
 
-// 한글 조사 '로/으로': 받침 없음 또는 ㄹ받침 → '로', 그 외 → '으로'
-function startParticle(name) {
+// 한글 조사 '과/와': 받침 있으면 '과', 없으면 '와'
+function withParticle(name) {
   const last = name[name.length - 1] ?? ''
   const code = last.charCodeAt(0)
-  if (code < 0xac00 || code > 0xd7a3) return '로'
-  const jong = (code - 0xac00) % 28
-  return jong === 0 || jong === 8 ? '로' : '으로'
+  if (code < 0xac00 || code > 0xd7a3) return '와'
+  return (code - 0xac00) % 28 === 0 ? '와' : '과'
 }
 
 function CoachAvatar({ info, size }) {
@@ -165,7 +164,7 @@ export default function CoachSelect({ onSelect, initialSelected = '유쾌', onBa
             boxShadow: '0 10px 22px -8px rgba(36,82,63,.5), inset 0 2px 0 rgba(255,255,255,.16)',
           }}
         >
-          {current.name}{startParticle(current.name)} 시작
+          {current.name}{withParticle(current.name)} 함께하기
         </button>
       </div>
     </div>
