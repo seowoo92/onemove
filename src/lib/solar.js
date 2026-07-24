@@ -122,9 +122,25 @@ function removeEmoji(text) {
     .trim()
 }
 
-// ② <think>...</think> 태그 및 내용 제거
+// ② <think> 사고 과정 제거 — 짝 없는 태그(닫힘만·열림만 온 경우)도 처리
 function removeThinkTags(text) {
-  return text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim()
+  let t = text.replace(/<think>[\s\S]*?<\/think>/gi, '')
+  // 닫는 태그만 남은 경우: 태그 앞은 사고 과정, 뒤가 최종본 — 마지막 태그 뒤만 사용
+  if (/<\/think>/i.test(t)) t = t.split(/<\/think>/i).pop()
+  // 여는 태그만 남은 경우: 태그 뒤는 사고 과정 — 앞부분만 사용
+  if (/<think>/i.test(t)) t = t.split(/<think>/i)[0]
+  return t.trim()
+}
+
+// ②-c 별표 메모 제거 (*수정 반영 버전* 등) — 초안 뒤에 수정본을 이어 붙이는 패턴.
+// 마커가 있으면 마지막 마커 뒤(수정본)를 사용하고, 뒤가 너무 짧으면 마커만 지운다
+function removeRevisionMarkers(text) {
+  const markers = text.match(/\*[^*\n]{1,30}\*/g)
+  if (!markers) return text.replace(/\*/g, ' ').trim()
+  const last = markers[markers.length - 1]
+  const after = text.slice(text.lastIndexOf(last) + last.length).trim()
+  const picked = after.length >= 8 ? after : text.replace(/\*[^*\n]{1,30}\*/g, ' ')
+  return picked.replace(/\*/g, ' ').trim()
 }
 
 // ②-b 모델이 붙이는 자기 설명 제거 — 괄호 주석(닫힘 누락 포함)과 ※ 이후 전부
@@ -183,6 +199,7 @@ function ensureEndPunctuation(text) {
 function cleanMessage(text) {
   let result = removeEmoji(text)
   result = removeThinkTags(result)
+  result = removeRevisionMarkers(result)
   result = removeMetaCommentary(result)
   result = removeRepetition(result)
   result = removeSpecialChars(result)
@@ -201,7 +218,7 @@ function buildUserPrompt(state, routineName, situation, nickname) {
 루틴: ${routineName}
 상황: ${SITUATION_LABELS[situation]}
 이 사용자에게 격려 메시지를 써줘. 첫 문장은 한 일을 인정하고, 둘째 문장은 다독이며 마무리해.
-출력 형식: 괄호·번호·설명·주석 없이, 각각 마침표나 느낌표로 끝나는 두 문장만 출력해.`
+출력 형식: 괄호·번호·설명·주석·별표 메모·태그·사고 과정 없이, 각각 마침표나 느낌표로 끝나는 두 문장만 바로 출력해. 수정하거나 다시 쓰지 말고 최종 문장만 출력해.`
 }
 
 /**
@@ -250,11 +267,14 @@ async function requestSolar(personality, userPrompt, nickname) {
       message = message.replace(new RegExp(`${safe}(?!님)`, 'g'), `${nickname}님`)
     }
     message = message.replace(/몸에게/g, '몸에')
-    // 품질 게이트: 짧거나 1문장이거나 반말 섞임 — 어느 하나라도 걸리면 예비 메시지가 낫다
+    // 품질 게이트: 짧거나 1문장이거나 반말 섞임 — 어느 하나라도 걸리면 예비 메시지가 낫다.
+    // 길이 상한: 모델이 문장부호를 생략하면 여러 문장이 "2문장"으로 계산돼 통과하므로,
+    // 전체 90자·문장당 60자를 넘는 출력은 장황·오염 가능성이 높아 예비 메시지로 대체
     const sentences = message.match(/[^.!?]+[.!?]+/g) ?? []
     const politeEnding = personality === '진중' ? /[다까요]$/ : /[요죠까]$/
     const allPolite = sentences.every((s) => politeEnding.test(s.replace(/[.!?\s]+$/, '').trim()))
-    if (message.length >= 16 && sentences.length >= 2 && allPolite) return message
+    const lengthOk = message.length >= 16 && message.length <= 90 && sentences.every((s) => s.trim().length <= 60)
+    if (lengthOk && sentences.length >= 2 && allPolite) return message
     return null
   } catch {
     return null
@@ -288,7 +308,7 @@ function buildReviewPrompt(state, completedList, skippedCount, nickname) {
 오늘 하루를 마무리하는 메시지를 써줘.
 - 첫 문장: 오늘은 쉬어간 날임을 있는 그대로 받아들여줘. 아쉬워하거나 과하게 격려하지 마.
 - 둘째 문장: 부담을 덜어주는 말로 하루를 편안하게 닫아줘. 내일 더 하자는 다짐·권유·목표 제시는 금지.
-출력 형식: 괄호·번호·설명·주석 없이, 각각 마침표나 느낌표로 끝나는 두 문장만 출력해.`
+출력 형식: 괄호·번호·설명·주석·별표 메모·태그·사고 과정 없이, 각각 마침표나 느낌표로 끝나는 두 문장만 바로 출력해. 수정하거나 다시 쓰지 말고 최종 문장만 출력해.`
   }
   const listText = completedList.map(({ name, area }) => `${name}(${area})`).join(', ')
   return `${nameHint}오늘 상태: ${state}
@@ -298,7 +318,7 @@ function buildReviewPrompt(state, completedList, skippedCount, nickname) {
 오늘 하루를 마무리하는 메시지를 써줘.
 - 첫 문장: 완료한 루틴들의 영역을 묶어 오늘이 어떤 하루였는지 종합해서 인정해. (예: 몸을 깨우고 바깥 공기도 쐰 하루) 루틴 이름을 그대로 나열하지 말고 하루의 느낌으로 종합해.
 - 둘째 문장: 하루를 부드럽게 닫아줘. 편안한 밤 인사나 내일 다시 만나자는 가벼운 인사는 좋아. 내일 더 하자는 다짐·권유·목표 제시는 금지.
-출력 형식: 괄호·번호·설명·주석 없이, 각각 마침표나 느낌표로 끝나는 두 문장만 출력해.`
+출력 형식: 괄호·번호·설명·주석·별표 메모·태그·사고 과정 없이, 각각 마침표나 느낌표로 끝나는 두 문장만 바로 출력해. 수정하거나 다시 쓰지 말고 최종 문장만 출력해.`
 }
 
 /**
