@@ -78,7 +78,7 @@ export default function StateCheck({ onSelect, onBack }) {
             오늘 마음 날씨는<br />어떤가요?
           </div>
           <div style={{ fontSize: 14, fontWeight: 500, color: '#7c8a80', marginTop: 9 }}>
-            {formatDate()} · 어떤 날이든 괜찮아요
+            {formatDate()}
           </div>
         </div>
 
@@ -110,8 +110,9 @@ export default function StateCheck({ onSelect, onBack }) {
           ))}
         </div>
 
-        {/* 안내 한 줄 — 서비스 철학과 연결 */}
-        <div style={{ marginTop: 24, textAlign: 'center', fontSize: 13, fontWeight: 500, color: '#8a978d', wordBreak: 'keep-all' }}>
+        {/* 안내 두 줄 — 무판단 신호 + 서비스 철학 (사용자 확정: 날짜 옆에서 이곳으로 이동) */}
+        <div style={{ marginTop: 24, textAlign: 'center', fontSize: 13, fontWeight: 500, color: '#8a978d', lineHeight: 1.7, wordBreak: 'keep-all' }}>
+          어떤 날이든 괜찮아요.<br />
           마음 날씨에 맞춰, 오늘 할 수 있는 만큼만 추천할게요.
         </div>
       </div>

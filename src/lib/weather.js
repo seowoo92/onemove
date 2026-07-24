@@ -1,14 +1,14 @@
 const WEATHER_MAP = {
   '좋아요': {
     weather: '맑음',
-    description: '맑게 갠 하루예요',
+    description: '오늘은 마음도 화창해요',
     image: '/onemove/images/weather-sunny.png',
     color: '#F3D978',
     tint: '#FBF1CF',
   },
   '보통이에요': {
     weather: '구름',
-    description: '구름 조금, 그런대로',
+    description: '구름 조금, 그런 날도 있죠',
     image: '/onemove/images/weather-cloudy.png',
     color: '#9FD2B0',
     tint: '#E5F1E9',
