@@ -4,11 +4,11 @@ import { COACH_INFO } from '../lib/coaches'
 export default function CoachModal({ loading, message, onClose, coach }) {
   const info = COACH_INFO[coach] ?? { name: '코치', color: '#9AA39C', image: null }
   const [imgError, setImgError] = useState(false)
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center coach-dim"
-      style={{ backgroundColor: 'rgba(20, 46, 34, 0.45)' }}
+      // 탭바 위에 떠 있는 형태 (사용자 확정) — 하단 여백 = 탭바 높이(고정부 56.3px + 안전영역 하단 패딩)와 정확히 일치
+      style={{ backgroundColor: 'rgba(20, 46, 34, 0.45)', paddingBottom: 'calc(56.3px + max(calc(env(safe-area-inset-bottom) - 12px), 5px))' }}
       onClick={(e) => e.target === e.currentTarget && !loading && onClose()}
     >
       <style>{`
@@ -27,7 +27,7 @@ export default function CoachModal({ loading, message, onClose, coach }) {
           width: 'calc(100% - 20px)',
           maxWidth: 480,
           backgroundColor: '#F9F6EE',
-          borderRadius: '34px 34px 0 0',
+          borderRadius: '28px 28px 0 0',
           boxShadow: '0 -20px 50px -10px rgba(0,0,0,.3)',
           padding: '22px 22px 22px',
           boxSizing: 'border-box',
