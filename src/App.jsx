@@ -26,6 +26,7 @@ export default function App() {
   const [user, setUser] = useState(null)
   const [nickname, setNickname] = useState('')
   const [coachSelectFrom, setCoachSelectFrom] = useState(null)
+  const [stateCheckFrom, setStateCheckFrom] = useState(null) // 'home' = 홈의 '마음 날씨 다시 고르기'로 진입
 
   function applyKakaoNickname(currentUser) {
     if (!currentUser) return
@@ -122,14 +123,20 @@ export default function App() {
   }
 
   function handleStateSelect(state) {
+    // 오늘 기록 초기화는 새 날씨가 '확정되는 이 시점'에 수행 —
+    // 마음 날씨 화면에서 뒤로 돌아가면 기존 루틴·완료 기록이 그대로 남는다
+    ;['onemove_routines', 'onemove_completed', 'onemove_easy', 'onemove_easy_auto', 'onemove_swap_used', 'onemove_swapped_out', 'onemove_skipped', 'onemove_review']
+      .forEach((k) => localStorage.removeItem(k))
+    storage.removeHistoryEntry(storage.getTodayKey())
     storage.setTodayState(state)
     setTodayState(state)
+    setStateCheckFrom(null)
     setScreen('home')
     setActiveTab('home')
   }
 
   function handleGoToStateCheck() {
-    setTodayState(null)
+    setStateCheckFrom('home')
     setScreen('state-check')
     setActiveTab('home')
   }
@@ -182,7 +189,11 @@ export default function App() {
       {screen === 'state-check' && (
         <StateCheck
           onSelect={handleStateSelect}
-          onBack={() => setScreen('coach-select')}
+          onBack={
+            stateCheckFrom === 'home'
+              ? () => { setStateCheckFrom(null); setScreen('home'); setActiveTab('home') } // 재선택 진입: 홈으로 복귀 (기록 유지)
+              : () => setScreen('coach-select') // 온보딩 진입: 코치 선택으로
+          }
         />
       )}
       {screen === 'home' && coach && (

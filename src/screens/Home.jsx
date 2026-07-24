@@ -309,9 +309,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
       const ok = window.confirm('마음 날씨를 다시 고르면 오늘 기록이 초기화돼요. 계속할까요?')
       if (!ok) return
     }
-    ;['onemove_state', 'onemove_routines', 'onemove_completed', 'onemove_easy', 'onemove_easy_auto', 'onemove_swap_used', 'onemove_swapped_out', 'onemove_skipped', 'onemove_review']
-      .forEach(k => localStorage.removeItem(k))
-    storage.removeHistoryEntry(storage.getTodayKey())
+    // 초기화는 새 날씨를 '선택하는 시점'(App.handleStateSelect)에 수행 — 뒤로 돌아오면 아무것도 잃지 않는다
     onGoToStateCheck()
   }
 

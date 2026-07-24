@@ -82,7 +82,7 @@ export default function StateCheck({ onSelect, onBack }) {
           </div>
         </div>
 
-        {/* 마음 날씨 카드 3종 */}
+        {/* 마음 날씨 카드 3종 + 안내 문구 (사용자 확정: 흰 카드 유지, 여백은 안내 한 줄로) */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 13, marginTop: 26 }}>
           {STATES.map(({ value, sub, image, tint }) => (
             <button
@@ -110,33 +110,9 @@ export default function StateCheck({ onSelect, onBack }) {
           ))}
         </div>
 
-        {/* 도움말 말풍선 */}
-        <div style={{ marginTop: 'auto', paddingTop: 24, display: 'flex', alignItems: 'flex-end', gap: 11 }}>
-          <div
-            style={{
-              flex: 'none',
-              position: 'relative',
-              width: 46,
-              height: 46,
-              borderRadius: '50%',
-              background: 'radial-gradient(120% 120% at 35% 28%,#FFFFFF,#E7F0E8)',
-              boxShadow: '0 8px 18px -10px rgba(36,82,63,.45),inset 0 -3px 6px rgba(36,82,63,.08)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <span style={{ fontSize: 24, fontWeight: 800, color: '#2d6049', lineHeight: 1 }}>?</span>
-          </div>
-          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 9 }}>
-            <div style={{ background: '#FBF4E2', borderRadius: 18, padding: '13px 16px', fontSize: 12.5, fontWeight: 500, color: '#6d6a52', lineHeight: 1.6, wordBreak: 'keep-all', boxShadow: '0 7px 16px -12px rgba(180,150,60,.45)' }}>
-              선택한 마음 날씨에 맞추어<br />루틴 개수와 난이도를 조절해서 제안해요.
-            </div>
-            <div style={{ position: 'relative', background: '#EBF2EB', borderRadius: '18px 18px 18px 6px', padding: '13px 16px', fontSize: 12.5, fontWeight: 500, color: '#566b5c', lineHeight: 1.6, wordBreak: 'keep-all', boxShadow: '0 7px 16px -12px rgba(36,82,63,.4)' }}>
-              <div style={{ position: 'absolute', left: -4, bottom: 11, width: 11, height: 11, background: '#EBF2EB', borderRadius: '0 0 0 3px', transform: 'rotate(45deg)' }} />
-              마음 날씨는 설정에서 언제든 다시 고를 수 있어요.<br />다시 고르면 오늘의 루틴은 새로 시작돼요.
-            </div>
-          </div>
+        {/* 안내 한 줄 — 서비스 철학과 연결 */}
+        <div style={{ marginTop: 24, textAlign: 'center', fontSize: 13, fontWeight: 500, color: '#8a978d', wordBreak: 'keep-all' }}>
+          마음 날씨에 맞춰, 오늘 할 수 있는 만큼만 추천할게요.
         </div>
       </div>
     </div>
