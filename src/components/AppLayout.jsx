@@ -137,20 +137,9 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
     )
   }
 
-  // 데스크톱: 좌우 2단 레이아웃 + 폰 베젤
-  // 프레임 리디자인 시안 비교용 (확정 후 정리): ?frame=1 크림 액자 / 2 딥그린 입체 / 3 프레임리스
-  const frameVariant = new URLSearchParams(window.location.search).get('frame')
+  // 데스크톱: 좌우 2단 레이아웃 + 폰 프레임
   return (
-    <div
-      className="flex min-h-screen items-center"
-      style={
-        frameVariant === '3'
-          ? { backgroundColor: '#FBF8F2', backgroundImage: 'radial-gradient(640px 420px at 82% 18%, rgba(243,217,120,.14), transparent 70%), radial-gradient(560px 420px at 14% 86%, rgba(238,132,102,.10), transparent 70%), radial-gradient(700px 520px at 90% 90%, rgba(36,82,63,.08), transparent 70%)' }
-          : frameVariant
-            ? { backgroundColor: '#FBF8F2' }
-            : { backgroundColor: '#FFFFFF' }
-      }
-    >
+    <div className="flex min-h-screen items-center" style={{ backgroundColor: '#FFFFFF' }}>
 
       {/* 좌측 소개 패널 */}
       <div className="flex-1 flex items-center justify-end pr-10 xl:pr-16 py-16">
@@ -209,22 +198,17 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
         </div>
       </div>
 
-      {/* 우측 폰 베젤 */}
+      {/* 우측 폰 프레임 (2026-07-26 사용자 확정: 딥그린 슬림 그라데이션 프레임, 노치 없음) */}
       <div className="flex-1 flex items-center justify-start pl-10 xl:pl-16 py-12">
         <div
-          style={
-            frameVariant === '1'
-              ? // 1안: 크림 액자 — 흰 매트 + 헤어라인, 층진 그림자
-                { flexShrink: 0, padding: 12, background: '#FFFFFF', borderRadius: 46, border: '1px solid #EAE3D7', boxShadow: '0 46px 90px -40px rgba(28,63,47,.28), 0 14px 30px -18px rgba(28,63,47,.15)' }
-              : frameVariant === '2'
-                ? // 2안: 딥그린 프레임 — 얇은 그라데이션 프레임 + 상단 하이라이트
-                  { flexShrink: 0, padding: 8, background: 'linear-gradient(150deg,#2F604B 0%,#1C3F2F 55%,#142E22 100%)', borderRadius: 48, boxShadow: '0 40px 80px -30px rgba(20,46,34,.45), inset 0 1px 1px rgba(255,255,255,.28)' }
-                : frameVariant === '3'
-                  ? // 3안: 프레임리스 — 래퍼 없음(아래 앱 카드가 곧 프레임)
-                    { flexShrink: 0 }
-                  : // 현행: 딥그린 10px 베젤 (래퍼 없음)
-                    { flexShrink: 0 }
-          }
+          style={{
+            flexShrink: 0,
+            padding: 8,
+            background: 'linear-gradient(150deg,#2F604B 0%,#1C3F2F 55%,#142E22 100%)',
+            borderRadius: 48,
+            // 그린 톤 깊은 그림자 + 상단 안쪽 하이라이트로 입체감
+            boxShadow: '0 40px 80px -30px rgba(20,46,34,.45), inset 0 1px 1px rgba(255,255,255,.28)',
+          }}
         >
         <div
           style={{
@@ -232,42 +216,19 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             width: '390px',
             flexShrink: 0,
             height: '812px',
-            ...(frameVariant === '1'
-              ? { border: '1px solid #F0EAE0', borderRadius: '34px' }
-              : frameVariant === '2'
-                ? { borderRadius: '40px' }
-                : frameVariant === '3'
-                  ? { border: '1px solid rgba(36,82,63,.10)', borderRadius: '36px', boxShadow: '0 50px 100px -45px rgba(28,63,47,.35), 0 18px 40px -24px rgba(28,63,47,.18)' }
-                  : { border: '10px solid #1C3F2F', borderRadius: '46px', boxShadow: '0 20px 50px rgba(0,0,0,0.12)' }),
+            borderRadius: '40px',
             overflow: 'hidden',
-            // CSS 트릭: position:fixed 자식들이 베젤 기준으로 고정됨 (CoachModal, TabBar)
+            // CSS 트릭: position:fixed 자식들이 프레임 기준으로 고정됨 (CoachModal, TabBar)
             transform: 'translateZ(0)',
           }}
         >
-          {/* 상단 노치 — 현행 시안에서만 */}
-          {!frameVariant && (
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: '110px',
-                height: '28px',
-                backgroundColor: '#1C3F2F',
-                borderRadius: '0 0 18px 18px',
-                zIndex: 200,
-                pointerEvents: 'none',
-              }}
-            />
-          )}
           {/* 스크롤 가능한 앱 콘텐츠 */}
           <div
             ref={bezelRef}
             className="[&::-webkit-scrollbar]:hidden"
             style={{ height: '812px', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'none', backgroundColor: '#FAF6F0' }}
           >
-            <div style={{ paddingTop: frameVariant ? '26px' : '48px', paddingLeft: '8px', paddingRight: '8px', paddingBottom: showTabBar ? '58px' : 0, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ paddingTop: '26px', paddingLeft: '8px', paddingRight: '8px', paddingBottom: showTabBar ? '58px' : 0, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
               {children}
             </div>
             {showTabBar && (
