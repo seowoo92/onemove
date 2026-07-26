@@ -6,7 +6,7 @@
 //
 // 템플릿 결정 기록 (2026-07-26 실기기 검증): 피드(카드) 템플릿은 본문 2줄 잘림 + 아이템 행 6자
 // 말줄임(위치도 제목 위 고정)이라 루틴 목록을 담을 수 없음 → 목록이 핵심이므로 텍스트 한 통으로 확정.
-// '오늘만큼 열기' 버튼도 제거(사용자 확정) — 하단 '오늘만큼' 푸터 탭으로 앱 진입 가능.
+// 버튼은 스펙상 제거 불가(미지정 시 기본 '자세히 보기') → '오늘만큼 열기'로 지정(사용자 확정).
 
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
@@ -58,12 +58,13 @@ export async function getValidAccessToken(userId: string): Promise<string> {
   return stale ? await refreshKakaoToken(userId, row.refresh_token) : row.access_token
 }
 
-// 텍스트 템플릿 — 전문(최대 200자)이 잘림 없이 표시된다. 버튼 없음.
+// 텍스트 템플릿 — 전문(최대 200자)이 잘림 없이 표시된다.
 export async function sendMemo(accessToken: string, text: string) {
   const template = {
     object_type: 'text',
     text,
     link: { web_url: APP_URL, mobile_web_url: APP_URL },
+    button_title: '오늘만큼 열기',
   }
   const res = await fetch('https://kapi.kakao.com/v2/api/talk/memo/default/send', {
     method: 'POST',

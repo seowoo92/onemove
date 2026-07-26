@@ -14,11 +14,11 @@
 - 프레임워크: Vite + React 19 + Tailwind CSS v4
 - 폰트: Pretendard Variable (CDN, 폴백 -apple-system, sans-serif)
 - AI: 업스테이지 Solar (model: solar-pro) — **solar-chat Edge Function 프록시 경유** (키는 서버에만)
-- 인증/서버: Supabase (Auth 카카오 OAuth · DB · Edge Functions 3개 · pg_cron) — 백엔드 지도: docs/handoff-linux.md 4절
-- 알림: 카카오 '나에게 보내기' — 루틴 확정 시 카드 + 매일 18:00 KST 미완료 리마인더 (나와의 채팅, 무음 도착)
+- 인증/서버: Supabase (Auth 카카오 OAuth · DB(push_subscriptions 포함 4테이블) · Edge Functions 4개: solar-chat·send-kakao·remind-incomplete·send-push · pg_cron) — 백엔드 지도: docs/handoff-linux.md 4절. 함수 반영은 대시보드 붙여넣기(CLI 미사용) — 저장소 커밋만으로는 서버에 반영 안 됨
+- 알림 2채널 (7/26 웹 푸시 추가, 실기기 검증 완료): ① 카카오 '나에게 보내기' — 루틴 확정 시 카드 + 매일 18:00 KST 미완료 리마인더 (나와의 채팅, 무음 도착) ② 웹 푸시 — 설정 '앱 알림' 토글(기기 단위 구독, 로그인 필요), 18:00 리마인더 동시 발송, **알림 탭 시 설치된 PWA로 직행**(카카오 버튼은 인앱 브라우저로만 열리는 iOS 한계의 해법). 카카오 루틴 카드는 **텍스트 템플릿 확정** — 피드는 본문 2줄 잘림·아이템 행 6자 말줄임·이미지 2:1 크롭(실기기 검증)이라 목록 수용 불가. 버튼은 제거 불가(스펙) → '오늘만큼 열기'
 - 배포: GitHub Pages (push to main 시 자동 배포)
 - 데이터 저장: localStorage 정본 + 로그인 사용자는 Supabase 동기화(하이브리드, sync.js) — 게스트는 localStorage만
-- PWA: manifest 홈 화면 설치 지원 (Web Push 없음)
+- PWA: manifest 홈 화면 설치 + **웹 푸시** (public/push-sw.js — 캐싱 없는 푸시 전용 SW, src/lib/push.js에 VAPID 공개키 내장. 아이폰은 iOS 16.4+ 홈 화면 설치 앱에서만 수신. 사용법 안내 '앱으로 쓰기'에 설치 안내)
 - 차트: recharts ^3.8.1 (기록 탭 막대 그래프)
 
 ## 환경변수
@@ -26,7 +26,7 @@
 - VITE_SUPABASE_ANON_KEY: Supabase anon public 키
 - VITE_SOLAR_API_KEY: (선택) 클라이언트는 더 이상 사용 안 함(프록시 전환) — 프롬프트 테스트 스크립트용
 - .env.local은 .gitignore에 포함 — 절대 커밋 금지. 값 얻는 곳: docs/handoff-linux.md 3절
-- 서버 비밀값(Supabase Edge Function Secrets): UPSTAGE_API_KEY · KAKAO_REST_API_KEY · KAKAO_CLIENT_SECRET · CRON_SECRET
+- 서버 비밀값(Supabase Edge Function Secrets): UPSTAGE_API_KEY · KAKAO_REST_API_KEY · KAKAO_CLIENT_SECRET · CRON_SECRET · VAPID_KEYS(웹 푸시 JWK 키쌍 — 저장소에 없음, 분실 시 재생성하면 기존 구독 전부 무효)
 
 ## 디자인 시스템
 > 색·타이포·간격·컴포넌트·화면별 사양의 상세 기준은 docs/design-handoff.md (1차 시안 핸드오프). 디자인 작업 시 그 문서를 우선 따른다.
@@ -144,7 +144,8 @@ S0 진입 → S1 코치 선택 → S2 마음 날씨 → S3 루틴 홈 → S4 코
 ### 설정 탭 (SettingsScreen.jsx) — 시안 재구성
 - **상단 프로필 헤더 카드**: 닉네임("OO님" 없으면 "이름을 정해주세요") + "변경" 버튼(prompt로 닉네임 편집) + "{코치명} 코치와 함께" + 카카오 버튼(미로그인 "카카오 로그인" / 로그인 "카카오 연결됨", 탭 시 로그아웃 confirm)
 - 섹션 라벨(12.5px #9AA69D): 알림 / AI 코치 / 마음 날씨 / 마음이 많이 힘들 때
-- **알림**: 카카오톡 알림 토글(on=#24523F) + "알림 발송은 카카오 채널 연동 후 제공돼요" 안내
+- **알림 (7/26 개편)**: 흰 카드 하나에 토글 2행 — ① 카카오톡 알림(onemove_notify) ② **앱 알림**(웹 푸시, 기기 단위 push_subscriptions 구독·로그인 필요). 앱 알림 켜면 라벨 옆 [테스트] 칩(확인용 발송). 상태·오류 안내는 카드 아래 한 줄(pushMsg)
+- **세로 압축 (7/26)**: 데스크톱 베젤이 모바일보다 상하 패딩만큼 좁아 넘쳤던 것 수정 — 섹션 라벨·카드 패딩 축소로 베젤·모바일 모두 한 화면 유지
 - **AI 코치 다시 고르기** / **마음 날씨 다시 고르기**: 동일 디자인 흰 박스(제목+부제+› 화살표). 코치 → CoachSelect 이동(coachSelectFrom='settings'), 마음 날씨 → confirm 후 state 초기화 + 당일 기록 제거
 - **마음이 많이 힘들 때**: 연한 회색 2칸 카드(국립정신건강센터 1577-0199 / 보건복지부 109), 전화 아이콘 + tel: 링크
 - **계정 섹션은 없음** — 로그인/로그아웃은 프로필 카카오 버튼에 통합
@@ -257,8 +258,9 @@ S0 진입 → S1 코치 선택 → S2 마음 날씨 → S3 루틴 홈 → S4 코
 - 사용자의 "오늘 작업 마감" 신호 → 그날 devlog 작성 + 마무리 커밋·푸시
 - 매일 작업 단위 커밋 (대회 제출 요건: 날짜별 기록). 날짜 소급 등 기록 조작 금지
 
-## 현재 상태 (2026-07-26 오후)
+## 현재 상태 (2026-07-26 저녁)
 - **마감 정정: 예선 제출 7/29(화) 오전 11시** — 26~28 사흘 가용
+- **7/26 완료분**: ① 기획안(보고서 양식 md + 서비스 컬러 A4 PDF 13쪽, 멘토링 지참— docs/기획안-초안-2026-07-26.md·gitignore) ② 사용자 안내서(설정 헤더 칩 → GuideScreen, 앱 설치 안내 포함) ③ **웹 푸시 완성·실기기 검증**(설정 앱 알림 토글→테스트 알림 수신 확인, 서버 4종 반영 완료) ④ 시스템 alert→인앱 토스트 ⑤ 카카오 카드 피드 실험 후 텍스트 확정(버튼 '오늘만큼 열기') ⑥ 설정 세로 압축(베젤 대응). 미사용 잔재: public/images/kakao-banner-*.png(피드 실험용 배너 3종 — 리포 정리 때 제거 가능)
 - 7/24 대규모 개편 완료(커밋 14개): 코치 메시지 유출 차단, 코치 한마디 플로팅(성격별 20문구), 마음 날씨 화면 개편(리셋 시점 이동·뒤로 홈 복귀·안내 두 줄·문구 확정), 진행 카드 단계별 멘트, 전역 마이크로 인터랙션 5종, 코치 모달 탭바 위 밀착형 확정 — 상세: docs/devlog/2026-07-24.md
 - 전체 동선 자동 리허설(스크립트: 세션 스크래치) 이슈 0건 통과, 실기기 점검은 진행 중이었음
 - 하루 마무리 배지 "AI 생성"/"예비 문구"로 확정 반영
