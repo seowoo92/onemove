@@ -18,6 +18,20 @@ const AREA_CHIPS = [
 
 const SECTIONS = [
   {
+    label: '앱으로 쓰기',
+    items: [
+      {
+        id: 'install',
+        title: '홈 화면에 설치하기',
+        body: [
+          '오늘만큼은 설치 없이 쓰는 웹앱이지만, 홈 화면에 추가하면 일반 앱처럼 아이콘으로 열 수 있어요. 아이폰에서는 앱 알림(푸시)도 홈 화면에 추가한 앱에서만 받을 수 있어요.',
+          '아이폰(사파리): 하단 공유 버튼 → [홈 화면에 추가] → [추가]',
+          '안드로이드(크롬): 오른쪽 위 점 세 개 메뉴 → [홈 화면에 추가] 또는 [앱 설치]',
+        ],
+      },
+    ],
+  },
+  {
     label: '오늘의 루틴',
     items: [
       {
@@ -122,7 +136,7 @@ function GuideItem({ item, isOpen, onToggle, isFirst }) {
         <div style={{ overflow: 'hidden' }}>
           <div style={{ paddingTop: 8, paddingBottom: 5 }}>
             {item.body.map((line, i) => (
-              <p key={i} style={{ fontSize: 13.5, fontWeight: 500, color: '#5C6B61', lineHeight: 1.6, margin: i === 0 ? 0 : '7px 0 0' }}>
+              <p key={i} style={{ fontSize: 13.5, fontWeight: 500, color: '#5C6B61', lineHeight: 1.6, wordBreak: 'keep-all', margin: i === 0 ? 0 : '7px 0 0' }}>
                 {line}
               </p>
             ))}
