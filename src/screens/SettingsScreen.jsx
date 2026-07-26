@@ -15,7 +15,7 @@ const CARD_SHADOW = '0 8px 18px -14px rgba(36,82,63,.2)'
 
 function SectionLabel({ children }) {
   return (
-    <p style={{ fontSize: 12.5, fontWeight: 700, color: '#9AA69D', letterSpacing: '0.02em', margin: '15px 0 7px', paddingLeft: 4 }}>
+    <p style={{ fontSize: 12.5, fontWeight: 700, color: '#9AA69D', letterSpacing: '0.02em', margin: '10px 0 6px', paddingLeft: 4 }}>
       {children}
     </p>
   )
@@ -106,6 +106,7 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
         <ScreenHeader
           title="설정"
           subtitle="알림과 코치를 나에게 맞게"
+          bottomGap={10}
           right={
             <button
               onClick={onGoToGuide}
@@ -117,7 +118,7 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
         />
 
         {/* 프로필 헤더 */}
-        <div style={{ background: '#fff', borderRadius: 20, padding: '15px 18px', boxShadow: CARD_SHADOW }}>
+        <div style={{ background: '#fff', borderRadius: 20, padding: '12px 16px', boxShadow: CARD_SHADOW }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <p style={{ fontSize: 19, fontWeight: 800, color: '#24523F', margin: 0 }}>
               {nickname ? `${nickname}님` : '이름을 정해주세요'}
@@ -132,7 +133,7 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
           <p style={{ fontSize: 13, fontWeight: 500, color: '#9AA39C', margin: '3px 0 0' }}>{coachName} 코치와 함께</p>
           <button
             onClick={handleKakao}
-            style={{ width: '100%', marginTop: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: '#FEE500', color: '#3C1E1E', borderRadius: 12, padding: 12, fontSize: 14.5, fontWeight: 700, border: 'none', cursor: 'pointer' }}
+            style={{ width: '100%', marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: '#FEE500', color: '#3C1E1E', borderRadius: 12, padding: 10, fontSize: 14.5, fontWeight: 700, border: 'none', cursor: 'pointer' }}
           >
             <svg width="17" height="17" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2C4.9 2 1.5 4.6 1.5 7.8c0 2 1.4 3.8 3.5 4.8-.2.6-.7 2.3-.8 2.6 0 .3.2.3.4.2.2-.1 2.4-1.6 3.3-2.2.4 0 .7.1 1.1.1 4.1 0 7.5-2.6 7.5-5.8S13.1 2 9 2z" fill="#3C1E1E" /></svg>
             {user ? '카카오 연결됨' : '카카오 로그인'}
@@ -142,7 +143,7 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
         {/* 알림 */}
         <SectionLabel>알림</SectionLabel>
         <div style={{ background: '#fff', borderRadius: 16, boxShadow: CARD_SHADOW }}>
-          <div style={{ padding: '11px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: 15, fontWeight: 600, color: '#24523F' }}>카카오톡 알림</span>
             <button
               onClick={() => { const n = !notify; setNotify(n); storage.setNotify(n) }}
@@ -153,7 +154,7 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
             </button>
           </div>
           {/* 앱 푸시 알림 — 기기 단위 구독, 알림 탭 시 설치된 앱(PWA)으로 바로 진입 */}
-          <div style={{ padding: '11px 16px', borderTop: '1px solid #F0EDE6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ padding: '10px 16px', borderTop: '1px solid #F0EDE6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: 15, fontWeight: 600, color: '#24523F' }}>
               앱 알림
               {pushOn && (
@@ -182,7 +183,7 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
         <SectionLabel>AI 코치</SectionLabel>
         <button
           onClick={onGoToCoachSelect}
-          style={{ width: '100%', textAlign: 'left', background: '#fff', borderRadius: 16, padding: '13px 16px', boxShadow: CARD_SHADOW, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}
+          style={{ width: '100%', textAlign: 'left', background: '#fff', borderRadius: 16, padding: '11px 16px', boxShadow: CARD_SHADOW, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}
         >
           <span>
             <span style={{ display: 'block', fontSize: 15, fontWeight: 600, color: '#24523F' }}>AI 코치 다시 고르기</span>
@@ -195,7 +196,7 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
         <SectionLabel>마음 날씨</SectionLabel>
         <button
           onClick={handleStateCheck}
-          style={{ width: '100%', textAlign: 'left', background: '#fff', borderRadius: 16, padding: '13px 16px', boxShadow: CARD_SHADOW, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}
+          style={{ width: '100%', textAlign: 'left', background: '#fff', borderRadius: 16, padding: '11px 16px', boxShadow: CARD_SHADOW, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}
         >
           <span>
             <span style={{ display: 'block', fontSize: 15, fontWeight: 600, color: '#24523F' }}>마음 날씨 다시 고르기</span>
@@ -211,10 +212,10 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
             <a
               key={tel}
               href={`tel:${tel}`}
-              style={{ flex: 1, background: '#F1F2EF', borderRadius: 14, padding: '12px 14px', textDecoration: 'none', display: 'block' }}
+              style={{ flex: 1, background: '#F1F2EF', borderRadius: 14, padding: '10px 14px', textDecoration: 'none', display: 'block' }}
             >
               <span style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#3A4A40', lineHeight: 1.4, whiteSpace: 'pre-line' }}>{name}</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 6, fontSize: 15, fontWeight: 800, color: '#24523F' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 4, fontSize: 15, fontWeight: 800, color: '#24523F' }}>
                 <PhoneIcon />{number}
               </span>
             </a>
