@@ -194,7 +194,7 @@ export default function GuideScreen({ onBack }) {
         {SECTIONS.map((section) => (
           <div key={section.label} style={{ marginTop: 14 }}>
             <div style={{ background: '#fff', borderRadius: 18, boxShadow: CARD_SHADOW, overflow: 'hidden' }}>
-              <p style={{ fontSize: 14, fontWeight: 800, color: '#24523F', letterSpacing: '0.01em', padding: '11px 16px 10px', background: '#EFF4EE', margin: 0 }}>
+              <p style={{ fontSize: 14, fontWeight: 800, color: '#1C3F2F', letterSpacing: '0.01em', padding: '11px 16px 10px', background: '#DDEBE0', margin: 0 }}>
                 {section.label}
               </p>
               {section.items.map((item, idx) => (

@@ -34,6 +34,7 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
   const [pushOn, setPushOn] = useState(false)
   const [pushBusy, setPushBusy] = useState(false)
   const [pushMsg, setPushMsg] = useState('') // 푸시 상태·오류 안내 (토글 아래 한 줄)
+  const [helpOpen, setHelpOpen] = useState(false) // 앱 알림 ? 도움말 풍선 (PWA 설치 방법)
   const coachName = COACH_INFO[coach]?.name ?? '코치'
 
   useEffect(() => {
@@ -47,7 +48,7 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
       return
     }
     if (!isPushSupported()) {
-      setPushMsg('이 브라우저는 앱 알림을 지원하지 않아요. 아이폰은 홈 화면에 추가한 앱에서 켜주세요.')
+      setPushMsg('이 브라우저에서는 앱 알림을 켤 수 없어요. 휴대폰 홈 화면에 추가한 오늘만큼 앱에서 켜주세요.')
       return
     }
     setPushBusy(true)
@@ -110,7 +111,7 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
           right={
             <button
               onClick={onGoToGuide}
-              style={{ fontSize: 12, fontWeight: 700, color: '#24523F', background: '#EFF4EE', border: 'none', borderRadius: 999, padding: '7px 13px', cursor: 'pointer', flex: 'none' }}
+              style={{ fontSize: 12, fontWeight: 700, color: '#FAF6F0', background: '#24523F', border: 'none', borderRadius: 999, padding: '7px 13px', cursor: 'pointer', flex: 'none' }}
             >
               사용법 안내 ›
             </button>
@@ -154,18 +155,39 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
             </button>
           </div>
           {/* 앱 푸시 알림 — 기기 단위 구독, 알림 탭 시 설치된 앱(PWA)으로 바로 진입 */}
-          <div style={{ padding: '10px 16px', borderTop: '1px solid #F0EDE6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: 15, fontWeight: 600, color: '#24523F' }}>
+          <div style={{ padding: '10px 16px', borderTop: '1px solid #F0EDE6', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
+            <span style={{ fontSize: 15, fontWeight: 600, color: '#24523F', display: 'flex', alignItems: 'center' }}>
               앱 알림
+              {/* ? 도움말 — PWA 설치 방법 풍선 (멘토링 피드백 7/26) */}
+              <button
+                onClick={() => setHelpOpen((v) => !v)}
+                aria-label="앱 알림 도움말"
+                style={{ marginLeft: 6, width: 18, height: 18, borderRadius: '50%', border: '1.3px solid #B7C4BA', background: 'none', color: '#6F7D72', fontSize: 11.5, fontWeight: 700, lineHeight: '15px', textAlign: 'center', cursor: 'pointer', padding: 0, flex: 'none' }}
+              >
+                ?
+              </button>
               {pushOn && (
                 <button
                   onClick={handleTestPush}
-                  style={{ marginLeft: 8, fontSize: 11.5, fontWeight: 700, color: '#24523F', background: '#EFF4EE', border: 'none', borderRadius: 999, padding: '3px 9px', cursor: 'pointer', verticalAlign: 1 }}
+                  style={{ marginLeft: 8, fontSize: 11.5, fontWeight: 700, color: '#FAF6F0', background: '#24523F', border: 'none', borderRadius: 999, padding: '3px 9px', cursor: 'pointer', flex: 'none' }}
                 >
                   테스트
                 </button>
               )}
             </span>
+            {helpOpen && (
+              <div
+                onClick={() => setHelpOpen(false)}
+                role="tooltip"
+                style={{ position: 'absolute', zIndex: 20, top: 'calc(100% - 4px)', left: 14, right: 14, background: '#24523F', color: '#FAF6F0', borderRadius: 12, padding: '11px 14px', boxShadow: '0 12px 26px -10px rgba(20,46,34,.45)', cursor: 'pointer' }}
+              >
+                <p style={{ fontSize: 12.5, fontWeight: 700, margin: 0 }}>홈 화면에 설치한 앱에서 알림을 받을 수 있어요</p>
+                <p style={{ fontSize: 12, fontWeight: 500, lineHeight: 1.65, margin: '5px 0 0', color: '#D9E6DE', wordBreak: 'keep-all' }}>
+                  아이폰: 사파리 공유 버튼 → [홈 화면에 추가]<br />
+                  안드로이드: 크롬 메뉴 → [앱 설치]
+                </p>
+              </div>
+            )}
             <button
               onClick={handlePushToggle}
               aria-label={pushOn ? '앱 알림 끄기' : '앱 알림 켜기'}
@@ -212,10 +234,11 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
             <a
               key={tel}
               href={`tel:${tel}`}
-              style={{ flex: 1, background: '#F1F2EF', borderRadius: 14, padding: '10px 14px', textDecoration: 'none', display: 'block' }}
+              style={{ flex: 1, background: '#E4EFE6', borderRadius: 14, padding: '10px 14px', textDecoration: 'none', display: 'block' }}
             >
-              <span style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#3A4A40', lineHeight: 1.4, whiteSpace: 'pre-line' }}>{name}</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 4, fontSize: 15, fontWeight: 800, color: '#24523F' }}>
+              <span style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#33453A', lineHeight: 1.4, whiteSpace: 'pre-line' }}>{name}</span>
+              {/* 전화번호 우측 정렬 — 오른쪽 여백이 비어 보이지 않게 (멘토링 피드백 7/26) */}
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 5, marginTop: 4, fontSize: 15, fontWeight: 800, color: '#24523F' }}>
                 <PhoneIcon />{number}
               </span>
             </a>
