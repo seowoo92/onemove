@@ -3,6 +3,10 @@
 // 필요 Secrets: KAKAO_REST_API_KEY, KAKAO_CLIENT_SECRET (Edge Functions > Secrets)
 // 주의: 이 함수는 "Verify JWT" 옵션을 끄고, 코드 안에서 직접 사용자 JWT를 검증한다
 //       (켜두면 브라우저 CORS 사전요청(OPTIONS)이 차단됨)
+//
+// 템플릿 결정 기록 (2026-07-26 실기기 검증): 피드(카드) 템플릿은 본문 2줄 잘림 + 아이템 행 6자
+// 말줄임(위치도 제목 위 고정)이라 루틴 목록을 담을 수 없음 → 목록이 핵심이므로 텍스트 한 통으로 확정.
+// '오늘만큼 열기' 버튼도 제거(사용자 확정) — 하단 '오늘만큼' 푸터 탭으로 앱 진입 가능.
 
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
@@ -54,7 +58,13 @@ export async function getValidAccessToken(userId: string): Promise<string> {
   return stale ? await refreshKakaoToken(userId, row.refresh_token) : row.access_token
 }
 
-async function postMemo(accessToken: string, template: Record<string, unknown>) {
+// 텍스트 템플릿 — 전문(최대 200자)이 잘림 없이 표시된다. 버튼 없음.
+export async function sendMemo(accessToken: string, text: string) {
+  const template = {
+    object_type: 'text',
+    text,
+    link: { web_url: APP_URL, mobile_web_url: APP_URL },
+  }
   const res = await fetch('https://kapi.kakao.com/v2/api/talk/memo/default/send', {
     method: 'POST',
     headers: {
@@ -63,48 +73,12 @@ async function postMemo(accessToken: string, template: Record<string, unknown>) 
     },
     body: new URLSearchParams({ template_object: JSON.stringify(template) }),
   })
-  if (!res.ok) throw new Error(`kakao send failed: ${await res.text()}`)
-}
-
-// 텍스트 템플릿 — 피드 발송 실패 시 대체용 (전문 최대 200자 그대로 표시)
-export async function sendMemo(accessToken: string, text: string) {
-  await postMemo(accessToken, {
-    object_type: 'text',
-    text,
-    link: { web_url: APP_URL, mobile_web_url: APP_URL },
-    button_title: '오늘만큼 열기',
-  })
-}
-
-// 피드(카드) 템플릿 (2026-07-26 실기기 검증 반영) —
-// 상단 날씨 배너(800×400 — 카카오가 2:1 상자에 크롭하므로 비율을 정확히 맞춤) + 제목/부제 + 버튼.
-// 루틴 목록은 카드에 넣지 않는다: 아이템 행은 이름이 6자에서 강제 말줄임되고 위치도 제목 위로 고정(스펙),
-// 본문(description)은 2줄 잘림 → 목록은 카드 직후 텍스트 메시지로 이어 보낸다(sendRoutineList).
-export async function sendRoutineFeed(
-  accessToken: string,
-  { title, imageUrl }: { title: string; imageUrl: string },
-) {
-  await postMemo(accessToken, {
-    object_type: 'feed',
-    content: {
-      title,
-      description: '오늘 할 수 있는 만큼만, 가볍게 시작해요',
-      image_url: imageUrl,
-      image_width: 800,
-      image_height: 400,
-      link: { web_url: APP_URL, mobile_web_url: APP_URL },
-    },
-    buttons: [{ title: '오늘만큼 열기', link: { web_url: APP_URL, mobile_web_url: APP_URL } }],
-  })
+  const bodyText = await res.text()
+  console.log(`kakao send [text] status=${res.status} body=${bodyText}`)
+  if (!res.ok) throw new Error(`kakao send failed: ${bodyText}`)
 }
 
 const WEATHER = { 좋아요: '맑음', 보통이에요: '구름', 힘들어요: '비' } as Record<string, string>
-// 마음 날씨별 카드 배너 (GitHub Pages 호스팅, 800×240)
-const BANNER = {
-  좋아요: 'kakao-banner-sunny.png',
-  보통이에요: 'kakao-banner-cloudy.png',
-  힘들어요: 'kakao-banner-rainy.png',
-} as Record<string, string>
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
@@ -129,22 +103,9 @@ Deno.serve(async (req) => {
     const accessToken = await getValidAccessToken(user.id)
     const weather = WEATHER[state] ?? ''
     const title = nickname ? `${nickname}님, 오늘의 루틴이 도착했어요` : '오늘의 루틴이 도착했어요'
-    const names = routine_names.slice(0, 4)
-
-    const list = names.map((n: string) => `· ${n}`).join('\n')
-    try {
-      // 1차: 피드 카드(날씨 배너 + 인사 + 버튼) → 바로 아래 루틴 목록 텍스트 (2연발 구성)
-      await sendRoutineFeed(accessToken, {
-        title,
-        // ?v= 는 카카오 이미지 캐시 무효화용 — 배너 파일을 갈 때마다 숫자를 올린다
-        imageUrl: `${APP_URL}images/${BANNER[state] ?? 'kakao-banner-cloudy.png'}?v=2`,
-      })
-      await sendMemo(accessToken, `오늘의 루틴 ${names.length}개\n\n${list}`)
-    } catch {
-      // 2차: 피드가 거부되면 기존 텍스트 카드 한 통으로 대체 — 발송 자체는 끊기지 않게
-      const text = `${title}${weather ? `\n오늘 마음 날씨 · ${weather}` : ''}\n\n${list}\n\n오늘 할 수 있는 만큼만, 가볍게 시작해요.`
-      await sendMemo(accessToken, text)
-    }
+    const list = routine_names.slice(0, 4).map((n: string) => `· ${n}`).join('\n')
+    const text = `${title}${weather ? `\n오늘 마음 날씨 · ${weather}` : ''}\n\n${list}\n\n오늘 할 수 있는 만큼만, 가볍게 시작해요.`
+    await sendMemo(accessToken, text)
 
     return new Response(JSON.stringify({ ok: true }), {
       headers: { ...CORS, 'Content-Type': 'application/json' },
