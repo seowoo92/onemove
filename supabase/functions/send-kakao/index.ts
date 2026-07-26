@@ -76,13 +76,13 @@ export async function sendMemo(accessToken: string, text: string) {
   })
 }
 
-// 피드(카드) 템플릿 (2026-07-26 사용자 확정 디자인) —
-// 상단 날씨 배너 이미지(마음 날씨별 3종) + 제목/부제 + 루틴 목록.
-// 본문(description)은 2줄에서 잘리므로 루틴 목록은 item_content.items(최대 5행)에 넣는다.
-// item_op는 필수 필드라 공백 한 칸으로 채움(우측 값 영역은 비워 보이게).
+// 피드(카드) 템플릿 (2026-07-26 실기기 검증 반영) —
+// 상단 날씨 배너(800×400 — 카카오가 2:1 상자에 크롭하므로 비율을 정확히 맞춤) + 제목/부제 + 버튼.
+// 루틴 목록은 카드에 넣지 않는다: 아이템 행은 이름이 6자에서 강제 말줄임되고 위치도 제목 위로 고정(스펙),
+// 본문(description)은 2줄 잘림 → 목록은 카드 직후 텍스트 메시지로 이어 보낸다(sendRoutineList).
 export async function sendRoutineFeed(
   accessToken: string,
-  { title, imageUrl, routineNames }: { title: string; imageUrl: string; routineNames: string[] },
+  { title, imageUrl }: { title: string; imageUrl: string },
 ) {
   await postMemo(accessToken, {
     object_type: 'feed',
@@ -91,11 +91,8 @@ export async function sendRoutineFeed(
       description: '오늘 할 수 있는 만큼만, 가볍게 시작해요',
       image_url: imageUrl,
       image_width: 800,
-      image_height: 240,
+      image_height: 400,
       link: { web_url: APP_URL, mobile_web_url: APP_URL },
-    },
-    item_content: {
-      items: routineNames.slice(0, 5).map((n) => ({ item: n, item_op: ' ' })),
     },
     buttons: [{ title: '오늘만큼 열기', link: { web_url: APP_URL, mobile_web_url: APP_URL } }],
   })
@@ -134,16 +131,17 @@ Deno.serve(async (req) => {
     const title = nickname ? `${nickname}님, 오늘의 루틴이 도착했어요` : '오늘의 루틴이 도착했어요'
     const names = routine_names.slice(0, 4)
 
+    const list = names.map((n: string) => `· ${n}`).join('\n')
     try {
-      // 1차: 피드 카드 (날씨 배너 + 루틴 행)
+      // 1차: 피드 카드(날씨 배너 + 인사 + 버튼) → 바로 아래 루틴 목록 텍스트 (2연발 구성)
       await sendRoutineFeed(accessToken, {
         title,
-        imageUrl: `${APP_URL}images/${BANNER[state] ?? 'kakao-banner-cloudy.png'}`,
-        routineNames: names,
+        // ?v= 는 카카오 이미지 캐시 무효화용 — 배너 파일을 갈 때마다 숫자를 올린다
+        imageUrl: `${APP_URL}images/${BANNER[state] ?? 'kakao-banner-cloudy.png'}?v=2`,
       })
+      await sendMemo(accessToken, `오늘의 루틴 ${names.length}개\n\n${list}`)
     } catch {
-      // 2차: 피드가 거부되면 기존 텍스트 카드로 대체 — 발송 자체는 끊기지 않게
-      const list = names.map((n: string) => `· ${n}`).join('\n')
+      // 2차: 피드가 거부되면 기존 텍스트 카드 한 통으로 대체 — 발송 자체는 끊기지 않게
       const text = `${title}${weather ? `\n오늘 마음 날씨 · ${weather}` : ''}\n\n${list}\n\n오늘 할 수 있는 만큼만, 가볍게 시작해요.`
       await sendMemo(accessToken, text)
     }
