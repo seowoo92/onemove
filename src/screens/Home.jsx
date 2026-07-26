@@ -587,10 +587,11 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
           </div>
         )}
 
-        {/* 하단 보조 액션 — 2단 그리드, 각 칸 가운데 정렬 (알림 미사용자는 1단).
+        {/* 하단 보조 액션 — 가운데 정렬 한 줄 (알림 미사용자는 버튼 1개).
+            왼쪽 여백 52px: 좌하단 코치 얼굴 플로팅(48px)이 '마음 날씨…' 텍스트를 가리지 않게 비켜준다.
             오늘 루틴이 모두 정리된 뒤에는 완료 축하 화면만 남도록 숨긴다 */}
         {!allResolved && (
-          <div style={{ width: '100%', marginTop: 4, display: 'grid', gridTemplateColumns: storage.getNotify() ? '1fr 1fr' : '1fr', justifyItems: 'center' }}>
+          <div style={{ width: '100%', marginTop: 4, paddingLeft: 52, boxSizing: 'border-box', display: 'flex', justifyContent: 'center', alignItems: 'center', columnGap: 14, flexWrap: 'wrap' }}>
             <button
               onClick={handleRequestStateChange}
               style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, color: '#9aa39c' }}
