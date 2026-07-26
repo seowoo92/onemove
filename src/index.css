@@ -12,6 +12,23 @@
     -webkit-font-smoothing: antialiased;
     /* 모바일 상태바·오버스크롤 영역까지 크림색으로 (데스크톱·태블릿은 각 레이아웃이 흰 배경을 덮음) */
     background-color: #faf6f0;
+    /* 앱 감성: 길게 눌러도 텍스트 선택·iOS 복사/번역 말풍선이 뜨지 않게 (입력창만 아래에서 예외) */
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  input,
+  textarea {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  /* 이미지 길게 눌러 저장·드래그 방지 */
+  img {
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
   }
 
   /* 전역 프레스 피드백 — 누르는 요소 공통 손맛.
