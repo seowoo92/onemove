@@ -28,7 +28,7 @@ function PhoneIcon() {
   )
 }
 
-export default function SettingsScreen({ coach, user, nickname, onNicknameChange, onGoToStateCheck, onGoToCoachSelect }) {
+export default function SettingsScreen({ coach, user, nickname, onNicknameChange, onGoToStateCheck, onGoToCoachSelect, onGoToGuide }) {
   const [notify, setNotify] = useState(() => storage.getNotify())
   const coachName = COACH_INFO[coach]?.name ?? '코치'
 
@@ -60,7 +60,18 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
   return (
     <div style={{ minHeight: '100%', backgroundColor: '#FAF6F0' }}>
       <div style={{ width: '100%', maxWidth: 480, margin: '0 auto', padding: '8px 20px 14px' }}>
-        <ScreenHeader title="설정" subtitle="알림과 코치를 나에게 맞게" />
+        <ScreenHeader
+          title="설정"
+          subtitle="알림과 코치를 나에게 맞게"
+          right={
+            <button
+              onClick={onGoToGuide}
+              style={{ fontSize: 12, fontWeight: 700, color: '#24523F', background: '#EFF4EE', border: 'none', borderRadius: 999, padding: '7px 13px', cursor: 'pointer', flex: 'none' }}
+            >
+              사용법 안내 ›
+            </button>
+          }
+        />
 
         {/* 프로필 헤더 */}
         <div style={{ background: '#fff', borderRadius: 20, padding: '15px 18px', boxShadow: CARD_SHADOW }}>

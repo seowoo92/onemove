@@ -11,6 +11,7 @@ import Home from './screens/Home'
 import GardenScreen from './screens/GardenScreen'
 import RecordScreen from './screens/RecordScreen'
 import SettingsScreen from './screens/SettingsScreen'
+import GuideScreen from './screens/GuideScreen'
 
 export default function App() {
   // ?crash=1 — 에러 안내화면(ErrorBoundary) 확인용 (QA·디자인 점검)
@@ -122,6 +123,10 @@ export default function App() {
     setScreen('coach-select')
   }
 
+  function handleGoToGuide() {
+    setScreen('guide')
+  }
+
   function handleStateSelect(state) {
     // 오늘 기록 초기화는 새 날씨가 '확정되는 이 시점'에 수행 —
     // 마음 날씨 화면에서 뒤로 돌아가면 기존 루틴·완료 기록이 그대로 남는다
@@ -186,6 +191,9 @@ export default function App() {
           } : null}
         />
       )}
+      {screen === 'guide' && (
+        <GuideScreen onBack={() => { setScreen('home'); setActiveTab('settings') }} />
+      )}
       {screen === 'state-check' && (
         <StateCheck
           onSelect={handleStateSelect}
@@ -216,6 +224,7 @@ export default function App() {
               onNicknameChange={handleNicknameChange}
               onGoToStateCheck={handleGoToStateCheck}
               onGoToCoachSelect={handleGoToCoachSelectFromSettings}
+              onGoToGuide={handleGoToGuide}
             />
           )}
         </div>
