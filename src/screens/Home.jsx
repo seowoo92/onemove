@@ -587,15 +587,14 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
           </div>
         )}
 
-        {/* 하단 보조 액션 — 가운데 정렬 한 줄 (알림 미사용자는 버튼 1개).
-            paddingLeft 62 = 코치 얼굴 플로팅 오른끝(left 14 + 48) — 이 값이면 '얼굴↔왼쪽 버튼'과
-            '오른쪽 버튼↔화면 끝' 여백이 텍스트 길이와 무관하게 정확히 같아진다.
-            오늘 루틴이 모두 정리된 뒤에는 완료 축하 화면만 남도록 숨긴다 */}
+        {/* 하단 보조 액션 — 화면 기준 정중앙 한 줄 (알림 미사용자는 버튼 1개).
+            버튼 기본 패딩 제거 + 간격 24px: 좌하단 코치 얼굴(오른끝 62px)을 가리지 않으면서
+            배경 기준 좌우 여백이 같도록. 오늘 루틴이 모두 정리된 뒤에는 완료 축하 화면만 남도록 숨긴다 */}
         {!allResolved && (
-          <div style={{ width: '100%', marginTop: 4, paddingLeft: 62, boxSizing: 'border-box', display: 'flex', justifyContent: 'center', alignItems: 'center', columnGap: 26, flexWrap: 'wrap' }}>
+          <div style={{ width: '100%', marginTop: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', columnGap: 24, flexWrap: 'wrap' }}>
             <button
               onClick={handleRequestStateChange}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, color: '#9aa39c' }}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 12.5, fontWeight: 500, color: '#9aa39c' }}
             >
               마음 날씨 다시 고르기
             </button>
@@ -603,7 +602,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
               <button
                 onClick={handleResendCard}
                 disabled={sendingCard}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, color: '#9aa39c', opacity: sendingCard ? 0.5 : 1 }}
+                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 12.5, fontWeight: 500, color: '#9aa39c', opacity: sendingCard ? 0.5 : 1 }}
               >
                 {sendingCard ? '카톡으로 보내는 중...' : '오늘 루틴 카톡으로 받기'}
               </button>
