@@ -54,15 +54,7 @@ export async function getValidAccessToken(userId: string): Promise<string> {
   return stale ? await refreshKakaoToken(userId, row.refresh_token) : row.access_token
 }
 
-// 텍스트 템플릿 사용: 피드(카드) 템플릿은 본문을 2줄까지만 보여줘 루틴 목록이 잘린다.
-// 텍스트 템플릿은 전문(최대 200자)이 그대로 표시됨.
-export async function sendMemo(accessToken: string, text: string) {
-  const template = {
-    object_type: 'text',
-    text,
-    link: { web_url: APP_URL, mobile_web_url: APP_URL },
-    button_title: '오늘만큼 열기',
-  }
+async function postMemo(accessToken: string, template: Record<string, unknown>) {
   const res = await fetch('https://kapi.kakao.com/v2/api/talk/memo/default/send', {
     method: 'POST',
     headers: {
@@ -74,7 +66,48 @@ export async function sendMemo(accessToken: string, text: string) {
   if (!res.ok) throw new Error(`kakao send failed: ${await res.text()}`)
 }
 
+// 텍스트 템플릿 — 피드 발송 실패 시 대체용 (전문 최대 200자 그대로 표시)
+export async function sendMemo(accessToken: string, text: string) {
+  await postMemo(accessToken, {
+    object_type: 'text',
+    text,
+    link: { web_url: APP_URL, mobile_web_url: APP_URL },
+    button_title: '오늘만큼 열기',
+  })
+}
+
+// 피드(카드) 템플릿 (2026-07-26 사용자 확정 디자인) —
+// 상단 날씨 배너 이미지(마음 날씨별 3종) + 제목/부제 + 루틴 목록.
+// 본문(description)은 2줄에서 잘리므로 루틴 목록은 item_content.items(최대 5행)에 넣는다.
+// item_op는 필수 필드라 공백 한 칸으로 채움(우측 값 영역은 비워 보이게).
+export async function sendRoutineFeed(
+  accessToken: string,
+  { title, imageUrl, routineNames }: { title: string; imageUrl: string; routineNames: string[] },
+) {
+  await postMemo(accessToken, {
+    object_type: 'feed',
+    content: {
+      title,
+      description: '오늘 할 수 있는 만큼만, 가볍게 시작해요',
+      image_url: imageUrl,
+      image_width: 800,
+      image_height: 240,
+      link: { web_url: APP_URL, mobile_web_url: APP_URL },
+    },
+    item_content: {
+      items: routineNames.slice(0, 5).map((n) => ({ item: n, item_op: ' ' })),
+    },
+    buttons: [{ title: '오늘만큼 열기', link: { web_url: APP_URL, mobile_web_url: APP_URL } }],
+  })
+}
+
 const WEATHER = { 좋아요: '맑음', 보통이에요: '구름', 힘들어요: '비' } as Record<string, string>
+// 마음 날씨별 카드 배너 (GitHub Pages 호스팅, 800×240)
+const BANNER = {
+  좋아요: 'kakao-banner-sunny.png',
+  보통이에요: 'kakao-banner-cloudy.png',
+  힘들어요: 'kakao-banner-rainy.png',
+} as Record<string, string>
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
@@ -99,9 +132,21 @@ Deno.serve(async (req) => {
     const accessToken = await getValidAccessToken(user.id)
     const weather = WEATHER[state] ?? ''
     const title = nickname ? `${nickname}님, 오늘의 루틴이 도착했어요` : '오늘의 루틴이 도착했어요'
-    const list = routine_names.slice(0, 4).map((n: string) => `· ${n}`).join('\n')
-    const text = `${title}${weather ? `\n오늘 마음 날씨 · ${weather}` : ''}\n\n${list}\n\n오늘 할 수 있는 만큼만, 가볍게 시작해요.`
-    await sendMemo(accessToken, text)
+    const names = routine_names.slice(0, 4)
+
+    try {
+      // 1차: 피드 카드 (날씨 배너 + 루틴 행)
+      await sendRoutineFeed(accessToken, {
+        title,
+        imageUrl: `${APP_URL}images/${BANNER[state] ?? 'kakao-banner-cloudy.png'}`,
+        routineNames: names,
+      })
+    } catch {
+      // 2차: 피드가 거부되면 기존 텍스트 카드로 대체 — 발송 자체는 끊기지 않게
+      const list = names.map((n: string) => `· ${n}`).join('\n')
+      const text = `${title}${weather ? `\n오늘 마음 날씨 · ${weather}` : ''}\n\n${list}\n\n오늘 할 수 있는 만큼만, 가볍게 시작해요.`
+      await sendMemo(accessToken, text)
+    }
 
     return new Response(JSON.stringify({ ok: true }), {
       headers: { ...CORS, 'Content-Type': 'application/json' },
