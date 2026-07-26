@@ -74,9 +74,10 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'unknown type' }), { status: 400, headers: CORS })
     }
 
+    // 제목에 실제 메시지를 넣는다 — 제목이 앱 이름이면 iOS 출처 표기와 이중으로 보임
     const result = await pushToUser(user.id, {
-      title: '오늘만큼',
-      body: '알림이 연결됐어요. 이렇게 조용히 도착할 거예요.',
+      title: '알림이 연결됐어요',
+      body: '이렇게 조용히 도착할 거예요.',
     })
 
     return new Response(JSON.stringify({ ok: true, ...result }), {

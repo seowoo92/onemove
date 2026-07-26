@@ -148,10 +148,11 @@ Deno.serve(async (req) => {
     }
 
     // 채널 2: 웹 푸시 — 구독한 기기가 있으면 발송 (구독 자체가 동의)
+    // 제목에 실제 메시지를 넣는다 — 제목이 앱 이름이면 iOS 출처 표기와 이중으로 보임 (2026-07-26 사용자 확정 문구)
     try {
       const pushed = await pushToUser(e.user_id, {
-        title: '오늘만큼',
-        body: `${nick}오늘 이만큼 남아 있어요 — 딱 하나만 해도 충분해요.`,
+        title: `${nick}오늘 하루 어땠나요`,
+        body: '남은 루틴은 가볍게 하나만 정리해봐요.',
       })
       if (pushed > 0) delivered = true
     } catch (_e) {
