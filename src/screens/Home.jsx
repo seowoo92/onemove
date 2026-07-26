@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { ROUTINE_MAP } from '../data/routines'
 import { storage } from '../lib/storage'
 import { pickRoutines, pickSwapCandidate } from '../lib/routinePicker'
@@ -191,6 +191,15 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
   const [modal, setModal] = useState(null) // { loading, message, source } | null
   const [sendingCard, setSendingCard] = useState(false) // 루틴 카드 수동 재발송 중
   const [review, setReview] = useState(null) // { loading } | { message, source } | null
+  const [toast, setToast] = useState(null) // 인앱 토스트 문구 (시스템 alert 대체)
+  const toastTimer = useRef(null)
+
+  function showToast(text) {
+    clearTimeout(toastTimer.current)
+    setToast(text)
+    toastTimer.current = setTimeout(() => setToast(null), 3200)
+  }
+  useEffect(() => () => clearTimeout(toastTimer.current), [])
 
   function togglePin(routineId) {
     const cur = storage.getPinnedIds()
@@ -201,7 +210,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
       return
     }
     if (cur.length >= 3) {
-      window.alert('매일 루틴은 3개까지 고정할 수 있어요.')
+      showToast('매일 루틴은 3개까지 고정할 수 있어요.')
       return
     }
     const next = [...cur, routineId]
@@ -294,7 +303,8 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
     })
     const ok = await resendRoutineCard(names)
     setSendingCard(false)
-    window.alert(ok ? '카카오톡(나와의 채팅)으로 오늘 루틴을 보냈어요.' : '발송하지 못했어요. 카카오 로그인과 알림 설정을 확인해주세요.')
+    // 줄바꿈은 문장 단위로 정돈 (whiteSpace: pre-line)
+    showToast(ok ? '카카오톡(나와의 채팅)으로\n오늘 루틴을 보냈어요.' : '발송하지 못했어요.\n카카오 로그인과 알림 설정을 확인해주세요.')
   }
 
   function handleUndoSkip(routineId) {
@@ -602,6 +612,39 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
 
       {/* 코치 한마디 플로팅 — 좌하단, 코치 존재감 강화 (모달 z-50 아래에 깔림) */}
       <CoachBuddy coach={coach} />
+
+      {/* 인앱 토스트 — 시스템 alert 대체, 탭바 위 중앙에 잠시 떠올랐다 사라짐 */}
+      {toast && (
+        <div
+          className="toast-pop"
+          role="status"
+          style={{
+            position: 'fixed',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 45,
+            width: 'max-content',
+            maxWidth: 'min(320px, calc(100% - 36px))',
+            wordBreak: 'keep-all',
+            whiteSpace: 'pre-line',
+            background: 'rgba(36,82,63,0.86)',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
+            color: '#FAF6F0',
+            fontSize: 13.5,
+            fontWeight: 600,
+            lineHeight: 1.6,
+            textAlign: 'center',
+            padding: '13px 19px',
+            borderRadius: 16,
+            boxShadow: '0 10px 24px -10px rgba(20,46,34,.45)',
+            pointerEvents: 'none',
+          }}
+        >
+          {toast}
+        </div>
+      )}
 
       {modal && (
         <CoachModal

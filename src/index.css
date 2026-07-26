@@ -33,9 +33,19 @@
     animation: screen-fade 0.18s ease;
   }
 
+  /* 인앱 토스트 등장 — 전환 원칙과 동일하게 opacity만 */
+  @keyframes toast-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .toast-pop {
+    animation: toast-in 0.22s ease;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     button:not(.no-press) { transition: none; }
     button:not(.no-press):active { transform: none; }
     .screen-fade { animation: none; }
+    .toast-pop { animation: none; }
   }
 }
