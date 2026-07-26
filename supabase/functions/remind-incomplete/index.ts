@@ -1,10 +1,12 @@
 // 오늘만큼 — 오후 미완료 루틴 리마인더 (스케줄 실행 전용)
 // 배포: Supabase 대시보드 > Edge Functions > New function > 이름 remind-incomplete > 이 코드 붙여넣기
-// 필요 Secrets: KAKAO_REST_API_KEY, KAKAO_CLIENT_SECRET, CRON_SECRET
+// 필요 Secrets: KAKAO_REST_API_KEY, KAKAO_CLIENT_SECRET, CRON_SECRET, VAPID_KEYS
 // 실행: pg_cron이 매일 오후 6시(KST)에 x-cron-key 헤더와 함께 호출
+// 발송 채널 2종: 카카오 '나에게 보내기'(notify_enabled 사용자) + 웹 푸시(구독 기기, 2026-07-26 추가)
 // 주의: "Verify JWT" 옵션은 끄고, CRON_SECRET 헤더로 호출자를 검증한다
 
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import * as webpush from 'jsr:@negrel/webpush'
 
 const KAKAO_REST_KEY = Deno.env.get('KAKAO_REST_API_KEY') ?? ''
 const KAKAO_SECRET = Deno.env.get('KAKAO_CLIENT_SECRET') ?? ''
@@ -71,6 +73,43 @@ function todayKST(): string {
   return new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10)
 }
 
+// ---------- 웹 푸시 (send-push와 동일 패턴) ----------
+let appServer: webpush.ApplicationServer | null = null
+async function getAppServer(): Promise<webpush.ApplicationServer | null> {
+  if (appServer) return appServer
+  try {
+    const exported = JSON.parse(Deno.env.get('VAPID_KEYS') ?? '{}')
+    const vapidKeys = await webpush.importVapidKeys(exported, { extractable: false })
+    appServer = await webpush.ApplicationServer.new({
+      contactInformation: 'mailto:project.greenist21@gmail.com',
+      vapidKeys,
+    })
+    return appServer
+  } catch {
+    return null // VAPID 미설정이어도 카카오 발송은 계속되도록
+  }
+}
+
+async function pushToUser(userId: string, payload: { title: string; body: string; url?: string }) {
+  const server = await getAppServer()
+  if (!server) return 0
+  const { data: subs } = await admin.from('push_subscriptions').select('*').eq('user_id', userId)
+  let sent = 0
+  for (const s of subs ?? []) {
+    try {
+      const subscriber = server.subscribe({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } })
+      await subscriber.pushTextMessage(JSON.stringify({ url: APP_URL, ...payload }), {})
+      sent++
+    } catch (e) {
+      const msg = String(e)
+      if (msg.includes('410') || msg.includes('404')) {
+        await admin.from('push_subscriptions').delete().eq('endpoint', s.endpoint)
+      }
+    }
+  }
+  return sent
+}
+
 Deno.serve(async (req) => {
   // 스케줄러 전용 — 비밀 키 없이 호출하면 거부
   if (!CRON_SECRET || req.headers.get('x-cron-key') !== CRON_SECRET) {
@@ -91,19 +130,36 @@ Deno.serve(async (req) => {
     if (remaining.length === 0) { skipped++; continue } // 다 했거나 다 쉬어감 — 방해하지 않는다
 
     const { data: prof } = await admin.from('profiles').select('*').eq('user_id', e.user_id).maybeSingle()
-    if (!prof?.notify_enabled) { skipped++; continue }
+    const nick = prof?.nickname ? `${prof.nickname}님, ` : ''
+    const list = remaining.map(({ name }) => `· ${name}`).join('\n')
+    // 죄책감을 주지 않는 톤 — 재촉이 아니라 가볍게 떠올려주기
+    const text = `${nick}오늘 이만큼 남아 있어요\n\n${list}\n\n딱 하나만 해도 충분해요. 무리하지 않아도 괜찮아요.`
 
-    try {
-      const accessToken = await getValidAccessToken(e.user_id)
-      const nick = prof.nickname ? `${prof.nickname}님, ` : ''
-      const list = remaining.map(({ name }) => `· ${name}`).join('\n')
-      // 죄책감을 주지 않는 톤 — 재촉이 아니라 가볍게 떠올려주기
-      const text = `${nick}오늘 이만큼 남아 있어요\n\n${list}\n\n딱 하나만 해도 충분해요. 무리하지 않아도 괜찮아요.`
-      await sendMemo(accessToken, text)
-      sent++
-    } catch (_e) {
-      failed++
+    // 채널 1: 카카오 '나에게 보내기' — 알림 동의 사용자만
+    let delivered = false
+    if (prof?.notify_enabled) {
+      try {
+        const accessToken = await getValidAccessToken(e.user_id)
+        await sendMemo(accessToken, text)
+        delivered = true
+      } catch (_e) {
+        failed++
+      }
     }
+
+    // 채널 2: 웹 푸시 — 구독한 기기가 있으면 발송 (구독 자체가 동의)
+    try {
+      const pushed = await pushToUser(e.user_id, {
+        title: '오늘만큼',
+        body: `${nick}오늘 이만큼 남아 있어요 — 딱 하나만 해도 충분해요.`,
+      })
+      if (pushed > 0) delivered = true
+    } catch (_e) {
+      // 푸시 실패는 카카오 결과에 영향 없음
+    }
+
+    if (delivered) sent++
+    else skipped++
   }
 
   return new Response(JSON.stringify({ ok: true, date: today, sent, skipped, failed }), {

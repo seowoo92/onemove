@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { storage } from '../lib/storage'
 import { supabase } from '../lib/supabase'
 import { KAKAO_SCOPES } from '../lib/kakao'
+import { isPushSupported, getPushSubscription, enablePush, disablePush, sendTestPush } from '../lib/push'
 import { COACH_INFO } from '../lib/coaches'
 import ScreenHeader from '../components/ScreenHeader'
 
@@ -30,7 +31,49 @@ function PhoneIcon() {
 
 export default function SettingsScreen({ coach, user, nickname, onNicknameChange, onGoToStateCheck, onGoToCoachSelect, onGoToGuide }) {
   const [notify, setNotify] = useState(() => storage.getNotify())
+  const [pushOn, setPushOn] = useState(false)
+  const [pushBusy, setPushBusy] = useState(false)
+  const [pushMsg, setPushMsg] = useState('') // 푸시 상태·오류 안내 (토글 아래 한 줄)
   const coachName = COACH_INFO[coach]?.name ?? '코치'
+
+  useEffect(() => {
+    getPushSubscription().then((sub) => setPushOn(!!sub))
+  }, [])
+
+  async function handlePushToggle() {
+    if (pushBusy) return
+    if (!user) {
+      setPushMsg('카카오 로그인 후 켤 수 있어요')
+      return
+    }
+    if (!isPushSupported()) {
+      setPushMsg('이 브라우저는 앱 알림을 지원하지 않아요. 아이폰은 홈 화면에 추가한 앱에서 켜주세요.')
+      return
+    }
+    setPushBusy(true)
+    if (pushOn) {
+      await disablePush()
+      setPushOn(false)
+      setPushMsg('')
+    } else {
+      const r = await enablePush(user.id)
+      if (r.ok) {
+        setPushOn(true)
+        setPushMsg('이 기기에서 알림이 켜졌어요')
+      } else if (r.reason === 'denied') {
+        setPushMsg('알림 권한이 꺼져 있어요. 기기 설정에서 허용해 주세요.')
+      } else {
+        setPushMsg('알림을 켜지 못했어요. 잠시 후 다시 시도해 주세요.')
+      }
+    }
+    setPushBusy(false)
+  }
+
+  async function handleTestPush() {
+    setPushMsg('테스트 알림을 보내는 중...')
+    const ok = await sendTestPush()
+    setPushMsg(ok ? '테스트 알림을 보냈어요. 잠시 후 도착해요.' : '테스트 알림을 보내지 못했어요.')
+  }
 
   function handleEditNickname() {
     const v = window.prompt('앱에서 불릴 이름을 입력하세요 (최대 12자)', nickname || '')
@@ -98,17 +141,42 @@ export default function SettingsScreen({ coach, user, nickname, onNicknameChange
 
         {/* 알림 */}
         <SectionLabel>알림</SectionLabel>
-        <div style={{ background: '#fff', borderRadius: 16, padding: '14px 16px', boxShadow: CARD_SHADOW, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 15, fontWeight: 600, color: '#24523F' }}>카카오톡 알림</span>
-          <button
-            onClick={() => { const n = !notify; setNotify(n); storage.setNotify(n) }}
-            aria-label={notify ? '알림 끄기' : '알림 켜기'}
-            style={{ width: 46, height: 26, borderRadius: 13, background: notify ? '#24523F' : '#C4BAB2', position: 'relative', border: 'none', cursor: 'pointer', transition: 'background-color .2s', flexShrink: 0 }}
-          >
-            <span style={{ position: 'absolute', top: 3, left: notify ? 23 : 3, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left .2s', display: 'block' }} />
-          </button>
+        <div style={{ background: '#fff', borderRadius: 16, boxShadow: CARD_SHADOW }}>
+          <div style={{ padding: '11px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 15, fontWeight: 600, color: '#24523F' }}>카카오톡 알림</span>
+            <button
+              onClick={() => { const n = !notify; setNotify(n); storage.setNotify(n) }}
+              aria-label={notify ? '카카오톡 알림 끄기' : '카카오톡 알림 켜기'}
+              style={{ width: 46, height: 26, borderRadius: 13, background: notify ? '#24523F' : '#C4BAB2', position: 'relative', border: 'none', cursor: 'pointer', transition: 'background-color .2s', flexShrink: 0 }}
+            >
+              <span style={{ position: 'absolute', top: 3, left: notify ? 23 : 3, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left .2s', display: 'block' }} />
+            </button>
+          </div>
+          {/* 앱 푸시 알림 — 기기 단위 구독, 알림 탭 시 설치된 앱(PWA)으로 바로 진입 */}
+          <div style={{ padding: '11px 16px', borderTop: '1px solid #F0EDE6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 15, fontWeight: 600, color: '#24523F' }}>
+              앱 알림
+              {pushOn && (
+                <button
+                  onClick={handleTestPush}
+                  style={{ marginLeft: 8, fontSize: 11.5, fontWeight: 700, color: '#24523F', background: '#EFF4EE', border: 'none', borderRadius: 999, padding: '3px 9px', cursor: 'pointer', verticalAlign: 1 }}
+                >
+                  테스트
+                </button>
+              )}
+            </span>
+            <button
+              onClick={handlePushToggle}
+              aria-label={pushOn ? '앱 알림 끄기' : '앱 알림 켜기'}
+              style={{ width: 46, height: 26, borderRadius: 13, background: pushOn ? '#24523F' : '#C4BAB2', position: 'relative', border: 'none', cursor: 'pointer', transition: 'background-color .2s', flexShrink: 0, opacity: pushBusy ? 0.6 : 1 }}
+            >
+              <span style={{ position: 'absolute', top: 3, left: pushOn ? 23 : 3, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left .2s', display: 'block' }} />
+            </button>
+          </div>
         </div>
-        <p style={{ fontSize: 12, fontWeight: 500, color: '#B7AFA4', margin: '7px 0 0', paddingLeft: 4 }}>카카오 로그인 후 켜면, 오늘의 루틴 카드를 카카오톡(나와의 채팅)으로 보내드려요</p>
+        <p style={{ fontSize: 12, fontWeight: 500, color: '#B7AFA4', margin: '6px 0 0', paddingLeft: 4 }}>
+          {pushMsg || '카카오톡은 나와의 채팅으로, 앱 알림은 이 기기로 보내드려요'}
+        </p>
 
         {/* AI 코치 */}
         <SectionLabel>AI 코치</SectionLabel>

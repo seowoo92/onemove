@@ -72,3 +72,22 @@ create policy "own tokens" on public.kakao_tokens
 
 -- 오후 리마인더가 "오늘 미완료 사용자"를 빠르게 찾도록 보조 인덱스
 create index if not exists daily_entries_date_idx on public.daily_entries (entry_date);
+
+-- ============================================================
+-- (2026-07-26 추가) 웹 푸시 구독 — 기기 단위 (사용자당 여러 기기 가능)
+-- 아래 블록만 SQL Editor에 붙여넣어 실행하면 됨
+-- ============================================================
+create table if not exists public.push_subscriptions (
+  endpoint   text primary key,
+  user_id    uuid not null references auth.users(id) on delete cascade,
+  p256dh     text not null,
+  auth       text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.push_subscriptions enable row level security;
+
+create policy "own push subs" on public.push_subscriptions
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+create index if not exists push_subscriptions_user_idx on public.push_subscriptions (user_id);
