@@ -565,7 +565,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
                   <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
                     <span style={{ fontSize: 11.5, fontWeight: 700, color: '#9AA69D', letterSpacing: '0.02em' }}>하루 마무리</span>
                     {!review.loading && (
-                      <span style={{ fontSize: 10.5, fontWeight: 500, color: '#B7AFA4' }}>출처 · {review.source === 'solar' ? 'AI' : '예비'}</span>
+                      <span style={{ fontSize: 10.5, fontWeight: 500, color: '#B7AFA4' }}>{review.source === 'solar' ? 'AI 생성' : '예비 문구'}</span>
                     )}
                   </div>
                   <p style={{ fontSize: 13.5, fontWeight: 500, color: '#3A4A40', lineHeight: 1.6, margin: '6px 0 0', wordBreak: 'keep-all' }}>
