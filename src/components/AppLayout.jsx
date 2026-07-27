@@ -195,6 +195,11 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             오늘만큼, 딱 그만큼<br />
             <span style={{ fontSize: 13, fontWeight: 600, color: '#9aa69d', letterSpacing: '0.02em' }}>One move a day</span>
           </p>
+
+          {/* 저작권 표기 (멘토링 피드백 7/26, 표기 문안 사용자 확정) */}
+          <p style={{ fontSize: 11.5, fontWeight: 500, color: '#B7AFA4', letterSpacing: '0.02em', margin: '18px 0 0' }}>
+            Designed &amp; Developed by Seowoo Kim
+          </p>
         </div>
       </div>
 
