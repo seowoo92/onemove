@@ -266,8 +266,9 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
               <p style={{ fontSize: 13.5, fontWeight: 800, color: '#24523F', margin: '6px 0 0' }}>{carouselCoach.name}</p>
             </div>
 
-            {/* 설명 + 핵심 3가지 — 캐릭터 컬럼과 상·하단 라인 정렬 */}
-            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            {/* 설명 + 핵심 3가지 — 캐릭터 컬럼과 상·하단 라인 정렬
+                paddingTop 14: 캐릭터 PNG 상단 투명 여백만큼 내려 정수리 라인에 첫 줄을 맞춤 */}
+            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingTop: 14 }}>
               <p style={{ fontSize: 14, fontWeight: 500, color: '#6f7d72', lineHeight: 1.7, marginBottom: 12, whiteSpace: 'nowrap' }}>
                 무리하지 않은 오늘도 괜찮아요.<br />
                 오늘의 마음 날씨에 맞춰 딱 할 수 있는 만큼의<br />
