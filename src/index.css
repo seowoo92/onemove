@@ -59,6 +59,15 @@
     animation: caret-blink 1s steps(1) infinite;
   }
 
+  /* 코치 캐러셀 전환 — 부드러운 페이드 (opacity만) */
+  @keyframes coach-swap {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .coach-swap {
+    animation: coach-swap 0.45s ease;
+  }
+
   /* 인앱 토스트 등장 — 전환 원칙과 동일하게 opacity만 */
   @keyframes toast-in {
     from { opacity: 0; }
@@ -74,5 +83,6 @@
     .screen-fade { animation: none; }
     .toast-pop { animation: none; }
     .caret-blink { animation: none; }
+    .coach-swap { animation: none; }
   }
 }

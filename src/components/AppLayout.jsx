@@ -213,7 +213,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
 
       {/* 좌측 소개 패널 — 높이를 폰 프레임(812+16)과 맞춰 About·저작권을 프레임 하단 라인에 정렬 */}
       <div className="flex-1 flex items-center justify-end pr-10 xl:pr-16 py-16" style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{ maxWidth: '400px', width: '100%', height: 828, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ maxWidth: '480px', width: '100%', height: 828, display: 'flex', flexDirection: 'column' }}>
         <div style={{ margin: 'auto 0' }}>
           {/* 브랜드 마크 */}
           <div className="flex items-center gap-2.5 mb-8">
@@ -233,28 +233,30 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
 
           {/* 캐릭터(좌) + 텍스트 뭉치(우) 2단 레이아웃 — 캐릭터 아래엔 코치명만 (사용자 요청 7/27) */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-            {/* 코치 캐릭터 캐러셀 — 꺽쇠는 캐릭터 좌우 (원형 24px·꺽쇠 16px), 캐릭터 확대 */}
-            <div style={{ flex: 'none', width: 178, textAlign: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <button
-                  onClick={() => setCoachIdx((i) => (i + COACH_KEYS.length - 1) % COACH_KEYS.length)}
-                  aria-label="이전 코치 보기"
-                  style={{ flex: 'none', width: 24, height: 24, borderRadius: '50%', background: '#fff', border: '1px solid #E7E1D6', boxShadow: '0 6px 14px -8px rgba(36,82,63,.25)', cursor: 'pointer', fontSize: 16, color: '#24523F', lineHeight: 1, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  ‹
-                </button>
-                {/* key 교체로 페이드 재생 (전환 원칙: opacity만) */}
+            {/* 코치 캐릭터 캐러셀 — 꺽쇠(원형 24px·꺽쇠 16px)를 캐릭터 좌우 투명 여백 위에 겹침 */}
+            <div style={{ flex: 'none', width: 132, textAlign: 'center' }}>
+              <div style={{ position: 'relative' }}>
+                {/* key 교체로 부드러운 페이드 재생 (coach-swap 0.45s, opacity만) */}
                 <img
                   key={coachIdx}
                   src={carouselCoach.image}
                   alt={carouselCoach.name}
-                  className="screen-fade"
-                  style={{ flex: 1, minWidth: 0, height: 156, objectFit: 'contain', display: 'block' }}
+                  className="coach-swap"
+                  style={{ width: '100%', height: 156, objectFit: 'contain', display: 'block' }}
                 />
+                <button
+                  onClick={() => setCoachIdx((i) => (i + COACH_KEYS.length - 1) % COACH_KEYS.length)}
+                  aria-label="이전 코치 보기"
+                  style={{ position: 'absolute', left: -6, top: '50%', transform: 'translateY(-50%)', width: 24, height: 24, borderRadius: '50%', background: '#fff', border: '1px solid #E7E1D6', boxShadow: '0 6px 14px -8px rgba(36,82,63,.25)', cursor: 'pointer', fontSize: 16, color: '#24523F', lineHeight: 1, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  className="no-press"
+                >
+                  ‹
+                </button>
                 <button
                   onClick={() => setCoachIdx((i) => (i + 1) % COACH_KEYS.length)}
                   aria-label="다음 코치 보기"
-                  style={{ flex: 'none', width: 24, height: 24, borderRadius: '50%', background: '#fff', border: '1px solid #E7E1D6', boxShadow: '0 6px 14px -8px rgba(36,82,63,.25)', cursor: 'pointer', fontSize: 16, color: '#24523F', lineHeight: 1, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ position: 'absolute', right: -6, top: '50%', transform: 'translateY(-50%)', width: 24, height: 24, borderRadius: '50%', background: '#fff', border: '1px solid #E7E1D6', boxShadow: '0 6px 14px -8px rgba(36,82,63,.25)', cursor: 'pointer', fontSize: 16, color: '#24523F', lineHeight: 1, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  className="no-press"
                 >
                   ›
                 </button>
@@ -264,12 +266,14 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
 
             {/* 설명 + 핵심 3가지 */}
             <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontSize: 14, fontWeight: 500, color: '#6f7d72', lineHeight: 1.7, marginBottom: 12, wordBreak: 'keep-all' }}>
-                무리하지 않은 오늘도 괜찮아요. 오늘의 마음 날씨에 맞춰 딱 할 수 있는 만큼의 회복 루틴을 AI 코치가 제안해요.
+              <p style={{ fontSize: 14, fontWeight: 500, color: '#6f7d72', lineHeight: 1.7, marginBottom: 12, whiteSpace: 'nowrap' }}>
+                무리하지 않은 오늘도 괜찮아요.<br />
+                오늘의 마음 날씨에 맞춰 딱 할 수 있는 만큼의<br />
+                회복 루틴을 AI 코치가 제안해요.
               </p>
               <ul className="flex flex-col gap-2">
                 {FEATURES.map((text) => (
-                  <li key={text} className="flex items-start gap-2.5" style={{ fontSize: 13.5, color: '#22302A', wordBreak: 'keep-all' }}>
+                  <li key={text} className="flex items-start gap-2.5" style={{ fontSize: 13.5, color: '#22302A', whiteSpace: 'nowrap' }}>
                     <span className="font-bold select-none" style={{ color: '#EE8466', marginTop: 1 }}>·</span>
                     <span>{text}</span>
                   </li>
