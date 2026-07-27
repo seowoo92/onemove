@@ -9,7 +9,7 @@ const FEATURES = [
 ]
 
 // 데스크톱 헤드라인 타이핑 효과용 원문 (멘토링 피드백 7/26)
-const HEADLINE = '오늘 할 수 있는\n만큼만.'
+const HEADLINE = '오늘 할 수 있는 만큼만.'
 
 function useViewportMode() {
   const getMode = () => {
@@ -123,7 +123,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
         }
         return n + 1
       })
-    }, 95)
+    }, 130)
     return () => clearInterval(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode])
@@ -225,59 +225,57 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             <span style={{ fontSize: 19, fontWeight: 800, color: '#24523F' }}>오늘만큼</span>
           </div>
 
-          {/* 헤드라인 — 타이핑 효과 (두 줄 높이 고정으로 레이아웃 흔들림 방지) */}
-          <h1 className="font-bold mb-5" style={{ fontSize: 38, color: '#24523F', letterSpacing: '-0.04em', lineHeight: 1.2, whiteSpace: 'pre-line', minHeight: '2.4em' }}>
+          {/* 헤드라인 — 한 줄 타이핑 효과, 캐럿은 완료 후에도 상시 깜빡임 (사용자 확정 7/27) */}
+          <h1 className="font-bold mb-5" style={{ fontSize: 32, color: '#24523F', letterSpacing: '-0.04em', lineHeight: 1.3, whiteSpace: 'nowrap', minHeight: '1.3em' }}>
             {HEADLINE.slice(0, typedLen)}
-            {typedLen < HEADLINE.length && (
-              <span className="caret-blink" style={{ display: 'inline-block', width: 3, height: '0.85em', background: '#24523F', marginLeft: 5, verticalAlign: '-0.08em' }} />
-            )}
+            <span className="caret-blink" style={{ display: 'inline-block', width: 3, height: '0.85em', background: '#24523F', marginLeft: 5, verticalAlign: '-0.08em' }} />
           </h1>
 
-          {/* 설명 */}
-          <p style={{ fontSize: 15, fontWeight: 500, color: '#6f7d72', lineHeight: 1.75, marginBottom: 18 }}>
-            무리하지 않은 오늘도 괜찮아요.<br />
-            오늘의 마음 날씨에 맞춰 딱 할 수 있는 만큼의<br />
-            회복 루틴을 AI 코치가 제안해요.
-          </p>
-
-          {/* 핵심 3가지 */}
-          <ul className="flex flex-col gap-3" style={{ marginBottom: 18 }}>
-            {FEATURES.map((text) => (
-              <li key={text} className="flex items-start gap-2.5" style={{ fontSize: 14.5, color: '#22302A' }}>
-                <span className="font-bold select-none" style={{ color: '#EE8466', marginTop: 1 }}>·</span>
-                <span>{text}</span>
-              </li>
-            ))}
-          </ul>
-
-          {/* 코치 캐릭터 캐러셀 — 꺽쇠로 3인 넘겨보기 (멘토링 피드백 7/26) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-            <button
-              onClick={() => setCoachIdx((i) => (i + COACH_KEYS.length - 1) % COACH_KEYS.length)}
-              aria-label="이전 코치 보기"
-              style={{ flex: 'none', width: 34, height: 34, borderRadius: '50%', background: '#fff', border: '1px solid #E7E1D6', boxShadow: '0 6px 14px -8px rgba(36,82,63,.25)', cursor: 'pointer', fontSize: 15, color: '#24523F', lineHeight: 1, padding: 0 }}
-            >
-              ‹
-            </button>
-            <div style={{ flex: 1, textAlign: 'center' }}>
-              {/* key 교체로 페이드 재생 (전환 원칙: opacity만) */}
-              <img
-                key={coachIdx}
-                src={carouselCoach.image}
-                alt={carouselCoach.name}
-                className="screen-fade"
-                style={{ height: 136, objectFit: 'contain', display: 'block', margin: '0 auto' }}
-              />
-              <p style={{ fontSize: 14, fontWeight: 800, color: '#24523F', margin: '6px 0 0' }}>{carouselCoach.name}</p>
-              <p style={{ fontSize: 12, fontWeight: 500, color: '#9AA69D', margin: '2px 0 0', minHeight: 18 }}>"{carouselCoach.tagline}"</p>
+          {/* 캐릭터(좌) + 텍스트 뭉치(우) 2단 레이아웃 — 캐릭터 아래엔 코치명만 (사용자 요청 7/27) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
+            {/* 코치 캐릭터 캐러셀 — 꺽쇠는 캐릭터 좌우 (원형 24px·꺽쇠 16px), 캐릭터 확대 */}
+            <div style={{ flex: 'none', width: 178, textAlign: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <button
+                  onClick={() => setCoachIdx((i) => (i + COACH_KEYS.length - 1) % COACH_KEYS.length)}
+                  aria-label="이전 코치 보기"
+                  style={{ flex: 'none', width: 24, height: 24, borderRadius: '50%', background: '#fff', border: '1px solid #E7E1D6', boxShadow: '0 6px 14px -8px rgba(36,82,63,.25)', cursor: 'pointer', fontSize: 16, color: '#24523F', lineHeight: 1, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  ‹
+                </button>
+                {/* key 교체로 페이드 재생 (전환 원칙: opacity만) */}
+                <img
+                  key={coachIdx}
+                  src={carouselCoach.image}
+                  alt={carouselCoach.name}
+                  className="screen-fade"
+                  style={{ flex: 1, minWidth: 0, height: 156, objectFit: 'contain', display: 'block' }}
+                />
+                <button
+                  onClick={() => setCoachIdx((i) => (i + 1) % COACH_KEYS.length)}
+                  aria-label="다음 코치 보기"
+                  style={{ flex: 'none', width: 24, height: 24, borderRadius: '50%', background: '#fff', border: '1px solid #E7E1D6', boxShadow: '0 6px 14px -8px rgba(36,82,63,.25)', cursor: 'pointer', fontSize: 16, color: '#24523F', lineHeight: 1, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  ›
+                </button>
+              </div>
+              <p style={{ fontSize: 13.5, fontWeight: 800, color: '#24523F', margin: '6px 0 0' }}>{carouselCoach.name}</p>
             </div>
-            <button
-              onClick={() => setCoachIdx((i) => (i + 1) % COACH_KEYS.length)}
-              aria-label="다음 코치 보기"
-              style={{ flex: 'none', width: 34, height: 34, borderRadius: '50%', background: '#fff', border: '1px solid #E7E1D6', boxShadow: '0 6px 14px -8px rgba(36,82,63,.25)', cursor: 'pointer', fontSize: 15, color: '#24523F', lineHeight: 1, padding: 0 }}
-            >
-              ›
-            </button>
+
+            {/* 설명 + 핵심 3가지 */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontSize: 14, fontWeight: 500, color: '#6f7d72', lineHeight: 1.7, marginBottom: 12, wordBreak: 'keep-all' }}>
+                무리하지 않은 오늘도 괜찮아요. 오늘의 마음 날씨에 맞춰 딱 할 수 있는 만큼의 회복 루틴을 AI 코치가 제안해요.
+              </p>
+              <ul className="flex flex-col gap-2">
+                {FEATURES.map((text) => (
+                  <li key={text} className="flex items-start gap-2.5" style={{ fontSize: 13.5, color: '#22302A', wordBreak: 'keep-all' }}>
+                    <span className="font-bold select-none" style={{ color: '#EE8466', marginTop: 1 }}>·</span>
+                    <span>{text}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           {/* 구분선 */}
