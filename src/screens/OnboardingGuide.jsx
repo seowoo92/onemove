@@ -101,12 +101,15 @@ export default function OnboardingGuide({ onDone }) {
 
         {!isStandalone && (
           <div style={{ flex: 'none', width: '100%', height: '100%', scrollSnapAlign: 'start', padding: '54px 28px 0', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', overflow: 'hidden' }}>
-            <img src={`${BASE}app-icon-192.png`} alt="" style={{ width: 74, height: 74, borderRadius: 19, boxShadow: '0 14px 30px -14px rgba(36,82,63,.35), 0 0 0 1px rgba(36,82,63,.06)' }} />
-            <h2 style={{ fontSize: 22, fontWeight: 800, color: '#24523F', letterSpacing: '-0.03em', lineHeight: 1.38, margin: '16px 0 0', wordBreak: 'keep-all' }}>홈 화면에 추가하면 앱이 돼요</h2>
+            <h2 style={{ fontSize: 22, fontWeight: 800, color: '#24523F', letterSpacing: '-0.03em', lineHeight: 1.38, margin: 0, wordBreak: 'keep-all' }}>홈 화면에 추가하면 앱이 돼요</h2>
             <p style={{ fontSize: 13.5, fontWeight: 500, color: '#6F7D72', lineHeight: 1.65, margin: '9px 0 0', wordBreak: 'keep-all' }}>
               홈 화면에 추가하면 아이콘으로 바로 열리고,<br />알림도 이 앱으로 도착해요.
             </p>
-            <div style={{ marginTop: 20, width: '100%', textAlign: 'left' }}>
+            {/* 설치된 모습 목업 — 홈 화면 위 오늘만큼 아이콘 강조 (다른 장의 미니 프레임과 같은 문법) */}
+            <div style={{ marginTop: 18, flex: 'none', padding: 5, borderRadius: 24, background: 'linear-gradient(150deg,#2F604B 0%,#1C3F2F 55%,#142E22 100%)', boxShadow: '0 22px 44px -20px rgba(20,46,34,.45)' }}>
+              <img src={`${BASE}images/onboard-install.png`} alt="" style={{ width: 200, display: 'block', borderRadius: 19 }} />
+            </div>
+            <div style={{ marginTop: 16, width: '100%', textAlign: 'left' }}>
               {methods.map(({ key, title, desc }) => {
                 const mine = key === browser
                 return (
