@@ -142,9 +142,10 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
   return (
     <div className="flex min-h-screen items-center" style={{ backgroundColor: '#FFFFFF' }}>
 
-      {/* 좌측 소개 패널 */}
+      {/* 좌측 소개 패널 — 높이를 폰 프레임(812+16)과 맞춰 About·저작권을 프레임 하단 라인에 정렬 */}
       <div className="flex-1 flex items-center justify-end pr-10 xl:pr-16 py-16">
-        <div style={{ maxWidth: '400px', width: '100%' }}>
+        <div style={{ maxWidth: '400px', width: '100%', height: 828, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ margin: 'auto 0' }}>
           {/* 브랜드 마크 */}
           <div className="flex items-center gap-2.5 mb-8">
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
@@ -197,16 +198,20 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             <span style={{ fontSize: 13, fontWeight: 600, color: '#9aa69d', letterSpacing: '0.02em' }}>One move a day</span>
           </p>
 
-          {/* About 메뉴 + 저작권 표기 (멘토링 피드백 7/26, 문안 사용자 확정) */}
+        </div>
+
+        {/* About 메뉴 + 저작권 표기 — 폰 프레임 하단 라인에 정렬 (멘토링 피드백 7/26, 문안 사용자 확정) */}
+        <div style={{ flex: 'none' }}>
           <button
             onClick={() => setAboutOpen(true)}
-            style={{ display: 'block', marginTop: 20, background: 'none', border: 'none', padding: 0, fontSize: 12.5, fontWeight: 700, color: '#6F7D72', cursor: 'pointer', letterSpacing: '0.01em' }}
+            style={{ display: 'block', background: 'none', border: 'none', padding: 0, fontSize: 12.5, fontWeight: 700, color: '#6F7D72', cursor: 'pointer', letterSpacing: '0.01em' }}
           >
             About — 만든 사람 ›
           </button>
           <p style={{ fontSize: 11.5, fontWeight: 500, color: '#B7AFA4', letterSpacing: '0.02em', margin: '8px 0 0' }}>
             Designed &amp; Developed by Seowoo Kim
           </p>
+        </div>
         </div>
       </div>
 
@@ -273,10 +278,11 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             >
               ✕
             </button>
-            <div style={{ display: 'flex', marginBottom: 14 }}>
-              <span style={{ width: 14, height: 14, borderRadius: '50%', background: 'radial-gradient(circle at 34% 30%,#F6C6B4,#EFA58F 55%,#E08066)' }} />
-              <span style={{ width: 14, height: 14, borderRadius: '50%', background: 'radial-gradient(circle at 34% 30%,#FFEFB6,#F3D978 55%,#E8C24E)', marginLeft: -4 }} />
-              <span style={{ width: 14, height: 14, borderRadius: '50%', background: 'radial-gradient(circle at 38% 28%,#3C7A5C,#1C4030)', marginLeft: -4 }} />
+            {/* 클레이 3점 마크 — 원본과 동일하게 점점 커지는 형태 */}
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 14 }}>
+              <span style={{ width: 18, height: 18, borderRadius: '50%', background: 'radial-gradient(circle at 34% 30%,#F6C6B4,#EFA58F 55%,#E08066)' }} />
+              <span style={{ width: 23, height: 23, borderRadius: '50%', background: 'radial-gradient(circle at 34% 30%,#FFEFB6,#F3D978 55%,#E8C24E)', marginLeft: -7 }} />
+              <span style={{ width: 28, height: 28, borderRadius: '50%', background: 'radial-gradient(circle at 38% 28%,#3C7A5C,#1C4030)', marginLeft: -7 }} />
             </div>
             <h2 style={{ fontSize: 22, fontWeight: 800, color: '#24523F', margin: 0 }}>김서우</h2>
             <p style={{ fontSize: 13.5, fontWeight: 600, color: '#6F7D72', margin: '4px 0 0' }}>오늘만큼을 기획하고, 디자인하고, 개발했습니다.</p>
