@@ -96,6 +96,7 @@ function ScrollHint({ scrollRef, bottom }) {
 export default function AppLayout({ children, showTabBar = false, activeTab = 'home', onTabChange = () => {} }) {
   const mode = useViewportMode()
   const bezelRef = useRef(null)
+  const [aboutOpen, setAboutOpen] = useState(false) // 데스크톱 About(만든 사람) 모달 — 멘토링 피드백 7/26
 
   // 모바일/태블릿: 중앙 정렬 + 그림자(태블릿만) + 조건부 고정 탭바
   if (mode !== 'desktop') {
@@ -196,8 +197,14 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             <span style={{ fontSize: 13, fontWeight: 600, color: '#9aa69d', letterSpacing: '0.02em' }}>One move a day</span>
           </p>
 
-          {/* 저작권 표기 (멘토링 피드백 7/26, 표기 문안 사용자 확정) */}
-          <p style={{ fontSize: 11.5, fontWeight: 500, color: '#B7AFA4', letterSpacing: '0.02em', margin: '18px 0 0' }}>
+          {/* About 메뉴 + 저작권 표기 (멘토링 피드백 7/26, 문안 사용자 확정) */}
+          <button
+            onClick={() => setAboutOpen(true)}
+            style={{ display: 'block', marginTop: 20, background: 'none', border: 'none', padding: 0, fontSize: 12.5, fontWeight: 700, color: '#6F7D72', cursor: 'pointer', letterSpacing: '0.01em' }}
+          >
+            About — 만든 사람 ›
+          </button>
+          <p style={{ fontSize: 11.5, fontWeight: 500, color: '#B7AFA4', letterSpacing: '0.02em', margin: '8px 0 0' }}>
             Designed &amp; Developed by Seowoo Kim
           </p>
         </div>
@@ -248,6 +255,48 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
         </div>
         </div>
       </div>
+
+      {/* About 모달 — 만든 사람·기획의도 (초안 반영 7/27, 추후 수정 예정) */}
+      {aboutOpen && (
+        <div
+          onClick={() => setAboutOpen(false)}
+          style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(20,46,34,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ background: '#FAF6F0', borderRadius: 26, maxWidth: 480, width: '100%', padding: '36px 38px', boxShadow: '0 30px 70px -20px rgba(20,46,34,.5)', position: 'relative' }}
+          >
+            <button
+              onClick={() => setAboutOpen(false)}
+              aria-label="닫기"
+              style={{ position: 'absolute', top: 18, right: 18, width: 32, height: 32, borderRadius: '50%', background: '#fff', border: '1px solid #EAE3D7', cursor: 'pointer', fontSize: 14, color: '#6F7D72', lineHeight: 1 }}
+            >
+              ✕
+            </button>
+            <div style={{ display: 'flex', marginBottom: 14 }}>
+              <span style={{ width: 14, height: 14, borderRadius: '50%', background: 'radial-gradient(circle at 34% 30%,#F6C6B4,#EFA58F 55%,#E08066)' }} />
+              <span style={{ width: 14, height: 14, borderRadius: '50%', background: 'radial-gradient(circle at 34% 30%,#FFEFB6,#F3D978 55%,#E8C24E)', marginLeft: -4 }} />
+              <span style={{ width: 14, height: 14, borderRadius: '50%', background: 'radial-gradient(circle at 38% 28%,#3C7A5C,#1C4030)', marginLeft: -4 }} />
+            </div>
+            <h2 style={{ fontSize: 22, fontWeight: 800, color: '#24523F', margin: 0 }}>김서우</h2>
+            <p style={{ fontSize: 13.5, fontWeight: 600, color: '#6F7D72', margin: '4px 0 0' }}>오늘만큼을 기획하고, 디자인하고, 개발했습니다.</p>
+            <p style={{ fontSize: 14.5, fontWeight: 700, color: '#9B5B45', lineHeight: 1.6, margin: '18px 0 0', wordBreak: 'keep-all' }}>
+              "무기력한 날의 나에게 필요했던 도구를 직접 만들었습니다."
+            </p>
+            <p style={{ fontSize: 13.5, fontWeight: 500, color: '#3A4A40', lineHeight: 1.75, margin: '14px 0 0', wordBreak: 'keep-all' }}>
+              AI Reboot 교육과정에서 개발을 배우면서, 배운 것으로 가장 만들고 싶었던 건 화려한 서비스가 아니라 '못한 날을 견디게 돕는 도구'였습니다.
+              무기력은 게으름이 아니라는 걸 알기에, 실패해도 죄책감 없이 다시 시작하는 경험을 설계했습니다.
+            </p>
+            <p style={{ fontSize: 13.5, fontWeight: 500, color: '#3A4A40', lineHeight: 1.75, margin: '10px 0 0', wordBreak: 'keep-all' }}>
+              오늘만큼은 잘하게 만드는 앱이 아니라, 어떤 날이든 괜찮다고 말해주는 앱입니다.
+            </p>
+            <div style={{ height: 1, background: '#E8E2D6', margin: '20px 0 14px' }} />
+            <a href="mailto:seowoo92@gmail.com" style={{ fontSize: 12.5, fontWeight: 600, color: '#6F7D72', textDecoration: 'none' }}>
+              seowoo92@gmail.com
+            </a>
+          </div>
+        </div>
+      )}
 
     </div>
   )
