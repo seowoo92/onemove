@@ -214,7 +214,8 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
       {/* 좌측 소개 패널 — 높이를 폰 프레임(812+16)과 맞춰 About·저작권을 프레임 하단 라인에 정렬 */}
       <div className="flex-1 flex items-center justify-end pr-10 xl:pr-16 py-16" style={{ position: 'relative', zIndex: 1 }}>
         <div style={{ maxWidth: '480px', width: '100%', height: 828, display: 'flex', flexDirection: 'column' }}>
-        <div style={{ margin: 'auto 0' }}>
+        {/* 본문 항목들을 세로로 고르게 분산 — 위쪽 뭉침 해소 (사용자 피드백 7/27) */}
+        <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', paddingBottom: 18 }}>
           {/* 브랜드 마크 */}
           <div className="flex items-center gap-2.5 mb-8">
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
