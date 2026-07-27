@@ -105,10 +105,12 @@ export default function OnboardingGuide({ onDone }) {
             <p style={{ fontSize: 13.5, fontWeight: 500, color: '#6F7D72', lineHeight: 1.65, margin: '9px 0 0', wordBreak: 'keep-all' }}>
               홈 화면에 추가하면 아이콘으로 바로 열리고,<br />알림도 이 앱으로 도착해요.
             </p>
-            {/* 설치된 모습 목업 — 홈 화면 위 오늘만큼 아이콘 강조 (다른 장의 미니 프레임과 같은 문법) */}
-            <div style={{ marginTop: 18, flex: 'none', padding: 5, borderRadius: 24, background: 'linear-gradient(150deg,#2F604B 0%,#1C3F2F 55%,#142E22 100%)', boxShadow: '0 22px 44px -20px rgba(20,46,34,.45)' }}>
-              <img src={`${BASE}images/onboard-install.png`} alt="" style={{ width: 200, display: 'block', borderRadius: 19 }} />
-            </div>
+            {/* 설치된 모습 목업 — 폰 상단 절반: 18시 푸시 배너 도착 + 홈 화면 아이콘 (사용자 확정 7/27) */}
+            <img
+              src={`${BASE}images/onboard-install.png`}
+              alt=""
+              style={{ marginTop: 18, width: 280, display: 'block', filter: 'drop-shadow(0 18px 30px rgba(20,46,34,.28))' }}
+            />
             <div style={{ marginTop: 16, width: '100%', textAlign: 'left' }}>
               {methods.map(({ key, title, desc }) => {
                 const mine = key === browser
