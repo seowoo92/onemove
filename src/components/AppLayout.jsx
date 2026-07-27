@@ -213,7 +213,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
 
       {/* 좌측 소개 패널 — 높이를 폰 프레임(812+16)과 맞춰 About·저작권을 프레임 하단 라인에 정렬 */}
       <div className="flex-1 flex items-center justify-end pr-10 xl:pr-16 py-16" style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{ maxWidth: '480px', width: '100%', height: 828, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ maxWidth: '520px', width: '100%', height: 828, display: 'flex', flexDirection: 'column' }}>
         {/* 본문 항목들을 세로로 고르게 분산 — 위쪽 뭉침 해소 (사용자 피드백 7/27) */}
         <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', paddingBottom: 18 }}>
           {/* 브랜드 마크 */}
@@ -234,9 +234,9 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
 
           {/* 캐릭터(좌) + 텍스트 뭉치(우) 2단 레이아웃 — 캐릭터 아래엔 코치명만 (사용자 요청 7/27)
               stretch + space-between: 텍스트 첫 줄이 캐릭터 머리, 마지막 줄이 '코치명'과 같은 라인 */}
-          <div style={{ display: 'flex', alignItems: 'stretch', gap: 28, marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'stretch', gap: 34, marginBottom: 20 }}>
             {/* 코치 캐릭터 캐러셀 — 꺽쇠(원형 24px·꺽쇠 16px)를 캐릭터 좌우 투명 여백 위에 겹침 */}
-            <div style={{ flex: 'none', width: 132, textAlign: 'center' }}>
+            <div style={{ flex: 'none', width: 150, textAlign: 'center' }}>
               <div style={{ position: 'relative' }}>
                 {/* key 교체로 부드러운 페이드 재생 (coach-swap 0.45s, opacity만) */}
                 <img
@@ -244,7 +244,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
                   src={carouselCoach.image}
                   alt={carouselCoach.name}
                   className="coach-swap"
-                  style={{ width: '100%', height: 156, objectFit: 'contain', display: 'block' }}
+                  style={{ width: '100%', height: 180, objectFit: 'contain', display: 'block' }}
                 />
                 <button
                   onClick={() => setCoachIdx((i) => (i + COACH_KEYS.length - 1) % COACH_KEYS.length)}
