@@ -394,10 +394,15 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
   // 하루 마무리(회고) — 모든 루틴이 정리되면 하루 1회 생성, 이후엔 저장본 재사용
   useEffect(() => {
     if (!allResolved) { setReview(null); return }
+    // 저장본이 AI 생성이면 그대로 재사용. 예비 문구로 저장된 날은 일단 보여주되,
+    // 아래에서 조용히 AI 생성을 재시도해 성공 시에만 교체·저장 (일시 실패가 하루 종일 고정되는 것 방지)
     const saved = storage.getTodayReview()
-    if (saved) { setReview(saved); return }
+    if (saved) {
+      setReview(saved)
+      if (saved.source === 'solar') return
+    }
     let cancelled = false
-    setReview({ loading: true })
+    if (!saved) setReview({ loading: true })
     const completedList = routineIds.filter((id) => completedIds.has(id)).map((id) => {
       const b = ROUTINE_MAP[id]
       const r = easyIds.has(id) ? b?.easyVersion : b
@@ -406,6 +411,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
     generateDailyReview({ personality: coach, state: todayState, completedList, skippedCount: skippedIds.size, nickname })
       .then((result) => {
         if (cancelled) return
+        if (saved && result.source !== 'solar') return // 재시도도 실패 — 기존 문구 유지
         const value = { message: result.message, source: result.source }
         storage.setTodayReview(value)
         setReview(value)

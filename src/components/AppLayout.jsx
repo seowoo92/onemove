@@ -172,7 +172,8 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             backgroundColor: '#FAF6F0',
             boxShadow: mode === 'tablet' ? '0 8px 30px rgba(0,0,0,0.08)' : 'none',
           }}>
-            <div style={{ paddingTop: '6px', paddingBottom: showTabBar ? 'calc(56px + max(calc(env(safe-area-inset-bottom) - 12px), 5px))' : 0, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
+            {/* 상단 안전영역: 홈 화면 설치 앱(standalone)에서 노치·상태바가 콘텐츠를 덮지 않도록 확보 — 일반 브라우저에선 env()가 0 */}
+            <div style={{ paddingTop: 'calc(6px + env(safe-area-inset-top))', paddingBottom: showTabBar ? 'calc(56px + max(calc(env(safe-area-inset-bottom) - 12px), 5px))' : 0, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
               {children}
             </div>
           </div>
