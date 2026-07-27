@@ -4,6 +4,7 @@ import { supabase } from './lib/supabase'
 import { reconcileOnLogin, startSync, stopSync } from './lib/sync'
 import { saveKakaoTokens } from './lib/kakao'
 import AppLayout from './components/AppLayout'
+import OnboardingGuide from './screens/OnboardingGuide'
 import WelcomeScreen from './screens/WelcomeScreen'
 import CoachSelect from './screens/CoachSelect'
 import StateCheck from './screens/StateCheck'
@@ -74,7 +75,9 @@ export default function App() {
       setTodayState(savedState)
 
       if (!savedCoach) {
-        setScreen(currentUser ? 'coach-select' : 'welcome')
+        // 완전 첫 방문(게스트 + 인트로 미열람)에게만 온보딩 가이드 → 웰컴 순서
+        const introSeen = localStorage.getItem('onemove_intro_seen') === 'true'
+        setScreen(currentUser ? 'coach-select' : introSeen ? 'welcome' : 'intro')
       } else if (!savedState) {
         setScreen('state-check')
       } else {
@@ -177,6 +180,14 @@ export default function App() {
 
   return (
     <AppLayout showTabBar={showTabBar} activeTab={activeTab} onTabChange={handleTabChange}>
+      {screen === 'intro' && (
+        <OnboardingGuide
+          onDone={() => {
+            localStorage.setItem('onemove_intro_seen', 'true')
+            setScreen('welcome')
+          }}
+        />
+      )}
       {screen === 'welcome' && (
         <WelcomeScreen onSkip={() => setScreen('coach-select')} />
       )}

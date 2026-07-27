@@ -65,6 +65,12 @@
 ## 화면 흐름 (5단계)
 S0 진입 → S1 코치 선택 → S2 마음 날씨 → S3 루틴 홈 → S4 코치 메시지(모달)
 
+### S0 앞 — 온보딩 가이드 (OnboardingGuide.jsx, 7/27 실사용 피드백 반영)
+- 완전 첫 방문(코치 없음 + 게스트 + onemove_intro_seen 없음)에만 웰컴 앞에 표시. 매 장 '건너뛰기'
+- 4장 가로 스와이프(scroll-snap) + 점 인디케이터: ① 마음 날씨 ② 루틴 홈 ③ 정원 — 실화면 캡처(public/images/onboard-*.png, DPR1.2)를 딥그린 미니 폰 프레임에 담음 ④ 앱 설치 안내 — **접속 브라우저 자동 감지**(아이폰 사파리/아이폰 크롬 CriOS/안드로이드)해 '내 방법' 배지로 강조, 설치된 앱(standalone)에서 열면 이 장 생략
+- 문구 사용자 확정(7/27): "먼저, 오늘 마음 날씨를 골라요 / 좋은 날엔 네 개, 힘든 날엔 두 개…" 등 — 번역투 배제 입말
+- 실화면 캡처는 UI가 크게 바뀌면 shot 스크립트로 재촬영 필요 (세션 스크래치의 shot-onboard-assets.js 패턴)
+
 ### S0 — 진입 화면 (WelcomeScreen.jsx)
 - 최초 사용자(onemove_coach 없음)에게만 표시, 기존 사용자는 건너뜀
 - 카카오 OAuth 복귀 시(세션 있음) coach 없어도 welcome 건너뛰고 S1으로 직행
@@ -208,6 +214,7 @@ S0 진입 → S1 코치 선택 → S2 마음 날씨 → S3 루틴 홈 → S4 코
 | `onemove_pinned` | 매일 루틴(★) ID 배열 (최대 3개) | 유지 |
 | `onemove_nickname` | 앱 내 닉네임 (최대 12자) | 유지 |
 | `onemove_notify` | 카카오톡 알림 수신 동의 ('true'\|'false') | 유지 |
+| `onemove_intro_seen` | 온보딩 가이드 열람 여부 ('true') | 유지 |
 | `onemove_profile_ts` | 프로필(닉네임·코치·알림·매일루틴) 마지막 로컬 변경 시각 — 기기 간 동기화 최신 비교용 | 유지 |
 | `onemove_card_sent` | 오늘 루틴 카드 발송 여부 (날짜 문자열, 하루 1회 제한) | 매일 |
 | `onemove_review` | 하루 마무리(회고) 메시지 `{message, source}` — 하루 1회 생성 후 재사용 | 매일 |
