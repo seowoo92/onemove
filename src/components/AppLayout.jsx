@@ -232,8 +232,9 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             <span className="caret-blink" style={{ display: 'inline-block', width: 3, height: '0.85em', background: '#24523F', marginLeft: 5, verticalAlign: '-0.08em' }} />
           </h1>
 
-          {/* 캐릭터(좌) + 텍스트 뭉치(우) 2단 레이아웃 — 캐릭터 아래엔 코치명만 (사용자 요청 7/27) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
+          {/* 캐릭터(좌) + 텍스트 뭉치(우) 2단 레이아웃 — 캐릭터 아래엔 코치명만 (사용자 요청 7/27)
+              stretch + space-between: 텍스트 첫 줄이 캐릭터 머리, 마지막 줄이 '코치명'과 같은 라인 */}
+          <div style={{ display: 'flex', alignItems: 'stretch', gap: 28, marginBottom: 20 }}>
             {/* 코치 캐릭터 캐러셀 — 꺽쇠(원형 24px·꺽쇠 16px)를 캐릭터 좌우 투명 여백 위에 겹침 */}
             <div style={{ flex: 'none', width: 132, textAlign: 'center' }}>
               <div style={{ position: 'relative' }}>
@@ -265,8 +266,8 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
               <p style={{ fontSize: 13.5, fontWeight: 800, color: '#24523F', margin: '6px 0 0' }}>{carouselCoach.name}</p>
             </div>
 
-            {/* 설명 + 핵심 3가지 */}
-            <div style={{ flex: 1, minWidth: 0 }}>
+            {/* 설명 + 핵심 3가지 — 캐릭터 컬럼과 상·하단 라인 정렬 */}
+            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <p style={{ fontSize: 14, fontWeight: 500, color: '#6f7d72', lineHeight: 1.7, marginBottom: 12, whiteSpace: 'nowrap' }}>
                 무리하지 않은 오늘도 괜찮아요.<br />
                 오늘의 마음 날씨에 맞춰 딱 할 수 있는 만큼의<br />
