@@ -50,6 +50,15 @@
     animation: screen-fade 0.18s ease;
   }
 
+  /* 데스크톱 헤드라인 타이핑 캐럿 */
+  @keyframes caret-blink {
+    0%, 55% { opacity: 1; }
+    56%, 100% { opacity: 0; }
+  }
+  .caret-blink {
+    animation: caret-blink 1s steps(1) infinite;
+  }
+
   /* 인앱 토스트 등장 — 전환 원칙과 동일하게 opacity만 */
   @keyframes toast-in {
     from { opacity: 0; }
@@ -64,5 +73,6 @@
     button:not(.no-press):active { transform: none; }
     .screen-fade { animation: none; }
     .toast-pop { animation: none; }
+    .caret-blink { animation: none; }
   }
 }

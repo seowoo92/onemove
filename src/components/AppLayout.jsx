@@ -1,11 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
 import TabBar from './TabBar'
+import { COACH_INFO, COACH_KEYS } from '../lib/coaches'
 
 const FEATURES = [
   '오늘의 마음 날씨에 맞춘 맞춤 루틴',
   '어려우면 더 쉬운 버전으로 — 실패해도 괜찮아요',
   '유쾌·진중·다정, 내가 고른 AI 코치의 격려',
 ]
+
+// 데스크톱 헤드라인 타이핑 효과용 원문 (멘토링 피드백 7/26)
+const HEADLINE = '오늘 할 수 있는\n만큼만.'
 
 function useViewportMode() {
   const getMode = () => {
@@ -98,6 +102,64 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
   const bezelRef = useRef(null)
   const [aboutOpen, setAboutOpen] = useState(false) // 데스크톱 About(만든 사람) 모달 — 멘토링 피드백 7/26
 
+  // ---------- 데스크톱 연출 3종 (멘토링 피드백 7/26) ----------
+  const reduceMotion = useRef(
+    typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,
+  ).current
+  // ① 헤드라인 타이핑
+  const [typedLen, setTypedLen] = useState(0)
+  useEffect(() => {
+    if (mode !== 'desktop') return
+    if (reduceMotion) {
+      setTypedLen(HEADLINE.length)
+      return
+    }
+    setTypedLen(0)
+    const id = setInterval(() => {
+      setTypedLen((n) => {
+        if (n >= HEADLINE.length) {
+          clearInterval(id)
+          return n
+        }
+        return n + 1
+      })
+    }, 95)
+    return () => clearInterval(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode])
+  // ② 마우스 따라 메인 3색 배경 무빙 — 리렌더 없이 DOM 직접 갱신(rAF 러프)
+  const blobLayerRef = useRef(null)
+  useEffect(() => {
+    if (mode !== 'desktop' || reduceMotion) return
+    const layer = blobLayerRef.current
+    if (!layer) return
+    const blobs = [...layer.children]
+    const factors = [0.06, -0.05, 0.04]
+    let tx = 0, ty = 0, cx = 0, cy = 0, raf
+    const onMove = (e) => {
+      tx = e.clientX - window.innerWidth / 2
+      ty = e.clientY - window.innerHeight / 2
+    }
+    const tick = () => {
+      cx += (tx - cx) * 0.06
+      cy += (ty - cy) * 0.06
+      blobs.forEach((b, i) => {
+        b.style.transform = `translate3d(${cx * factors[i]}px, ${cy * factors[i]}px, 0)`
+      })
+      raf = requestAnimationFrame(tick)
+    }
+    window.addEventListener('mousemove', onMove)
+    raf = requestAnimationFrame(tick)
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      cancelAnimationFrame(raf)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode])
+  // ③ 코치 캐릭터 캐러셀
+  const [coachIdx, setCoachIdx] = useState(0)
+  const carouselCoach = COACH_INFO[COACH_KEYS[coachIdx]]
+
   // 모바일/태블릿: 중앙 정렬 + 그림자(태블릿만) + 조건부 고정 탭바
   if (mode !== 'desktop') {
     return (
@@ -140,10 +202,17 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
 
   // 데스크톱: 좌우 2단 레이아웃 + 폰 프레임
   return (
-    <div className="flex min-h-screen items-center" style={{ backgroundColor: '#FFFFFF' }}>
+    <div className="flex min-h-screen items-center" style={{ backgroundColor: '#FFFFFF', position: 'relative', overflow: 'hidden' }}>
+
+      {/* 마우스 따라 움직이는 메인 3색 배경 블롭 (멘토링 피드백 7/26) — reduced-motion 시 정지 */}
+      <div ref={blobLayerRef} aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', top: '-12%', right: '4%', width: 520, height: 520, borderRadius: '50%', background: 'radial-gradient(circle, rgba(238,132,102,0.11), transparent 70%)', filter: 'blur(70px)', willChange: 'transform' }} />
+        <div style={{ position: 'absolute', bottom: '-14%', left: '2%', width: 480, height: 480, borderRadius: '50%', background: 'radial-gradient(circle, rgba(243,217,120,0.16), transparent 70%)', filter: 'blur(70px)', willChange: 'transform' }} />
+        <div style={{ position: 'absolute', top: '26%', left: '40%', width: 560, height: 560, borderRadius: '50%', background: 'radial-gradient(circle, rgba(36,82,63,0.08), transparent 70%)', filter: 'blur(80px)', willChange: 'transform' }} />
+      </div>
 
       {/* 좌측 소개 패널 — 높이를 폰 프레임(812+16)과 맞춰 About·저작권을 프레임 하단 라인에 정렬 */}
-      <div className="flex-1 flex items-center justify-end pr-10 xl:pr-16 py-16">
+      <div className="flex-1 flex items-center justify-end pr-10 xl:pr-16 py-16" style={{ position: 'relative', zIndex: 1 }}>
         <div style={{ maxWidth: '400px', width: '100%', height: 828, display: 'flex', flexDirection: 'column' }}>
         <div style={{ margin: 'auto 0' }}>
           {/* 브랜드 마크 */}
@@ -156,20 +225,23 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             <span style={{ fontSize: 19, fontWeight: 800, color: '#24523F' }}>오늘만큼</span>
           </div>
 
-          {/* 헤드라인 */}
-          <h1 className="font-bold mb-5" style={{ fontSize: 38, color: '#24523F', letterSpacing: '-0.04em', lineHeight: 1.2 }}>
-            오늘 할 수 있는<br />만큼만.
+          {/* 헤드라인 — 타이핑 효과 (두 줄 높이 고정으로 레이아웃 흔들림 방지) */}
+          <h1 className="font-bold mb-5" style={{ fontSize: 38, color: '#24523F', letterSpacing: '-0.04em', lineHeight: 1.2, whiteSpace: 'pre-line', minHeight: '2.4em' }}>
+            {HEADLINE.slice(0, typedLen)}
+            {typedLen < HEADLINE.length && (
+              <span className="caret-blink" style={{ display: 'inline-block', width: 3, height: '0.85em', background: '#24523F', marginLeft: 5, verticalAlign: '-0.08em' }} />
+            )}
           </h1>
 
           {/* 설명 */}
-          <p style={{ fontSize: 15, fontWeight: 500, color: '#6f7d72', lineHeight: 1.75, marginBottom: 26 }}>
+          <p style={{ fontSize: 15, fontWeight: 500, color: '#6f7d72', lineHeight: 1.75, marginBottom: 18 }}>
             무리하지 않은 오늘도 괜찮아요.<br />
             오늘의 마음 날씨에 맞춰 딱 할 수 있는 만큼의<br />
             회복 루틴을 AI 코치가 제안해요.
           </p>
 
           {/* 핵심 3가지 */}
-          <ul className="flex flex-col gap-3" style={{ marginBottom: 28 }}>
+          <ul className="flex flex-col gap-3" style={{ marginBottom: 18 }}>
             {FEATURES.map((text) => (
               <li key={text} className="flex items-start gap-2.5" style={{ fontSize: 14.5, color: '#22302A' }}>
                 <span className="font-bold select-none" style={{ color: '#EE8466', marginTop: 1 }}>·</span>
@@ -178,11 +250,41 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
             ))}
           </ul>
 
+          {/* 코치 캐릭터 캐러셀 — 꺽쇠로 3인 넘겨보기 (멘토링 피드백 7/26) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+            <button
+              onClick={() => setCoachIdx((i) => (i + COACH_KEYS.length - 1) % COACH_KEYS.length)}
+              aria-label="이전 코치 보기"
+              style={{ flex: 'none', width: 34, height: 34, borderRadius: '50%', background: '#fff', border: '1px solid #E7E1D6', boxShadow: '0 6px 14px -8px rgba(36,82,63,.25)', cursor: 'pointer', fontSize: 15, color: '#24523F', lineHeight: 1, padding: 0 }}
+            >
+              ‹
+            </button>
+            <div style={{ flex: 1, textAlign: 'center' }}>
+              {/* key 교체로 페이드 재생 (전환 원칙: opacity만) */}
+              <img
+                key={coachIdx}
+                src={carouselCoach.image}
+                alt={carouselCoach.name}
+                className="screen-fade"
+                style={{ height: 136, objectFit: 'contain', display: 'block', margin: '0 auto' }}
+              />
+              <p style={{ fontSize: 14, fontWeight: 800, color: '#24523F', margin: '6px 0 0' }}>{carouselCoach.name}</p>
+              <p style={{ fontSize: 12, fontWeight: 500, color: '#9AA69D', margin: '2px 0 0', minHeight: 18 }}>"{carouselCoach.tagline}"</p>
+            </div>
+            <button
+              onClick={() => setCoachIdx((i) => (i + 1) % COACH_KEYS.length)}
+              aria-label="다음 코치 보기"
+              style={{ flex: 'none', width: 34, height: 34, borderRadius: '50%', background: '#fff', border: '1px solid #E7E1D6', boxShadow: '0 6px 14px -8px rgba(36,82,63,.25)', cursor: 'pointer', fontSize: 15, color: '#24523F', lineHeight: 1, padding: 0 }}
+            >
+              ›
+            </button>
+          </div>
+
           {/* 구분선 */}
-          <div style={{ height: 1, background: '#E0DACE', marginBottom: 26 }} />
+          <div style={{ height: 1, background: '#E0DACE', marginBottom: 20 }} />
 
           {/* QR + 안내 */}
-          <div className="flex items-center gap-4" style={{ marginBottom: 24 }}>
+          <div className="flex items-center gap-4" style={{ marginBottom: 16 }}>
             <div style={{ flex: 'none', width: 92, height: 92, borderRadius: 14, background: '#fff', border: '1px solid #E7E1D6', padding: 9, boxSizing: 'border-box', boxShadow: '0 8px 18px -14px rgba(36,82,63,.3)' }}>
               <img src="/onemove/images/qr-onemove.svg" alt="오늘만큼 QR 코드" width={72} height={72} style={{ display: 'block', width: '100%', height: '100%' }} />
             </div>
@@ -216,7 +318,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
       </div>
 
       {/* 우측 폰 프레임 (2026-07-26 사용자 확정: 딥그린 슬림 그라데이션 프레임, 노치 없음) */}
-      <div className="flex-1 flex items-center justify-start pl-10 xl:pl-16 py-12">
+      <div className="flex-1 flex items-center justify-start pl-10 xl:pl-16 py-12" style={{ position: 'relative', zIndex: 1 }}>
         <div
           style={{
             flexShrink: 0,
