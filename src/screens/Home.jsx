@@ -580,8 +580,9 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
                 <div style={{ marginTop: 14, background: '#FAF6F0', borderRadius: 14, padding: '12px 15px', textAlign: 'left' }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
                     <span style={{ fontSize: 11.5, fontWeight: 700, color: '#9AA69D', letterSpacing: '0.02em' }}>하루 마무리</span>
-                    {!review.loading && (
-                      <span style={{ fontSize: 10.5, fontWeight: 500, color: '#B7AFA4' }}>{review.source === 'solar' ? 'AI 생성' : '예비 문구'}</span>
+                    {/* 예비 메시지일 땐 배지 숨김 — 일반 사용자에게 '예비 문구' 표기는 뜻이 안 와닿음 (7/27 확정) */}
+                    {!review.loading && review.source === 'solar' && (
+                      <span style={{ fontSize: 10.5, fontWeight: 500, color: '#B7AFA4' }}>AI 생성</span>
                     )}
                   </div>
                   <p style={{ fontSize: 13.5, fontWeight: 500, color: '#3A4A40', lineHeight: 1.6, margin: '6px 0 0', wordBreak: 'keep-all' }}>
