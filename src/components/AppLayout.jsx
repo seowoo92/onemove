@@ -4,7 +4,7 @@ import { COACH_INFO, COACH_KEYS } from '../lib/coaches'
 
 const FEATURES = [
   '오늘의 마음 날씨에 맞춘 맞춤 루틴',
-  '어려우면 더 쉬운 버전으로 — 실패해도 괜찮아요',
+  '어려우면 더 쉬운 버전으로, 실패해도 괜찮아요',
   '유쾌·진중·다정, 내가 고른 AI 코치의 격려',
 ]
 
@@ -58,14 +58,14 @@ const ABOUT_SECTIONS = [
         </AboutP>
         <AboutH>심리학 원리를 일상의 언어로</AboutH>
         <AboutP>
-          인지행동치료(CBT)에서 검증된 원리들을 빌렸습니다 — 생각보다 행동을 먼저 움직이는 행동 활성화, 어려우면 단계를 낮추는 과제 단계화,
-          마음 날씨로 기분을 살피는 기분 모니터링, 완료가 정원으로 쌓이는 긍정적 강화.
+          인지행동치료(CBT)에서 검증된 원리들을 빌렸습니다. 생각보다 행동을 먼저 움직이는 행동 활성화, 어려우면 단계를 낮추는 과제 단계화,
+          마음 날씨로 기분을 살피는 기분 모니터링, 완료가 정원으로 쌓이는 긍정적 강화까지.
           치료 도구가 아니라, 원리를 차용한 일상 자기관리 도구입니다.
         </AboutP>
         <AboutH>실패까지 설계했습니다</AboutH>
         <AboutP last>
           어려우면 쉬운 버전으로 바꾸고, 쉬어가는 날도 오늘의 기록으로 인정합니다. 정원은 시들지 않고, 계절이 끝나면 앨범으로 갈무리됩니다.
-          실패해도 죄책감 없이 다시 시작하는 경험 — 모든 기능이 그 한 문장을 향합니다.
+          '실패해도 죄책감 없이 다시 시작하는 경험.' 모든 기능이 이 한 문장을 향합니다.
         </AboutP>
       </>
     ),
@@ -86,8 +86,8 @@ const ABOUT_SECTIONS = [
           "그래서, 오늘 나는 뭘 하면 되지?"
         </AboutP>
         <AboutP>
-          전문적인 심리치료 프로그램도 써봤습니다. 근거는 탄탄했지만, 하루 20분씩 글을 쓰는 50일 코스와 월 10만 원 가까운 비용은 —
-          역설적이게도 — 가장 무기력한 사람이 넘기 가장 어려운 문턱이었습니다.
+          전문적인 심리치료 프로그램도 써봤습니다. 근거는 탄탄했지만, 하루 20분씩 글을 쓰는 50일 코스와 월 10만 원 가까운 비용은,
+          역설적이게도 가장 무기력한 사람이 넘기 가장 어려운 문턱이었습니다.
         </AboutP>
         <AboutP>
           제게 필요한 건 관리 도구도, 분석 리포트도, 치료 프로그램도 아니었습니다.
@@ -106,19 +106,19 @@ const ABOUT_SECTIONS = [
     body: (
       <>
         <StackRow tag="화면">
-          <b style={{ fontWeight: 700, color: '#24523F' }}>React 19 · Vite · Tailwind CSS v4</b> — 모바일 우선 반응형, 데스크톱은 폰 목업 프레임으로 배려
+          <b style={{ fontWeight: 700, color: '#24523F' }}>React 19 · Vite · Tailwind CSS v4</b><br />모바일 우선 반응형, 데스크톱은 폰 목업 프레임으로 배려
         </StackRow>
         <StackRow tag="AI 코치">
-          <b style={{ fontWeight: 700, color: '#24523F' }}>업스테이지 Solar Pro</b> — 서버 프록시로 키 보호, 품질 게이트 6단계 + 예비 메시지 안전망
+          <b style={{ fontWeight: 700, color: '#24523F' }}>업스테이지 Solar Pro</b><br />서버 프록시로 키 보호, 품질 게이트 6단계 + 예비 메시지 안전망
         </StackRow>
         <StackRow tag="서버">
-          <b style={{ fontWeight: 700, color: '#24523F' }}>Supabase</b> — 카카오 로그인, 기기 간 동기화 DB, Edge Functions 4종, 매일 18시 리마인더(pg_cron)
+          <b style={{ fontWeight: 700, color: '#24523F' }}>Supabase</b><br />카카오 로그인, 기기 간 동기화 DB, Edge Functions 4종, 매일 18시 리마인더(pg_cron)
         </StackRow>
         <StackRow tag="알림">
-          <b style={{ fontWeight: 700, color: '#24523F' }}>카카오톡 '나에게 보내기' + 웹 푸시(PWA)</b> — 루틴 카드와 저녁 리마인더 2채널
+          <b style={{ fontWeight: 700, color: '#24523F' }}>카카오톡 '나에게 보내기' + 웹 푸시(PWA)</b><br />루틴 카드와 저녁 리마인더 2채널
         </StackRow>
         <StackRow tag="배포" last>
-          <b style={{ fontWeight: 700, color: '#24523F' }}>GitHub Pages</b> — 설치 없이 웹에서 바로, 홈 화면 설치(PWA)는 선택
+          <b style={{ fontWeight: 700, color: '#24523F' }}>GitHub Pages</b><br />설치 없이 웹에서 바로, 홈 화면 설치(PWA)는 선택
         </StackRow>
       </>
     ),
@@ -134,12 +134,12 @@ const ABOUT_SECTIONS = [
         </AboutP>
         <AboutH>코치와의 대화</AboutH>
         <AboutP>
-          지금 코치는 격려를 건네는 존재입니다. 다음 단계는 선택지 기반의 짧은 대화 —
+          지금 코치는 격려를 건네는 존재입니다. 다음 단계는 선택지 기반의 짧은 대화입니다.
           마음이 힘든 사용자를 마주하는 기능인 만큼, 안전 설계를 갖춘 뒤 신중하게 열 계획입니다.
         </AboutP>
         <AboutH>더 깊은 개인화</AboutH>
         <AboutP last>
-          완료 패턴을 반영한 루틴 추천 고도화, 카카오 루틴 카드의 동적 이미지, 비 온 날 완료하면 뜨는 무지개 배너 같은 작은 디테일까지 —
+          완료 패턴을 반영한 루틴 추천 고도화, 카카오 루틴 카드의 동적 이미지, 비 온 날 완료하면 뜨는 무지개 배너 같은 작은 디테일까지,
           회복의 경험을 계속 다듬어 갑니다.
         </AboutP>
       </>
