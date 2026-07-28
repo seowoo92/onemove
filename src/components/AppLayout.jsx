@@ -11,6 +11,142 @@ const FEATURES = [
 // 데스크톱 헤드라인 타이핑 효과용 원문 (멘토링 피드백 7/26)
 const HEADLINE = '오늘 할 수 있는 만큼만.'
 
+// ---------- About 모달 (A안 책갈피형, 사용자 확정 7/28) ----------
+const AboutH = ({ children }) => (
+  <h4 style={{ fontSize: 14.5, fontWeight: 800, color: '#24523F', paddingLeft: 11, borderLeft: '3px solid #EE8466', margin: '0 0 8px' }}>{children}</h4>
+)
+const AboutP = ({ children, last = false }) => (
+  <p style={{ fontSize: 13.5, fontWeight: 500, color: '#3A4A40', lineHeight: 1.75, margin: 0, marginBottom: last ? 0 : 14, wordBreak: 'keep-all' }}>{children}</p>
+)
+const AboutQuote = ({ children }) => (
+  <p style={{ fontSize: 14.5, fontWeight: 700, color: '#9B5B45', lineHeight: 1.6, margin: '2px 0 16px', wordBreak: 'keep-all' }}>{children}</p>
+)
+const StackRow = ({ tag, last = false, children }) => (
+  <div style={{ display: 'flex', gap: 12, padding: '11px 0', borderBottom: last ? 'none' : '1px solid #EEE8DC' }}>
+    <div style={{ flex: 'none', width: 86, fontSize: 11.5, fontWeight: 800, color: '#24523F', background: '#EFF4EE', borderRadius: 8, padding: '5px 0', textAlign: 'center', height: 'fit-content' }}>{tag}</div>
+    <div style={{ fontSize: 13, fontWeight: 500, color: '#3A4A40', lineHeight: 1.6, wordBreak: 'keep-all' }}>{children}</div>
+  </div>
+)
+
+const ABOUT_SECTIONS = [
+  {
+    label: '만든 사람',
+    sub: '오늘만큼을 기획하고, 디자인하고, 개발했습니다',
+    body: (
+      <>
+        <AboutQuote>"무기력한 날의 나에게 필요했던 도구를 직접 만들었습니다."</AboutQuote>
+        <AboutH>김서우</AboutH>
+        <AboutP>
+          AI Reboot 교육과정에서 개발을 배우면서, 배운 것으로 가장 만들고 싶었던 건 화려한 서비스가 아니라 '못한 날을 견디게 돕는 도구'였습니다.
+          무기력은 게으름이 아니라는 걸 알기에, 실패해도 죄책감 없이 다시 시작하는 경험을 설계했습니다.
+        </AboutP>
+        <AboutP>오늘만큼은 잘하게 만드는 앱이 아니라, 어떤 날이든 괜찮다고 말해주는 앱입니다.</AboutP>
+        <div style={{ height: 1, background: '#E8E2D6', margin: '18px 0 12px' }} />
+        <a href="mailto:seowoo92@gmail.com" style={{ fontSize: 12.5, fontWeight: 600, color: '#6F7D72', textDecoration: 'none' }}>seowoo92@gmail.com</a>
+      </>
+    ),
+  },
+  {
+    label: '기획 의도',
+    sub: '잘하게 만드는 앱이 아니라, 괜찮다고 말해주는 앱',
+    body: (
+      <>
+        <AboutH>무기력은 게으름이 아니니까</AboutH>
+        <AboutP>
+          취업·학업·대인관계 스트레스로 무기력을 겪는 청년들은 하려는 마음이 없는 게 아니라, 시작할 힘이 모자란 상태입니다.
+          오늘만큼은 그 상태를 탓하지 않고, 오늘 마음 날씨에 맞춰 딱 할 수 있는 만큼만 제안합니다.
+        </AboutP>
+        <AboutH>심리학 원리를 일상의 언어로</AboutH>
+        <AboutP>
+          인지행동치료(CBT)에서 검증된 원리들을 빌렸습니다 — 생각보다 행동을 먼저 움직이는 행동 활성화, 어려우면 단계를 낮추는 과제 단계화,
+          마음 날씨로 기분을 살피는 기분 모니터링, 완료가 정원으로 쌓이는 긍정적 강화.
+          치료 도구가 아니라, 원리를 차용한 일상 자기관리 도구입니다.
+        </AboutP>
+        <AboutH>실패까지 설계했습니다</AboutH>
+        <AboutP last>
+          어려우면 쉬운 버전으로 바꾸고, 쉬어가는 날도 오늘의 기록으로 인정합니다. 정원은 시들지 않고, 계절이 끝나면 앨범으로 갈무리됩니다.
+          실패해도 죄책감 없이 다시 시작하는 경험 — 모든 기능이 그 한 문장을 향합니다.
+        </AboutP>
+      </>
+    ),
+  },
+  {
+    label: '스토리',
+    sub: '여러 앱을 써봤지만',
+    body: (
+      <>
+        <AboutP>무기력에서 벗어나고 싶어서, 남들처럼 앱부터 깔았습니다.</AboutP>
+        <AboutP>
+          처음엔 루틴 플래너였습니다. 예쁜 계획표를 짜는 것까지는 좋았는데, 문제는 계획을 세울 힘조차 없는 날이었습니다.
+          그런 날이 며칠 이어지면 실천율 숫자가 떨어졌고, 앱을 열 때마다 "며칠째 안 했다"는 기록이 먼저 보였습니다.
+          나를 도우려던 앱이 어느새 죄책감을 주는 앱이 되어 있었습니다.
+        </AboutP>
+        <AboutP>
+          감정 관리 앱도 써봤습니다. 내 감정에 이름을 붙이고 패턴을 보는 건 의미가 있었지만, 화면을 닫고 나면 같은 질문이 남았습니다.
+          "그래서, 오늘 나는 뭘 하면 되지?"
+        </AboutP>
+        <AboutP>
+          전문적인 심리치료 프로그램도 써봤습니다. 근거는 탄탄했지만, 하루 20분씩 글을 쓰는 50일 코스와 월 10만 원 가까운 비용은 —
+          역설적이게도 — 가장 무기력한 사람이 넘기 가장 어려운 문턱이었습니다.
+        </AboutP>
+        <AboutP>
+          제게 필요한 건 관리 도구도, 분석 리포트도, 치료 프로그램도 아니었습니다.
+          <b> 오늘 내 상태를 묻고, 딱 그만큼만 건네주고, 못 해도 괜찮다고 말해주는 것.</b> 그 단순한 도구가 없어서, 직접 만들었습니다.
+        </AboutP>
+        <AboutP last>
+          마음 날씨를 고르면 오늘 할 수 있는 만큼만 도착하고, 어려우면 더 쉬워지고, 쉬어가도 기록이 되는 서비스.
+          무기력한 날의 저에게 필요했던 도구, 오늘만큼입니다.
+        </AboutP>
+      </>
+    ),
+  },
+  {
+    label: '기술 스택',
+    sub: '혼자서, 화면부터 서버까지',
+    body: (
+      <>
+        <StackRow tag="화면">
+          <b style={{ fontWeight: 700, color: '#24523F' }}>React 19 · Vite · Tailwind CSS v4</b> — 모바일 우선 반응형, 데스크톱은 폰 목업 프레임으로 배려
+        </StackRow>
+        <StackRow tag="AI 코치">
+          <b style={{ fontWeight: 700, color: '#24523F' }}>업스테이지 Solar Pro</b> — 서버 프록시로 키 보호, 품질 게이트 6단계 + 예비 메시지 안전망
+        </StackRow>
+        <StackRow tag="서버">
+          <b style={{ fontWeight: 700, color: '#24523F' }}>Supabase</b> — 카카오 로그인, 기기 간 동기화 DB, Edge Functions 4종, 매일 18시 리마인더(pg_cron)
+        </StackRow>
+        <StackRow tag="알림">
+          <b style={{ fontWeight: 700, color: '#24523F' }}>카카오톡 '나에게 보내기' + 웹 푸시(PWA)</b> — 루틴 카드와 저녁 리마인더 2채널
+        </StackRow>
+        <StackRow tag="배포" last>
+          <b style={{ fontWeight: 700, color: '#24523F' }}>GitHub Pages</b> — 설치 없이 웹에서 바로, 홈 화면 설치(PWA)는 선택
+        </StackRow>
+      </>
+    ),
+  },
+  {
+    label: '앞으로의 계획',
+    sub: '오늘만큼은 계속 자랍니다',
+    body: (
+      <>
+        <AboutH>정원의 사계절</AboutH>
+        <AboutP>
+          지금 정원은 여름입니다. 9월이 오면 가을 세트가 열리고, 실사용자의 첫 완성 앨범이 만들어집니다. 겨울과 봄도 차례로 준비합니다.
+        </AboutP>
+        <AboutH>코치와의 대화</AboutH>
+        <AboutP>
+          지금 코치는 격려를 건네는 존재입니다. 다음 단계는 선택지 기반의 짧은 대화 —
+          마음이 힘든 사용자를 마주하는 기능인 만큼, 안전 설계를 갖춘 뒤 신중하게 열 계획입니다.
+        </AboutP>
+        <AboutH>더 깊은 개인화</AboutH>
+        <AboutP last>
+          완료 패턴을 반영한 루틴 추천 고도화, 카카오 루틴 카드의 동적 이미지, 비 온 날 완료하면 뜨는 무지개 배너 같은 작은 디테일까지 —
+          회복의 경험을 계속 다듬어 갑니다.
+        </AboutP>
+      </>
+    ),
+  },
+]
+
 function useViewportMode() {
   const getMode = () => {
     const w = window.innerWidth
@@ -100,7 +236,8 @@ function ScrollHint({ scrollRef, bottom }) {
 export default function AppLayout({ children, showTabBar = false, activeTab = 'home', onTabChange = () => {} }) {
   const mode = useViewportMode()
   const bezelRef = useRef(null)
-  const [aboutOpen, setAboutOpen] = useState(false) // 데스크톱 About(만든 사람) 모달 — 멘토링 피드백 7/26
+  const [aboutOpen, setAboutOpen] = useState(false) // 데스크톱 About 모달 — 멘토링 피드백 7/26, 7/28 책갈피 5탭으로 확장
+  const [aboutTab, setAboutTab] = useState(0)
 
   // ---------- 데스크톱 연출 3종 (멘토링 피드백 7/26) ----------
   const reduceMotion = useRef(
@@ -308,15 +445,17 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
 
         </div>
 
-        {/* About 메뉴 + 저작권 표기 — 폰 프레임 하단 라인에 정렬 (멘토링 피드백 7/26, 문안 사용자 확정) */}
+        {/* About 버튼(테두리 필 + 둥둥 부유) + 저작권 표기 — 폰 프레임 하단 라인에 정렬 (7/28 사용자 확정) */}
         <div style={{ flex: 'none' }}>
-          <button
-            onClick={() => setAboutOpen(true)}
-            style={{ display: 'block', background: 'none', border: 'none', padding: 0, fontSize: 12.5, fontWeight: 700, color: '#6F7D72', cursor: 'pointer', letterSpacing: '0.01em' }}
-          >
-            About — 만든 사람 ›
-          </button>
-          <p style={{ fontSize: 11.5, fontWeight: 500, color: '#B7AFA4', letterSpacing: '0.02em', margin: '8px 0 0' }}>
+          <div className="about-float" style={{ display: 'inline-block' }}>
+            <button
+              onClick={() => { setAboutTab(0); setAboutOpen(true) }}
+              style={{ display: 'inline-block', background: '#FFFFFF', border: '1.5px solid #24523F', borderRadius: 999, padding: '9px 18px', fontSize: 13, fontWeight: 800, color: '#24523F', cursor: 'pointer', letterSpacing: '0.01em', boxShadow: '0 12px 24px -16px rgba(36,82,63,.45)' }}
+            >
+              About 오늘만큼
+            </button>
+          </div>
+          <p style={{ fontSize: 11.5, fontWeight: 500, color: '#B7AFA4', letterSpacing: '0.02em', margin: '10px 0 0' }}>
             Designed &amp; Developed by Seowoo Kim
           </p>
         </div>
@@ -369,7 +508,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
         </div>
       </div>
 
-      {/* About 모달 — 만든 사람·기획의도 (초안 반영 7/27, 추후 수정 예정) */}
+      {/* About 모달 — A안 책갈피형: 좌측 5개 메뉴 + 우측 내용 (사용자 확정 7/28) */}
       {aboutOpen && (
         <div
           onClick={() => setAboutOpen(false)}
@@ -377,37 +516,52 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            style={{ background: '#FAF6F0', borderRadius: 26, maxWidth: 480, width: '100%', padding: '36px 38px', boxShadow: '0 30px 70px -20px rgba(20,46,34,.5)', position: 'relative' }}
+            style={{ background: '#FAF6F0', borderRadius: 26, width: 780, maxWidth: '94vw', height: 560, maxHeight: '86vh', display: 'flex', overflow: 'hidden', boxShadow: '0 30px 70px -20px rgba(20,46,34,.5)', position: 'relative' }}
           >
             <button
               onClick={() => setAboutOpen(false)}
               aria-label="닫기"
-              style={{ position: 'absolute', top: 18, right: 18, width: 32, height: 32, borderRadius: '50%', background: '#fff', border: '1px solid #EAE3D7', cursor: 'pointer', fontSize: 14, color: '#6F7D72', lineHeight: 1 }}
+              style={{ position: 'absolute', top: 18, right: 18, width: 32, height: 32, borderRadius: '50%', background: '#fff', border: '1px solid #EAE3D7', cursor: 'pointer', fontSize: 14, color: '#6F7D72', lineHeight: 1, zIndex: 5 }}
             >
               ✕
             </button>
-            {/* 클레이 3점 마크 — 원본과 동일하게 점점 커지는 형태 */}
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 14 }}>
-              <span style={{ width: 18, height: 18, borderRadius: '50%', background: 'radial-gradient(circle at 34% 30%,#F6C6B4,#EFA58F 55%,#E08066)' }} />
-              <span style={{ width: 23, height: 23, borderRadius: '50%', background: 'radial-gradient(circle at 34% 30%,#FFEFB6,#F3D978 55%,#E8C24E)', marginLeft: -7 }} />
-              <span style={{ width: 28, height: 28, borderRadius: '50%', background: 'radial-gradient(circle at 38% 28%,#3C7A5C,#1C4030)', marginLeft: -7 }} />
+
+            {/* 좌측 책갈피 */}
+            <div style={{ width: 196, flex: 'none', padding: '30px 20px 26px', borderRight: '1px solid #EAE3D7', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <span style={{ width: 15, height: 15, borderRadius: '50%', background: 'radial-gradient(circle at 34% 30%,#F6C6B4,#EFA58F 55%,#E08066)' }} />
+                <span style={{ width: 19, height: 19, borderRadius: '50%', background: 'radial-gradient(circle at 34% 30%,#FFEFB6,#F3D978 55%,#E8C24E)', marginLeft: -6 }} />
+                <span style={{ width: 23, height: 23, borderRadius: '50%', background: 'radial-gradient(circle at 38% 28%,#3C7A5C,#1C4030)', marginLeft: -6 }} />
+              </div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: '#24523F', marginTop: 10 }}>About 오늘만큼</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#B7AFA4', letterSpacing: '0.06em', marginTop: 3 }}>ABOUT ONEMOVE</div>
+              <div style={{ marginTop: 26, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {ABOUT_SECTIONS.map((s, i) => {
+                  const on = i === aboutTab
+                  return (
+                    <button
+                      key={s.label}
+                      onClick={() => setAboutTab(i)}
+                      style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 9, padding: '9px 12px', border: 'none', background: on ? '#FFFFFF' : 'none', borderRadius: 11, fontSize: 13.5, fontWeight: on ? 800 : 600, color: on ? '#24523F' : '#9AA69D', textAlign: 'left', cursor: 'pointer', boxShadow: on ? '0 6px 14px -10px rgba(36,82,63,.25)' : 'none', fontFamily: 'inherit' }}
+                    >
+                      {on && <span style={{ position: 'absolute', left: 0, top: 9, bottom: 9, width: 3, borderRadius: 2, background: '#EE8466' }} />}
+                      <span style={{ fontSize: 11, fontWeight: 800, color: on ? '#EE8466' : '#C9C2B4', letterSpacing: '0.03em', width: 18 }}>{String(i + 1).padStart(2, '0')}</span>
+                      {s.label}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
-            <h2 style={{ fontSize: 22, fontWeight: 800, color: '#24523F', margin: 0 }}>김서우</h2>
-            <p style={{ fontSize: 13.5, fontWeight: 600, color: '#6F7D72', margin: '4px 0 0' }}>오늘만큼을 기획하고, 디자인하고, 개발했습니다.</p>
-            <p style={{ fontSize: 14.5, fontWeight: 700, color: '#9B5B45', lineHeight: 1.6, margin: '18px 0 0', wordBreak: 'keep-all' }}>
-              "무기력한 날의 나에게 필요했던 도구를 직접 만들었습니다."
-            </p>
-            <p style={{ fontSize: 13.5, fontWeight: 500, color: '#3A4A40', lineHeight: 1.75, margin: '14px 0 0', wordBreak: 'keep-all' }}>
-              AI Reboot 교육과정에서 개발을 배우면서, 배운 것으로 가장 만들고 싶었던 건 화려한 서비스가 아니라 '못한 날을 견디게 돕는 도구'였습니다.
-              무기력은 게으름이 아니라는 걸 알기에, 실패해도 죄책감 없이 다시 시작하는 경험을 설계했습니다.
-            </p>
-            <p style={{ fontSize: 13.5, fontWeight: 500, color: '#3A4A40', lineHeight: 1.75, margin: '10px 0 0', wordBreak: 'keep-all' }}>
-              오늘만큼은 잘하게 만드는 앱이 아니라, 어떤 날이든 괜찮다고 말해주는 앱입니다.
-            </p>
-            <div style={{ height: 1, background: '#E8E2D6', margin: '20px 0 14px' }} />
-            <a href="mailto:seowoo92@gmail.com" style={{ fontSize: 12.5, fontWeight: 600, color: '#6F7D72', textDecoration: 'none' }}>
-              seowoo92@gmail.com
-            </a>
+
+            {/* 우측 내용 — 탭 전환 시 페이드(coach-swap 재사용), 길면 이 영역만 스크롤 */}
+            <div key={aboutTab} className="coach-swap [&::-webkit-scrollbar]:hidden" style={{ flex: 1, padding: '34px 38px 30px', overflowY: 'auto', scrollbarWidth: 'none' }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 6 }}>
+                <span style={{ fontSize: 15, fontWeight: 800, color: '#EE8466' }}>{String(aboutTab + 1).padStart(2, '0')}</span>
+                <span style={{ fontSize: 21, fontWeight: 800, color: '#24523F', letterSpacing: '-0.02em' }}>{ABOUT_SECTIONS[aboutTab].label}</span>
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: '#9AA69D', marginBottom: 22 }}>{ABOUT_SECTIONS[aboutTab].sub}</div>
+              {ABOUT_SECTIONS[aboutTab].body}
+            </div>
           </div>
         </div>
       )}

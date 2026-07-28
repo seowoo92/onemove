@@ -68,6 +68,15 @@
     animation: coach-swap 0.45s ease;
   }
 
+  /* About 버튼 둥둥 부유 — 데스크톱 소개 패널 (버튼 프레스 scale과 충돌하지 않게 래퍼에 적용) */
+  @keyframes about-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  .about-float {
+    animation: about-float 2.8s ease-in-out infinite;
+  }
+
   /* 인앱 토스트 등장 — 전환 원칙과 동일하게 opacity만 */
   @keyframes toast-in {
     from { opacity: 0; }
@@ -84,5 +93,6 @@
     .toast-pop { animation: none; }
     .caret-blink { animation: none; }
     .coach-swap { animation: none; }
+    .about-float { animation: none; }
   }
 }
