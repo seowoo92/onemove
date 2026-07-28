@@ -316,8 +316,9 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
     }
     const onLeave = () => { el.style.opacity = '0' }
     const tick = () => {
-      cx += (mx - cx) * 0.16
-      cy += (my - cy) * 0.16
+      // 팔로우 강도: 낮으면 늘어지고 높으면 딱딱함 — 0.38은 부드러움을 유지하면서 커서에 밀착 (7/28 사용자 피드백)
+      cx += (mx - cx) * 0.38
+      cy += (my - cy) * 0.38
       el.style.left = cx + 'px'
       el.style.top = cy + 'px'
       raf = requestAnimationFrame(tick)
@@ -554,7 +555,7 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
       <div
         ref={cursorRef}
         aria-hidden="true"
-        style={{ position: 'fixed', left: -100, top: -100, width: 30, height: 30, borderRadius: '50%', border: '1.5px solid #E8C24E', background: 'rgba(243,217,120,.12)', pointerEvents: 'none', zIndex: 200, transform: 'translate(-50%,-50%)', transition: 'width .25s, height .25s, background .25s, opacity .3s', opacity: 0 }}
+        style={{ position: 'fixed', left: -100, top: -100, width: 30, height: 30, borderRadius: '50%', border: '1.5px solid #F3D978', background: 'rgba(243,217,120,.14)', pointerEvents: 'none', zIndex: 200, transform: 'translate(-50%,-50%)', transition: 'width .25s, height .25s, background .25s, opacity .3s', opacity: 0 }}
       />
 
       {/* About 모달 — A안 책갈피형: 좌측 5개 메뉴 + 우측 내용 (사용자 확정 7/28) */}
