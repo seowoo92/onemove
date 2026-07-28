@@ -265,12 +265,13 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode])
   // ② 마우스 따라 메인 3색 배경 무빙 — 리렌더 없이 DOM 직접 갱신(rAF 러프)
+  //    자율 부유(blob-drift, 래퍼 transform)와 겹치지 않게 패럴랙스는 안쪽 .blob-inner에 적용
   const blobLayerRef = useRef(null)
   useEffect(() => {
     if (mode !== 'desktop' || reduceMotion) return
     const layer = blobLayerRef.current
     if (!layer) return
-    const blobs = [...layer.children]
+    const blobs = [...layer.querySelectorAll('.blob-inner')]
     const factors = [0.06, -0.05, 0.04]
     let tx = 0, ty = 0, cx = 0, cy = 0, raf
     const onMove = (e) => {
@@ -296,6 +297,41 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
   // ③ 코치 캐릭터 캐러셀
   const [coachIdx, setCoachIdx] = useState(0)
   const carouselCoach = COACH_INFO[COACH_KEYS[coachIdx]]
+  // ④ 진옐로 커서 링 — 포인터를 러프(lerp)로 뒤따르고 클릭 요소 위에서 확대 (7/28 사용자 확정, 마우스 환경 전용)
+  const cursorRef = useRef(null)
+  useEffect(() => {
+    if (mode !== 'desktop' || reduceMotion) return
+    if (!window.matchMedia?.('(pointer: fine)').matches) return
+    const el = cursorRef.current
+    if (!el) return
+    let mx = -100, my = -100, cx = -100, cy = -100, raf
+    const onMove = (e) => {
+      mx = e.clientX
+      my = e.clientY
+      el.style.opacity = '1'
+      const t = e.target?.closest?.('button, a')
+      el.style.width = t ? '52px' : '30px'
+      el.style.height = t ? '52px' : '30px'
+      el.style.background = t ? 'rgba(243,217,120,.26)' : 'rgba(243,217,120,.12)'
+    }
+    const onLeave = () => { el.style.opacity = '0' }
+    const tick = () => {
+      cx += (mx - cx) * 0.16
+      cy += (my - cy) * 0.16
+      el.style.left = cx + 'px'
+      el.style.top = cy + 'px'
+      raf = requestAnimationFrame(tick)
+    }
+    window.addEventListener('mousemove', onMove)
+    document.documentElement.addEventListener('mouseleave', onLeave)
+    raf = requestAnimationFrame(tick)
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      document.documentElement.removeEventListener('mouseleave', onLeave)
+      cancelAnimationFrame(raf)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode])
 
   // 모바일/태블릿: 중앙 정렬 + 그림자(태블릿만) + 조건부 고정 탭바
   if (mode !== 'desktop') {
@@ -342,11 +378,17 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
   return (
     <div className="flex min-h-screen items-center" style={{ backgroundColor: '#FFFFFF', position: 'relative', overflow: 'hidden' }}>
 
-      {/* 마우스 따라 움직이는 메인 3색 배경 블롭 (멘토링 피드백 7/26) — reduced-motion 시 정지 */}
-      <div ref={blobLayerRef} aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
-        <div style={{ position: 'absolute', top: '-12%', right: '4%', width: 520, height: 520, borderRadius: '50%', background: 'radial-gradient(circle, rgba(238,132,102,0.11), transparent 70%)', filter: 'blur(70px)', willChange: 'transform' }} />
-        <div style={{ position: 'absolute', bottom: '-14%', left: '2%', width: 480, height: 480, borderRadius: '50%', background: 'radial-gradient(circle, rgba(243,217,120,0.16), transparent 70%)', filter: 'blur(70px)', willChange: 'transform' }} />
-        <div style={{ position: 'absolute', top: '26%', left: '40%', width: 560, height: 560, borderRadius: '50%', background: 'radial-gradient(circle, rgba(36,82,63,0.08), transparent 70%)', filter: 'blur(80px)', willChange: 'transform' }} />
+      {/* 메인 3색 배경 대형 원 (동일 520px) — 자율 부유(드리프트) + 마우스 패럴랙스 (7/28 사용자 확정) — reduced-motion 시 정지 */}
+      <div ref={blobLayerRef} aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+        <div className="blob-drift-1" style={{ position: 'absolute', top: '-14%', left: '58%' }}>
+          <div className="blob-inner" style={{ width: 520, height: 520, borderRadius: '50%', background: 'radial-gradient(circle, rgba(238,132,102,0.20), transparent 68%)', filter: 'blur(60px)', willChange: 'transform' }} />
+        </div>
+        <div className="blob-drift-2" style={{ position: 'absolute', top: '52%', left: '-8%' }}>
+          <div className="blob-inner" style={{ width: 520, height: 520, borderRadius: '50%', background: 'radial-gradient(circle, rgba(243,217,120,0.26), transparent 68%)', filter: 'blur(60px)', willChange: 'transform' }} />
+        </div>
+        <div className="blob-drift-3" style={{ position: 'absolute', top: '28%', left: '38%' }}>
+          <div className="blob-inner" style={{ width: 520, height: 520, borderRadius: '50%', background: 'radial-gradient(circle, rgba(36,82,63,0.15), transparent 68%)', filter: 'blur(60px)', willChange: 'transform' }} />
+        </div>
       </div>
 
       {/* 좌측 소개 패널 — 높이를 폰 프레임(812+16)과 맞춰 About·저작권을 프레임 하단 라인에 정렬 */}
@@ -507,6 +549,13 @@ export default function AppLayout({ children, showTabBar = false, activeTab = 'h
         </div>
         </div>
       </div>
+
+      {/* 진옐로 커서 링 — 기본 커서 위에 얹는 팔로우 링, 모달 위에서도 보이도록 z 최상단 */}
+      <div
+        ref={cursorRef}
+        aria-hidden="true"
+        style={{ position: 'fixed', left: -100, top: -100, width: 30, height: 30, borderRadius: '50%', border: '1.5px solid #E8C24E', background: 'rgba(243,217,120,.12)', pointerEvents: 'none', zIndex: 200, transform: 'translate(-50%,-50%)', transition: 'width .25s, height .25s, background .25s, opacity .3s', opacity: 0 }}
+      />
 
       {/* About 모달 — A안 책갈피형: 좌측 5개 메뉴 + 우측 내용 (사용자 확정 7/28) */}
       {aboutOpen && (

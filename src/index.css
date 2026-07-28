@@ -68,6 +68,29 @@
     animation: coach-swap 0.45s ease;
   }
 
+  /* 데스크톱 배경 3색 대형 원 — 자율 부유 (래퍼=드리프트 transform, 안쪽 .blob-inner=마우스 패럴랙스 transform으로 분리) */
+  @keyframes blob-drift-1 {
+    0% { transform: translate(0, 0); }
+    33% { transform: translate(-34vw, 22vh); }
+    66% { transform: translate(-6vw, 52vh); }
+    100% { transform: translate(12vw, 18vh); }
+  }
+  @keyframes blob-drift-2 {
+    0% { transform: translate(0, 0); }
+    33% { transform: translate(20vw, -30vh); }
+    66% { transform: translate(42vw, 6vh); }
+    100% { transform: translate(6vw, -22vh); }
+  }
+  @keyframes blob-drift-3 {
+    0% { transform: translate(0, 0); }
+    33% { transform: translate(22vw, 24vh); }
+    66% { transform: translate(8vw, -16vh); }
+    100% { transform: translate(-12vw, 16vh); }
+  }
+  .blob-drift-1 { animation: blob-drift-1 30s ease-in-out infinite alternate; }
+  .blob-drift-2 { animation: blob-drift-2 26s ease-in-out infinite alternate; }
+  .blob-drift-3 { animation: blob-drift-3 34s ease-in-out infinite alternate; }
+
   /* About 버튼 둥둥 부유 — 데스크톱 소개 패널 (버튼 프레스 scale과 충돌하지 않게 래퍼에 적용) */
   @keyframes about-float {
     0%, 100% { transform: translateY(0); }
@@ -94,5 +117,6 @@
     .caret-blink { animation: none; }
     .coach-swap { animation: none; }
     .about-float { animation: none; }
+    .blob-drift-1, .blob-drift-2, .blob-drift-3 { animation: none; }
   }
 }
