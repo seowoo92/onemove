@@ -394,6 +394,10 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
   // 하루 마무리(회고) — 모든 루틴이 정리되면 하루 1회 생성, 이후엔 저장본 재사용
   useEffect(() => {
     if (!allResolved) { setReview(null); return }
+    // 코치 모달이 열려 있는 동안은 생성을 미룬다 — 마지막 완료 순간 모달 메시지와 회고가
+    // 동시에 Solar를 호출하면 한쪽이 튕겨 예비 문구로 저장되는 경합 방지. 회고 카드는
+    // 어차피 모달에 가려 안 보이므로 닫힌 뒤 생성해도 체감 차이 없음
+    if (modal) return
     // 저장본이 AI 생성이면 그대로 재사용. 예비 문구로 저장된 날은 일단 보여주되,
     // 아래에서 조용히 AI 생성을 재시도해 성공 시에만 교체·저장 (일시 실패가 하루 종일 고정되는 것 방지)
     const saved = storage.getTodayReview()
@@ -417,7 +421,7 @@ export default function Home({ coach, todayState, nickname = '', onGoToStateChec
         setReview(value)
       })
     return () => { cancelled = true }
-  }, [allResolved]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [allResolved, modal]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div style={{ minHeight: '100%', backgroundColor: '#FAF6F0' }}>
